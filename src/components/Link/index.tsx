@@ -5,6 +5,19 @@ import React from 'react'
 
 import type { Page, Post, Product, OpenPosition, Category } from '@/payload-types'
 
+// Map collection names to their route paths
+const getCollectionPath = (relationTo: string): string => {
+  const collectionPathMap: Record<string, string> = {
+    pages: '',
+    posts: 'posts',
+    products: 'products',
+    openPositions: 'open-positions',
+    categories: 'categories',
+  }
+
+  return collectionPathMap[relationTo] || relationTo
+}
+
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
@@ -27,7 +40,6 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     appearance = 'inline',
     children,
     className,
-    label,
     newTab,
     reference,
     size: sizeFromProps,
@@ -35,12 +47,26 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     locale,
   } = props
 
-  const href =
-    type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `/${locale || 'en'}${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
-          reference.value.slug
-        }`
-      : url
+  let href: string | null = null
+
+  // Handle custom URL type
+  if (type === 'custom' && url) {
+    href = url
+  }
+
+  // Handle reference type - simplified approach
+  if (type === 'reference' && reference?.value) {
+    const refValue = reference.value
+    if (typeof refValue === 'object' && refValue && 'slug' in refValue && refValue.slug) {
+      if (reference.relationTo === 'pages') {
+        href = `/${locale || 'en'}/${refValue.slug}`
+      } else {
+        // For all collections, use the mapped path
+        const collectionPath = getCollectionPath(reference.relationTo)
+        href = `/${locale || 'en'}/${collectionPath}/${refValue.slug}`
+      }
+    }
+  }
 
   if (!href) return null
 
@@ -50,8 +76,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
-        {label && label}
+      <Link className={cn(className)} href={href} {...newTabProps}>
         {children && children}
       </Link>
     )
@@ -59,8 +84,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
-        {label && label}
+      <Link className={cn(className)} href={href} {...newTabProps}>
         {children && children}
       </Link>
     </Button>

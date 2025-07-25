@@ -3,7 +3,7 @@ import { getCachedGlobal } from '@/utilities/getGlobals'
 import Link from 'next/link'
 import React from 'react'
 import type { Footer as FooterType } from '@/payload-types'
-import { CMSLink } from '@/components/Link'
+import { getLinkHref } from '@/utilities/getLinkHref'
 import { Logo } from '@/components/Logo/Logo'
 import { TypedLocale } from 'payload'
 
@@ -24,9 +24,14 @@ export async function Footer({ locale }: FooterProps) {
 
         <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
           <nav className="flex flex-col md:flex-row gap-4">
-            {navItems.map(({ link }, i) => (
-              <CMSLink className="text-white" key={i} {...link} locale={locale || 'en'} />
-            ))}
+            {navItems.map((item, i) => {
+              const href = getLinkHref({ link: item.link }, locale || 'en')
+              return (
+                <Link key={i} className="text-white" href={href}>
+                  {item.link.label}
+                </Link>
+              )
+            })}
           </nav>
         </div>
       </div>
