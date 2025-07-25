@@ -1,6 +1,6 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-vercel-postgres'
 
-export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."_locales" AS ENUM('en', 'rs');
   CREATE TYPE "public"."enum_pages_hero_links_link_type" AS ENUM('reference', 'custom');
@@ -29,11 +29,18 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE TYPE "public"."enum_posts_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum__posts_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum__posts_v_published_locale" AS ENUM('en', 'rs');
+  CREATE TYPE "public"."enum_open_positions_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum__open_positions_v_version_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum__open_positions_v_published_locale" AS ENUM('en', 'rs');
+  CREATE TYPE "public"."enum_products_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum__products_v_version_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum__products_v_published_locale" AS ENUM('en', 'rs');
   CREATE TYPE "public"."enum_redirects_to_type" AS ENUM('reference', 'custom');
   CREATE TYPE "public"."enum_forms_confirmation_type" AS ENUM('message', 'redirect');
   CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'schedulePublish');
   CREATE TYPE "public"."enum_payload_jobs_log_state" AS ENUM('failed', 'succeeded');
   CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'schedulePublish');
+  CREATE TYPE "public"."enum_header_nav_items_subcategories_link_type" AS ENUM('reference', 'custom');
   CREATE TYPE "public"."enum_header_nav_items_link_type" AS ENUM('reference', 'custom');
   CREATE TYPE "public"."enum_footer_nav_items_link_type" AS ENUM('reference', 'custom');
   CREATE TABLE IF NOT EXISTS "pages_hero_links" (
@@ -169,6 +176,71 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"block_name" varchar
   );
   
+  CREATE TABLE IF NOT EXISTS "pages_blocks_zig_zag_left" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"content_background_id" integer,
+  	"content_image_id" integer,
+  	"content_title" varchar,
+  	"content_description" varchar,
+  	"content_call_to_action_text" varchar,
+  	"content_call_to_action_link" varchar,
+  	"content_call_to_action_open_in_new_tab" boolean DEFAULT false,
+  	"block_name" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "pages_blocks_zig_zag_right" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"content_background_id" integer,
+  	"content_image_id" integer,
+  	"content_title" varchar,
+  	"content_description" varchar,
+  	"content_call_to_action_text" varchar,
+  	"content_call_to_action_link" varchar,
+  	"content_call_to_action_open_in_new_tab" boolean DEFAULT false,
+  	"block_name" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "pages_blocks_contact_block_contacts" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" varchar NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"avatar_id" integer,
+  	"name" varchar,
+  	"position" varchar,
+  	"email" varchar,
+  	"phone" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "pages_blocks_contact_block" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"title" varchar,
+  	"company_info_name" varchar DEFAULT 'Geneza Ltd.',
+  	"company_info_address" varchar DEFAULT '24420 Kanjiža, Put Narodnih heroja 17, Serbia',
+  	"company_info_tin" varchar DEFAULT '100870797',
+  	"company_info_identification_no" varchar DEFAULT '08579024',
+  	"company_info_registration_no" varchar DEFAULT '2140857024',
+  	"company_info_industrial_no" varchar DEFAULT '4621',
+  	"company_info_vat_id" varchar DEFAULT '125364362',
+  	"company_info_front_office" varchar DEFAULT '+381 24 4873 057, +381 24 4875 157, +381 24 4875 197',
+  	"company_info_commercial_department" varchar DEFAULT '+381 24 4873 887, +381 24 4874 987',
+  	"company_info_cell" varchar DEFAULT '+381 63 1057 668',
+  	"company_info_email" varchar DEFAULT 'geneza@geneza.rs',
+  	"block_name" varchar
+  );
+  
   CREATE TABLE IF NOT EXISTS "pages" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"title" varchar,
@@ -200,6 +272,8 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"locale" "_locales",
   	"pages_id" integer,
   	"posts_id" integer,
+  	"products_id" integer,
+  	"open_positions_id" integer,
   	"categories_id" integer
   );
   
@@ -348,6 +422,75 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"block_name" varchar
   );
   
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_zig_zag_left" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"content_background_id" integer,
+  	"content_image_id" integer,
+  	"content_title" varchar,
+  	"content_description" varchar,
+  	"content_call_to_action_text" varchar,
+  	"content_call_to_action_link" varchar,
+  	"content_call_to_action_open_in_new_tab" boolean DEFAULT false,
+  	"_uuid" varchar,
+  	"block_name" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_zig_zag_right" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"content_background_id" integer,
+  	"content_image_id" integer,
+  	"content_title" varchar,
+  	"content_description" varchar,
+  	"content_call_to_action_text" varchar,
+  	"content_call_to_action_link" varchar,
+  	"content_call_to_action_open_in_new_tab" boolean DEFAULT false,
+  	"_uuid" varchar,
+  	"block_name" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_contact_block_contacts" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"avatar_id" integer,
+  	"name" varchar,
+  	"position" varchar,
+  	"email" varchar,
+  	"phone" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_pages_v_blocks_contact_block" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"title" varchar,
+  	"company_info_name" varchar DEFAULT 'Geneza Ltd.',
+  	"company_info_address" varchar DEFAULT '24420 Kanjiža, Put Narodnih heroja 17, Serbia',
+  	"company_info_tin" varchar DEFAULT '100870797',
+  	"company_info_identification_no" varchar DEFAULT '08579024',
+  	"company_info_registration_no" varchar DEFAULT '2140857024',
+  	"company_info_industrial_no" varchar DEFAULT '4621',
+  	"company_info_vat_id" varchar DEFAULT '125364362',
+  	"company_info_front_office" varchar DEFAULT '+381 24 4873 057, +381 24 4875 157, +381 24 4875 197',
+  	"company_info_commercial_department" varchar DEFAULT '+381 24 4873 887, +381 24 4874 987',
+  	"company_info_cell" varchar DEFAULT '+381 63 1057 668',
+  	"company_info_email" varchar DEFAULT 'geneza@geneza.rs',
+  	"_uuid" varchar,
+  	"block_name" varchar
+  );
+  
   CREATE TABLE IF NOT EXISTS "_pages_v" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"parent_id" integer,
@@ -386,6 +529,8 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"locale" "_locales",
   	"pages_id" integer,
   	"posts_id" integer,
+  	"products_id" integer,
+  	"open_positions_id" integer,
   	"categories_id" integer
   );
   
@@ -578,6 +723,258 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"hash" varchar,
   	"login_attempts" numeric DEFAULT 0,
   	"lock_until" timestamp(3) with time zone
+  );
+  
+  CREATE TABLE IF NOT EXISTS "open_positions_job_offers_requirements" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" varchar NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"item" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "open_positions_job_offers_responsibilities" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" varchar NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"item" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "open_positions_job_offers" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"image_id" integer,
+  	"position" varchar,
+  	"date" timestamp(3) with time zone,
+  	"requirements_title" varchar,
+  	"responsibilities_title" varchar,
+  	"call_to_action_text" varchar,
+  	"call_to_action_link" varchar,
+  	"call_to_action_open_in_new_tab" boolean DEFAULT false
+  );
+  
+  CREATE TABLE IF NOT EXISTS "open_positions" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"title" varchar,
+  	"content" jsonb,
+  	"slug" varchar,
+  	"slug_lock" boolean DEFAULT true,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"_status" "enum_open_positions_status" DEFAULT 'draft'
+  );
+  
+  CREATE TABLE IF NOT EXISTS "open_positions_locales" (
+  	"meta_title" varchar,
+  	"meta_image_id" integer,
+  	"meta_description" varchar,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"_parent_id" integer NOT NULL
+  );
+  
+  CREATE TABLE IF NOT EXISTS "open_positions_rels" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"order" integer,
+  	"parent_id" integer NOT NULL,
+  	"path" varchar NOT NULL,
+  	"categories_id" integer
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_open_positions_v_version_job_offers_requirements" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"item" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_open_positions_v_version_job_offers_responsibilities" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"item" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_open_positions_v_version_job_offers" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"image_id" integer,
+  	"position" varchar,
+  	"date" timestamp(3) with time zone,
+  	"requirements_title" varchar,
+  	"responsibilities_title" varchar,
+  	"call_to_action_text" varchar,
+  	"call_to_action_link" varchar,
+  	"call_to_action_open_in_new_tab" boolean DEFAULT false,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_open_positions_v" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"parent_id" integer,
+  	"version_title" varchar,
+  	"version_content" jsonb,
+  	"version_slug" varchar,
+  	"version_slug_lock" boolean DEFAULT true,
+  	"version_updated_at" timestamp(3) with time zone,
+  	"version_created_at" timestamp(3) with time zone,
+  	"version__status" "enum__open_positions_v_version_status" DEFAULT 'draft',
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"snapshot" boolean,
+  	"published_locale" "enum__open_positions_v_published_locale",
+  	"latest" boolean,
+  	"autosave" boolean
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_open_positions_v_locales" (
+  	"version_meta_title" varchar,
+  	"version_meta_image_id" integer,
+  	"version_meta_description" varchar,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"_parent_id" integer NOT NULL
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_open_positions_v_rels" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"order" integer,
+  	"parent_id" integer NOT NULL,
+  	"path" varchar NOT NULL,
+  	"categories_id" integer
+  );
+  
+  CREATE TABLE IF NOT EXISTS "products_nutritive_info_additional_nutrients" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"value" varchar,
+  	"unit" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "products_product_info_certifications" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"image_id" integer
+  );
+  
+  CREATE TABLE IF NOT EXISTS "products_cut_sizes" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"name" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "products" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"scientific_name" varchar,
+  	"image_id" integer,
+  	"background_image_id" integer,
+  	"slug" varchar,
+  	"slug_lock" boolean DEFAULT true,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"_status" "enum_products_status" DEFAULT 'draft'
+  );
+  
+  CREATE TABLE IF NOT EXISTS "products_locales" (
+  	"title" varchar,
+  	"description" jsonb,
+  	"nutritive_info_calories" numeric,
+  	"nutritive_info_protein" numeric,
+  	"nutritive_info_carbohydrates" numeric,
+  	"product_info_origin" varchar,
+  	"product_info_season" varchar,
+  	"product_info_storage" varchar,
+  	"product_info_shelf_life" varchar,
+  	"meta_title" varchar,
+  	"meta_image_id" integer,
+  	"meta_description" varchar,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"_parent_id" integer NOT NULL
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_products_v_version_nutritive_info_additional_nutrients" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"value" varchar,
+  	"unit" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_products_v_version_product_info_certifications" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"image_id" integer,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_products_v_version_cut_sizes" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"name" varchar,
+  	"_uuid" varchar
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_products_v" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"parent_id" integer,
+  	"version_scientific_name" varchar,
+  	"version_image_id" integer,
+  	"version_background_image_id" integer,
+  	"version_slug" varchar,
+  	"version_slug_lock" boolean DEFAULT true,
+  	"version_updated_at" timestamp(3) with time zone,
+  	"version_created_at" timestamp(3) with time zone,
+  	"version__status" "enum__products_v_version_status" DEFAULT 'draft',
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"snapshot" boolean,
+  	"published_locale" "enum__products_v_published_locale",
+  	"latest" boolean,
+  	"autosave" boolean
+  );
+  
+  CREATE TABLE IF NOT EXISTS "_products_v_locales" (
+  	"version_title" varchar,
+  	"version_description" jsonb,
+  	"version_nutritive_info_calories" numeric,
+  	"version_nutritive_info_protein" numeric,
+  	"version_nutritive_info_carbohydrates" numeric,
+  	"version_product_info_origin" varchar,
+  	"version_product_info_season" varchar,
+  	"version_product_info_storage" varchar,
+  	"version_product_info_shelf_life" varchar,
+  	"version_meta_title" varchar,
+  	"version_meta_image_id" integer,
+  	"version_meta_description" varchar,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"_locale" "_locales" NOT NULL,
+  	"_parent_id" integer NOT NULL
   );
   
   CREATE TABLE IF NOT EXISTS "redirects" (
@@ -909,6 +1306,8 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"media_id" integer,
   	"categories_id" integer,
   	"users_id" integer,
+  	"open_positions_id" integer,
+  	"products_id" integer,
   	"redirects_id" integer,
   	"forms_id" integer,
   	"form_submissions_id" integer,
@@ -947,7 +1346,10 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"id" varchar PRIMARY KEY NOT NULL,
   	"label" varchar NOT NULL,
   	"description" varchar NOT NULL,
-  	"link" varchar NOT NULL
+  	"link_type" "enum_header_nav_items_subcategories_link_type" DEFAULT 'reference',
+  	"link_new_tab" boolean,
+  	"link_url" varchar,
+  	"link_label" varchar NOT NULL
   );
   
   CREATE TABLE IF NOT EXISTS "header_nav_items" (
@@ -975,7 +1377,10 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"path" varchar NOT NULL,
   	"locale" "_locales",
   	"pages_id" integer,
-  	"posts_id" integer
+  	"posts_id" integer,
+  	"products_id" integer,
+  	"open_positions_id" integer,
+  	"categories_id" integer
   );
   
   CREATE TABLE IF NOT EXISTS "footer_nav_items" (
@@ -1000,7 +1405,10 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
   	"pages_id" integer,
-  	"posts_id" integer
+  	"posts_id" integer,
+  	"products_id" integer,
+  	"open_positions_id" integer,
+  	"categories_id" integer
   );
   
   DO $$ BEGIN
@@ -1100,6 +1508,60 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   END $$;
   
   DO $$ BEGIN
+   ALTER TABLE "pages_blocks_zig_zag_left" ADD CONSTRAINT "pages_blocks_zig_zag_left_content_background_id_media_id_fk" FOREIGN KEY ("content_background_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_zig_zag_left" ADD CONSTRAINT "pages_blocks_zig_zag_left_content_image_id_media_id_fk" FOREIGN KEY ("content_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_zig_zag_left" ADD CONSTRAINT "pages_blocks_zig_zag_left_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_zig_zag_right" ADD CONSTRAINT "pages_blocks_zig_zag_right_content_background_id_media_id_fk" FOREIGN KEY ("content_background_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_zig_zag_right" ADD CONSTRAINT "pages_blocks_zig_zag_right_content_image_id_media_id_fk" FOREIGN KEY ("content_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_zig_zag_right" ADD CONSTRAINT "pages_blocks_zig_zag_right_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_contact_block_contacts" ADD CONSTRAINT "pages_blocks_contact_block_contacts_avatar_id_media_id_fk" FOREIGN KEY ("avatar_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_contact_block_contacts" ADD CONSTRAINT "pages_blocks_contact_block_contacts_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages_blocks_contact_block"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_blocks_contact_block" ADD CONSTRAINT "pages_blocks_contact_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
    ALTER TABLE "pages" ADD CONSTRAINT "pages_hero_media_id_media_id_fk" FOREIGN KEY ("hero_media_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
@@ -1131,6 +1593,18 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   
   DO $$ BEGIN
    ALTER TABLE "pages_rels" ADD CONSTRAINT "pages_rels_posts_fk" FOREIGN KEY ("posts_id") REFERENCES "public"."posts"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_rels" ADD CONSTRAINT "pages_rels_products_fk" FOREIGN KEY ("products_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "pages_rels" ADD CONSTRAINT "pages_rels_open_positions_fk" FOREIGN KEY ("open_positions_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
@@ -1238,6 +1712,60 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   END $$;
   
   DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_zig_zag_left" ADD CONSTRAINT "_pages_v_blocks_zig_zag_left_content_background_id_media_id_fk" FOREIGN KEY ("content_background_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_zig_zag_left" ADD CONSTRAINT "_pages_v_blocks_zig_zag_left_content_image_id_media_id_fk" FOREIGN KEY ("content_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_zig_zag_left" ADD CONSTRAINT "_pages_v_blocks_zig_zag_left_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_zig_zag_right" ADD CONSTRAINT "_pages_v_blocks_zig_zag_right_content_background_id_media_id_fk" FOREIGN KEY ("content_background_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_zig_zag_right" ADD CONSTRAINT "_pages_v_blocks_zig_zag_right_content_image_id_media_id_fk" FOREIGN KEY ("content_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_zig_zag_right" ADD CONSTRAINT "_pages_v_blocks_zig_zag_right_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_contact_block_contacts" ADD CONSTRAINT "_pages_v_blocks_contact_block_contacts_avatar_id_media_id_fk" FOREIGN KEY ("avatar_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_contact_block_contacts" ADD CONSTRAINT "_pages_v_blocks_contact_block_contacts_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v_blocks_contact_block"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_blocks_contact_block" ADD CONSTRAINT "_pages_v_blocks_contact_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
    ALTER TABLE "_pages_v" ADD CONSTRAINT "_pages_v_parent_id_pages_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."pages"("id") ON DELETE set null ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
@@ -1275,6 +1803,18 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   
   DO $$ BEGIN
    ALTER TABLE "_pages_v_rels" ADD CONSTRAINT "_pages_v_rels_posts_fk" FOREIGN KEY ("posts_id") REFERENCES "public"."posts"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_rels" ADD CONSTRAINT "_pages_v_rels_products_fk" FOREIGN KEY ("products_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_pages_v_rels" ADD CONSTRAINT "_pages_v_rels_open_positions_fk" FOREIGN KEY ("open_positions_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
@@ -1413,6 +1953,210 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   
   DO $$ BEGIN
    ALTER TABLE "categories_locales" ADD CONSTRAINT "categories_locales_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_job_offers_requirements" ADD CONSTRAINT "open_positions_job_offers_requirements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."open_positions_job_offers"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_job_offers_responsibilities" ADD CONSTRAINT "open_positions_job_offers_responsibilities_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."open_positions_job_offers"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_job_offers" ADD CONSTRAINT "open_positions_job_offers_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_job_offers" ADD CONSTRAINT "open_positions_job_offers_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_locales" ADD CONSTRAINT "open_positions_locales_meta_image_id_media_id_fk" FOREIGN KEY ("meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_locales" ADD CONSTRAINT "open_positions_locales_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_rels" ADD CONSTRAINT "open_positions_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "open_positions_rels" ADD CONSTRAINT "open_positions_rels_categories_fk" FOREIGN KEY ("categories_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_version_job_offers_requirements" ADD CONSTRAINT "_open_positions_v_version_job_offers_requirements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_open_positions_v_version_job_offers"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_version_job_offers_responsibilities" ADD CONSTRAINT "_open_positions_v_version_job_offers_responsibilities_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_open_positions_v_version_job_offers"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_version_job_offers" ADD CONSTRAINT "_open_positions_v_version_job_offers_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_version_job_offers" ADD CONSTRAINT "_open_positions_v_version_job_offers_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_open_positions_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v" ADD CONSTRAINT "_open_positions_v_parent_id_open_positions_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."open_positions"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_locales" ADD CONSTRAINT "_open_positions_v_locales_version_meta_image_id_media_id_fk" FOREIGN KEY ("version_meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_locales" ADD CONSTRAINT "_open_positions_v_locales_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_open_positions_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_rels" ADD CONSTRAINT "_open_positions_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."_open_positions_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_open_positions_v_rels" ADD CONSTRAINT "_open_positions_v_rels_categories_fk" FOREIGN KEY ("categories_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products_nutritive_info_additional_nutrients" ADD CONSTRAINT "products_nutritive_info_additional_nutrients_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products_product_info_certifications" ADD CONSTRAINT "products_product_info_certifications_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products_product_info_certifications" ADD CONSTRAINT "products_product_info_certifications_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products_cut_sizes" ADD CONSTRAINT "products_cut_sizes_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products" ADD CONSTRAINT "products_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products" ADD CONSTRAINT "products_background_image_id_media_id_fk" FOREIGN KEY ("background_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products_locales" ADD CONSTRAINT "products_locales_meta_image_id_media_id_fk" FOREIGN KEY ("meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "products_locales" ADD CONSTRAINT "products_locales_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v_version_nutritive_info_additional_nutrients" ADD CONSTRAINT "_products_v_version_nutritive_info_additional_nutrients_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_products_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v_version_product_info_certifications" ADD CONSTRAINT "_products_v_version_product_info_certifications_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v_version_product_info_certifications" ADD CONSTRAINT "_products_v_version_product_info_certifications_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_products_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v_version_cut_sizes" ADD CONSTRAINT "_products_v_version_cut_sizes_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_products_v"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_parent_id_products_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."products"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_version_image_id_media_id_fk" FOREIGN KEY ("version_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_version_background_image_id_media_id_fk" FOREIGN KEY ("version_background_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v_locales" ADD CONSTRAINT "_products_v_locales_version_meta_image_id_media_id_fk" FOREIGN KEY ("version_meta_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "_products_v_locales" ADD CONSTRAINT "_products_v_locales_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_products_v"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
@@ -1658,6 +2402,18 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   END $$;
   
   DO $$ BEGIN
+   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_open_positions_fk" FOREIGN KEY ("open_positions_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_products_fk" FOREIGN KEY ("products_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
    ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_redirects_fk" FOREIGN KEY ("redirects_id") REFERENCES "public"."redirects"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
@@ -1736,6 +2492,24 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   END $$;
   
   DO $$ BEGIN
+   ALTER TABLE "header_rels" ADD CONSTRAINT "header_rels_products_fk" FOREIGN KEY ("products_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "header_rels" ADD CONSTRAINT "header_rels_open_positions_fk" FOREIGN KEY ("open_positions_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "header_rels" ADD CONSTRAINT "header_rels_categories_fk" FOREIGN KEY ("categories_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
    ALTER TABLE "footer_nav_items" ADD CONSTRAINT "footer_nav_items_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."footer"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
@@ -1755,6 +2529,24 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   
   DO $$ BEGIN
    ALTER TABLE "footer_rels" ADD CONSTRAINT "footer_rels_posts_fk" FOREIGN KEY ("posts_id") REFERENCES "public"."posts"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "footer_rels" ADD CONSTRAINT "footer_rels_products_fk" FOREIGN KEY ("products_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "footer_rels" ADD CONSTRAINT "footer_rels_open_positions_fk" FOREIGN KEY ("open_positions_id") REFERENCES "public"."open_positions"("id") ON DELETE cascade ON UPDATE no action;
+  EXCEPTION
+   WHEN duplicate_object THEN null;
+  END $$;
+  
+  DO $$ BEGIN
+   ALTER TABLE "footer_rels" ADD CONSTRAINT "footer_rels_categories_fk" FOREIGN KEY ("categories_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;
   EXCEPTION
    WHEN duplicate_object THEN null;
   END $$;
@@ -1805,6 +2597,26 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE INDEX IF NOT EXISTS "pages_blocks_infinite_cards_parent_id_idx" ON "pages_blocks_infinite_cards" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "pages_blocks_infinite_cards_path_idx" ON "pages_blocks_infinite_cards" USING btree ("_path");
   CREATE INDEX IF NOT EXISTS "pages_blocks_infinite_cards_locale_idx" ON "pages_blocks_infinite_cards" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_left_order_idx" ON "pages_blocks_zig_zag_left" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_left_parent_id_idx" ON "pages_blocks_zig_zag_left" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_left_path_idx" ON "pages_blocks_zig_zag_left" USING btree ("_path");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_left_locale_idx" ON "pages_blocks_zig_zag_left" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_left_content_content_background_idx" ON "pages_blocks_zig_zag_left" USING btree ("content_background_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_left_content_content_image_idx" ON "pages_blocks_zig_zag_left" USING btree ("content_image_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_right_order_idx" ON "pages_blocks_zig_zag_right" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_right_parent_id_idx" ON "pages_blocks_zig_zag_right" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_right_path_idx" ON "pages_blocks_zig_zag_right" USING btree ("_path");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_right_locale_idx" ON "pages_blocks_zig_zag_right" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_right_content_content_background_idx" ON "pages_blocks_zig_zag_right" USING btree ("content_background_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_zig_zag_right_content_content_image_idx" ON "pages_blocks_zig_zag_right" USING btree ("content_image_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_contacts_order_idx" ON "pages_blocks_contact_block_contacts" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_contacts_parent_id_idx" ON "pages_blocks_contact_block_contacts" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_contacts_locale_idx" ON "pages_blocks_contact_block_contacts" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_contacts_avatar_idx" ON "pages_blocks_contact_block_contacts" USING btree ("avatar_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_order_idx" ON "pages_blocks_contact_block" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_parent_id_idx" ON "pages_blocks_contact_block" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_path_idx" ON "pages_blocks_contact_block" USING btree ("_path");
+  CREATE INDEX IF NOT EXISTS "pages_blocks_contact_block_locale_idx" ON "pages_blocks_contact_block" USING btree ("_locale");
   CREATE INDEX IF NOT EXISTS "pages_hero_hero_media_idx" ON "pages" USING btree ("hero_media_id");
   CREATE INDEX IF NOT EXISTS "pages_slug_idx" ON "pages" USING btree ("slug");
   CREATE INDEX IF NOT EXISTS "pages_updated_at_idx" ON "pages" USING btree ("updated_at");
@@ -1818,6 +2630,8 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE INDEX IF NOT EXISTS "pages_rels_locale_idx" ON "pages_rels" USING btree ("locale");
   CREATE INDEX IF NOT EXISTS "pages_rels_pages_id_idx" ON "pages_rels" USING btree ("pages_id","locale");
   CREATE INDEX IF NOT EXISTS "pages_rels_posts_id_idx" ON "pages_rels" USING btree ("posts_id","locale");
+  CREATE INDEX IF NOT EXISTS "pages_rels_products_id_idx" ON "pages_rels" USING btree ("products_id","locale");
+  CREATE INDEX IF NOT EXISTS "pages_rels_open_positions_id_idx" ON "pages_rels" USING btree ("open_positions_id","locale");
   CREATE INDEX IF NOT EXISTS "pages_rels_categories_id_idx" ON "pages_rels" USING btree ("categories_id","locale");
   CREATE INDEX IF NOT EXISTS "_pages_v_version_hero_links_order_idx" ON "_pages_v_version_hero_links" USING btree ("_order");
   CREATE INDEX IF NOT EXISTS "_pages_v_version_hero_links_parent_id_idx" ON "_pages_v_version_hero_links" USING btree ("_parent_id");
@@ -1865,6 +2679,26 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE INDEX IF NOT EXISTS "_pages_v_blocks_infinite_cards_parent_id_idx" ON "_pages_v_blocks_infinite_cards" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "_pages_v_blocks_infinite_cards_path_idx" ON "_pages_v_blocks_infinite_cards" USING btree ("_path");
   CREATE INDEX IF NOT EXISTS "_pages_v_blocks_infinite_cards_locale_idx" ON "_pages_v_blocks_infinite_cards" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_left_order_idx" ON "_pages_v_blocks_zig_zag_left" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_left_parent_id_idx" ON "_pages_v_blocks_zig_zag_left" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_left_path_idx" ON "_pages_v_blocks_zig_zag_left" USING btree ("_path");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_left_locale_idx" ON "_pages_v_blocks_zig_zag_left" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_left_content_content_background_idx" ON "_pages_v_blocks_zig_zag_left" USING btree ("content_background_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_left_content_content_image_idx" ON "_pages_v_blocks_zig_zag_left" USING btree ("content_image_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_right_order_idx" ON "_pages_v_blocks_zig_zag_right" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_right_parent_id_idx" ON "_pages_v_blocks_zig_zag_right" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_right_path_idx" ON "_pages_v_blocks_zig_zag_right" USING btree ("_path");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_right_locale_idx" ON "_pages_v_blocks_zig_zag_right" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_right_content_content_background_idx" ON "_pages_v_blocks_zig_zag_right" USING btree ("content_background_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_zig_zag_right_content_content_image_idx" ON "_pages_v_blocks_zig_zag_right" USING btree ("content_image_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_contacts_order_idx" ON "_pages_v_blocks_contact_block_contacts" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_contacts_parent_id_idx" ON "_pages_v_blocks_contact_block_contacts" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_contacts_locale_idx" ON "_pages_v_blocks_contact_block_contacts" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_contacts_avatar_idx" ON "_pages_v_blocks_contact_block_contacts" USING btree ("avatar_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_order_idx" ON "_pages_v_blocks_contact_block" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_parent_id_idx" ON "_pages_v_blocks_contact_block" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_path_idx" ON "_pages_v_blocks_contact_block" USING btree ("_path");
+  CREATE INDEX IF NOT EXISTS "_pages_v_blocks_contact_block_locale_idx" ON "_pages_v_blocks_contact_block" USING btree ("_locale");
   CREATE INDEX IF NOT EXISTS "_pages_v_parent_idx" ON "_pages_v" USING btree ("parent_id");
   CREATE INDEX IF NOT EXISTS "_pages_v_version_hero_version_hero_media_idx" ON "_pages_v" USING btree ("version_hero_media_id");
   CREATE INDEX IF NOT EXISTS "_pages_v_version_version_slug_idx" ON "_pages_v" USING btree ("version_slug");
@@ -1885,6 +2719,8 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE INDEX IF NOT EXISTS "_pages_v_rels_locale_idx" ON "_pages_v_rels" USING btree ("locale");
   CREATE INDEX IF NOT EXISTS "_pages_v_rels_pages_id_idx" ON "_pages_v_rels" USING btree ("pages_id","locale");
   CREATE INDEX IF NOT EXISTS "_pages_v_rels_posts_id_idx" ON "_pages_v_rels" USING btree ("posts_id","locale");
+  CREATE INDEX IF NOT EXISTS "_pages_v_rels_products_id_idx" ON "_pages_v_rels" USING btree ("products_id","locale");
+  CREATE INDEX IF NOT EXISTS "_pages_v_rels_open_positions_id_idx" ON "_pages_v_rels" USING btree ("open_positions_id","locale");
   CREATE INDEX IF NOT EXISTS "_pages_v_rels_categories_id_idx" ON "_pages_v_rels" USING btree ("categories_id","locale");
   CREATE INDEX IF NOT EXISTS "posts_populated_authors_order_idx" ON "posts_populated_authors" USING btree ("_order");
   CREATE INDEX IF NOT EXISTS "posts_populated_authors_parent_id_idx" ON "posts_populated_authors" USING btree ("_parent_id");
@@ -1946,6 +2782,96 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE INDEX IF NOT EXISTS "users_updated_at_idx" ON "users" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "users_created_at_idx" ON "users" USING btree ("created_at");
   CREATE UNIQUE INDEX IF NOT EXISTS "users_email_idx" ON "users" USING btree ("email");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_requirements_order_idx" ON "open_positions_job_offers_requirements" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_requirements_parent_id_idx" ON "open_positions_job_offers_requirements" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_requirements_locale_idx" ON "open_positions_job_offers_requirements" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_responsibilities_order_idx" ON "open_positions_job_offers_responsibilities" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_responsibilities_parent_id_idx" ON "open_positions_job_offers_responsibilities" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_responsibilities_locale_idx" ON "open_positions_job_offers_responsibilities" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_order_idx" ON "open_positions_job_offers" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_parent_id_idx" ON "open_positions_job_offers" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_locale_idx" ON "open_positions_job_offers" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "open_positions_job_offers_image_idx" ON "open_positions_job_offers" USING btree ("image_id");
+  CREATE INDEX IF NOT EXISTS "open_positions_slug_idx" ON "open_positions" USING btree ("slug");
+  CREATE INDEX IF NOT EXISTS "open_positions_updated_at_idx" ON "open_positions" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "open_positions_created_at_idx" ON "open_positions" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "open_positions__status_idx" ON "open_positions" USING btree ("_status");
+  CREATE INDEX IF NOT EXISTS "open_positions_meta_meta_image_idx" ON "open_positions_locales" USING btree ("meta_image_id","_locale");
+  CREATE UNIQUE INDEX IF NOT EXISTS "open_positions_locales_locale_parent_id_unique" ON "open_positions_locales" USING btree ("_locale","_parent_id");
+  CREATE INDEX IF NOT EXISTS "open_positions_rels_order_idx" ON "open_positions_rels" USING btree ("order");
+  CREATE INDEX IF NOT EXISTS "open_positions_rels_parent_idx" ON "open_positions_rels" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "open_positions_rels_path_idx" ON "open_positions_rels" USING btree ("path");
+  CREATE INDEX IF NOT EXISTS "open_positions_rels_categories_id_idx" ON "open_positions_rels" USING btree ("categories_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_requirements_order_idx" ON "_open_positions_v_version_job_offers_requirements" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_requirements_parent_id_idx" ON "_open_positions_v_version_job_offers_requirements" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_requirements_locale_idx" ON "_open_positions_v_version_job_offers_requirements" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_responsibilities_order_idx" ON "_open_positions_v_version_job_offers_responsibilities" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_responsibilities_parent_id_idx" ON "_open_positions_v_version_job_offers_responsibilities" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_responsibilities_locale_idx" ON "_open_positions_v_version_job_offers_responsibilities" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_order_idx" ON "_open_positions_v_version_job_offers" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_parent_id_idx" ON "_open_positions_v_version_job_offers" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_locale_idx" ON "_open_positions_v_version_job_offers" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_job_offers_image_idx" ON "_open_positions_v_version_job_offers" USING btree ("image_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_parent_idx" ON "_open_positions_v" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_version_slug_idx" ON "_open_positions_v" USING btree ("version_slug");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_version_updated_at_idx" ON "_open_positions_v" USING btree ("version_updated_at");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_version_created_at_idx" ON "_open_positions_v" USING btree ("version_created_at");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_version__status_idx" ON "_open_positions_v" USING btree ("version__status");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_created_at_idx" ON "_open_positions_v" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_updated_at_idx" ON "_open_positions_v" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_snapshot_idx" ON "_open_positions_v" USING btree ("snapshot");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_published_locale_idx" ON "_open_positions_v" USING btree ("published_locale");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_latest_idx" ON "_open_positions_v" USING btree ("latest");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_autosave_idx" ON "_open_positions_v" USING btree ("autosave");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_version_meta_version_meta_image_idx" ON "_open_positions_v_locales" USING btree ("version_meta_image_id","_locale");
+  CREATE UNIQUE INDEX IF NOT EXISTS "_open_positions_v_locales_locale_parent_id_unique" ON "_open_positions_v_locales" USING btree ("_locale","_parent_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_rels_order_idx" ON "_open_positions_v_rels" USING btree ("order");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_rels_parent_idx" ON "_open_positions_v_rels" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_rels_path_idx" ON "_open_positions_v_rels" USING btree ("path");
+  CREATE INDEX IF NOT EXISTS "_open_positions_v_rels_categories_id_idx" ON "_open_positions_v_rels" USING btree ("categories_id");
+  CREATE INDEX IF NOT EXISTS "products_nutritive_info_additional_nutrients_order_idx" ON "products_nutritive_info_additional_nutrients" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "products_nutritive_info_additional_nutrients_parent_id_idx" ON "products_nutritive_info_additional_nutrients" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "products_nutritive_info_additional_nutrients_locale_idx" ON "products_nutritive_info_additional_nutrients" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "products_product_info_certifications_order_idx" ON "products_product_info_certifications" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "products_product_info_certifications_parent_id_idx" ON "products_product_info_certifications" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "products_product_info_certifications_locale_idx" ON "products_product_info_certifications" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "products_product_info_certifications_image_idx" ON "products_product_info_certifications" USING btree ("image_id");
+  CREATE INDEX IF NOT EXISTS "products_cut_sizes_order_idx" ON "products_cut_sizes" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "products_cut_sizes_parent_id_idx" ON "products_cut_sizes" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "products_cut_sizes_locale_idx" ON "products_cut_sizes" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "products_image_idx" ON "products" USING btree ("image_id");
+  CREATE INDEX IF NOT EXISTS "products_background_image_idx" ON "products" USING btree ("background_image_id");
+  CREATE INDEX IF NOT EXISTS "products_slug_idx" ON "products" USING btree ("slug");
+  CREATE INDEX IF NOT EXISTS "products_updated_at_idx" ON "products" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "products_created_at_idx" ON "products" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "products__status_idx" ON "products" USING btree ("_status");
+  CREATE INDEX IF NOT EXISTS "products_meta_meta_image_idx" ON "products_locales" USING btree ("meta_image_id","_locale");
+  CREATE UNIQUE INDEX IF NOT EXISTS "products_locales_locale_parent_id_unique" ON "products_locales" USING btree ("_locale","_parent_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_nutritive_info_additional_nutrients_order_idx" ON "_products_v_version_nutritive_info_additional_nutrients" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_nutritive_info_additional_nutrients_parent_id_idx" ON "_products_v_version_nutritive_info_additional_nutrients" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_nutritive_info_additional_nutrients_locale_idx" ON "_products_v_version_nutritive_info_additional_nutrients" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_product_info_certifications_order_idx" ON "_products_v_version_product_info_certifications" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_product_info_certifications_parent_id_idx" ON "_products_v_version_product_info_certifications" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_product_info_certifications_locale_idx" ON "_products_v_version_product_info_certifications" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_product_info_certifications_image_idx" ON "_products_v_version_product_info_certifications" USING btree ("image_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_cut_sizes_order_idx" ON "_products_v_version_cut_sizes" USING btree ("_order");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_cut_sizes_parent_id_idx" ON "_products_v_version_cut_sizes" USING btree ("_parent_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_cut_sizes_locale_idx" ON "_products_v_version_cut_sizes" USING btree ("_locale");
+  CREATE INDEX IF NOT EXISTS "_products_v_parent_idx" ON "_products_v" USING btree ("parent_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_version_image_idx" ON "_products_v" USING btree ("version_image_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_version_background_image_idx" ON "_products_v" USING btree ("version_background_image_id");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_version_slug_idx" ON "_products_v" USING btree ("version_slug");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_version_updated_at_idx" ON "_products_v" USING btree ("version_updated_at");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_version_created_at_idx" ON "_products_v" USING btree ("version_created_at");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_version__status_idx" ON "_products_v" USING btree ("version__status");
+  CREATE INDEX IF NOT EXISTS "_products_v_created_at_idx" ON "_products_v" USING btree ("created_at");
+  CREATE INDEX IF NOT EXISTS "_products_v_updated_at_idx" ON "_products_v" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "_products_v_snapshot_idx" ON "_products_v" USING btree ("snapshot");
+  CREATE INDEX IF NOT EXISTS "_products_v_published_locale_idx" ON "_products_v" USING btree ("published_locale");
+  CREATE INDEX IF NOT EXISTS "_products_v_latest_idx" ON "_products_v" USING btree ("latest");
+  CREATE INDEX IF NOT EXISTS "_products_v_autosave_idx" ON "_products_v" USING btree ("autosave");
+  CREATE INDEX IF NOT EXISTS "_products_v_version_meta_version_meta_image_idx" ON "_products_v_locales" USING btree ("version_meta_image_id","_locale");
+  CREATE UNIQUE INDEX IF NOT EXISTS "_products_v_locales_locale_parent_id_unique" ON "_products_v_locales" USING btree ("_locale","_parent_id");
   CREATE INDEX IF NOT EXISTS "redirects_from_idx" ON "redirects" USING btree ("from");
   CREATE INDEX IF NOT EXISTS "redirects_updated_at_idx" ON "redirects" USING btree ("updated_at");
   CREATE INDEX IF NOT EXISTS "redirects_created_at_idx" ON "redirects" USING btree ("created_at");
@@ -2037,6 +2963,8 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_media_id_idx" ON "payload_locked_documents_rels" USING btree ("media_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_categories_id_idx" ON "payload_locked_documents_rels" USING btree ("categories_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_users_id_idx" ON "payload_locked_documents_rels" USING btree ("users_id");
+  CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_open_positions_id_idx" ON "payload_locked_documents_rels" USING btree ("open_positions_id");
+  CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_products_id_idx" ON "payload_locked_documents_rels" USING btree ("products_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_redirects_id_idx" ON "payload_locked_documents_rels" USING btree ("redirects_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_forms_id_idx" ON "payload_locked_documents_rels" USING btree ("forms_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_form_submissions_id_idx" ON "payload_locked_documents_rels" USING btree ("form_submissions_id");
@@ -2064,16 +2992,22 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   CREATE INDEX IF NOT EXISTS "header_rels_locale_idx" ON "header_rels" USING btree ("locale");
   CREATE INDEX IF NOT EXISTS "header_rels_pages_id_idx" ON "header_rels" USING btree ("pages_id","locale");
   CREATE INDEX IF NOT EXISTS "header_rels_posts_id_idx" ON "header_rels" USING btree ("posts_id","locale");
+  CREATE INDEX IF NOT EXISTS "header_rels_products_id_idx" ON "header_rels" USING btree ("products_id","locale");
+  CREATE INDEX IF NOT EXISTS "header_rels_open_positions_id_idx" ON "header_rels" USING btree ("open_positions_id","locale");
+  CREATE INDEX IF NOT EXISTS "header_rels_categories_id_idx" ON "header_rels" USING btree ("categories_id","locale");
   CREATE INDEX IF NOT EXISTS "footer_nav_items_order_idx" ON "footer_nav_items" USING btree ("_order");
   CREATE INDEX IF NOT EXISTS "footer_nav_items_parent_id_idx" ON "footer_nav_items" USING btree ("_parent_id");
   CREATE INDEX IF NOT EXISTS "footer_rels_order_idx" ON "footer_rels" USING btree ("order");
   CREATE INDEX IF NOT EXISTS "footer_rels_parent_idx" ON "footer_rels" USING btree ("parent_id");
   CREATE INDEX IF NOT EXISTS "footer_rels_path_idx" ON "footer_rels" USING btree ("path");
   CREATE INDEX IF NOT EXISTS "footer_rels_pages_id_idx" ON "footer_rels" USING btree ("pages_id");
-  CREATE INDEX IF NOT EXISTS "footer_rels_posts_id_idx" ON "footer_rels" USING btree ("posts_id");`)
+  CREATE INDEX IF NOT EXISTS "footer_rels_posts_id_idx" ON "footer_rels" USING btree ("posts_id");
+  CREATE INDEX IF NOT EXISTS "footer_rels_products_id_idx" ON "footer_rels" USING btree ("products_id");
+  CREATE INDEX IF NOT EXISTS "footer_rels_open_positions_id_idx" ON "footer_rels" USING btree ("open_positions_id");
+  CREATE INDEX IF NOT EXISTS "footer_rels_categories_id_idx" ON "footer_rels" USING btree ("categories_id");`)
 }
 
-export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
+export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
    DROP TABLE "pages_hero_links" CASCADE;
   DROP TABLE "pages_blocks_cta_links" CASCADE;
@@ -2087,6 +3021,10 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
   DROP TABLE "pages_blocks_carousel" CASCADE;
   DROP TABLE "pages_blocks_infinite_cards_cards" CASCADE;
   DROP TABLE "pages_blocks_infinite_cards" CASCADE;
+  DROP TABLE "pages_blocks_zig_zag_left" CASCADE;
+  DROP TABLE "pages_blocks_zig_zag_right" CASCADE;
+  DROP TABLE "pages_blocks_contact_block_contacts" CASCADE;
+  DROP TABLE "pages_blocks_contact_block" CASCADE;
   DROP TABLE "pages" CASCADE;
   DROP TABLE "pages_locales" CASCADE;
   DROP TABLE "pages_rels" CASCADE;
@@ -2102,6 +3040,10 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
   DROP TABLE "_pages_v_blocks_carousel" CASCADE;
   DROP TABLE "_pages_v_blocks_infinite_cards_cards" CASCADE;
   DROP TABLE "_pages_v_blocks_infinite_cards" CASCADE;
+  DROP TABLE "_pages_v_blocks_zig_zag_left" CASCADE;
+  DROP TABLE "_pages_v_blocks_zig_zag_right" CASCADE;
+  DROP TABLE "_pages_v_blocks_contact_block_contacts" CASCADE;
+  DROP TABLE "_pages_v_blocks_contact_block" CASCADE;
   DROP TABLE "_pages_v" CASCADE;
   DROP TABLE "_pages_v_locales" CASCADE;
   DROP TABLE "_pages_v_rels" CASCADE;
@@ -2119,6 +3061,28 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
   DROP TABLE "categories" CASCADE;
   DROP TABLE "categories_locales" CASCADE;
   DROP TABLE "users" CASCADE;
+  DROP TABLE "open_positions_job_offers_requirements" CASCADE;
+  DROP TABLE "open_positions_job_offers_responsibilities" CASCADE;
+  DROP TABLE "open_positions_job_offers" CASCADE;
+  DROP TABLE "open_positions" CASCADE;
+  DROP TABLE "open_positions_locales" CASCADE;
+  DROP TABLE "open_positions_rels" CASCADE;
+  DROP TABLE "_open_positions_v_version_job_offers_requirements" CASCADE;
+  DROP TABLE "_open_positions_v_version_job_offers_responsibilities" CASCADE;
+  DROP TABLE "_open_positions_v_version_job_offers" CASCADE;
+  DROP TABLE "_open_positions_v" CASCADE;
+  DROP TABLE "_open_positions_v_locales" CASCADE;
+  DROP TABLE "_open_positions_v_rels" CASCADE;
+  DROP TABLE "products_nutritive_info_additional_nutrients" CASCADE;
+  DROP TABLE "products_product_info_certifications" CASCADE;
+  DROP TABLE "products_cut_sizes" CASCADE;
+  DROP TABLE "products" CASCADE;
+  DROP TABLE "products_locales" CASCADE;
+  DROP TABLE "_products_v_version_nutritive_info_additional_nutrients" CASCADE;
+  DROP TABLE "_products_v_version_product_info_certifications" CASCADE;
+  DROP TABLE "_products_v_version_cut_sizes" CASCADE;
+  DROP TABLE "_products_v" CASCADE;
+  DROP TABLE "_products_v_locales" CASCADE;
   DROP TABLE "redirects" CASCADE;
   DROP TABLE "redirects_rels" CASCADE;
   DROP TABLE "forms_blocks_checkbox" CASCADE;
@@ -2192,11 +3156,18 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
   DROP TYPE "public"."enum_posts_status";
   DROP TYPE "public"."enum__posts_v_version_status";
   DROP TYPE "public"."enum__posts_v_published_locale";
+  DROP TYPE "public"."enum_open_positions_status";
+  DROP TYPE "public"."enum__open_positions_v_version_status";
+  DROP TYPE "public"."enum__open_positions_v_published_locale";
+  DROP TYPE "public"."enum_products_status";
+  DROP TYPE "public"."enum__products_v_version_status";
+  DROP TYPE "public"."enum__products_v_published_locale";
   DROP TYPE "public"."enum_redirects_to_type";
   DROP TYPE "public"."enum_forms_confirmation_type";
   DROP TYPE "public"."enum_payload_jobs_log_task_slug";
   DROP TYPE "public"."enum_payload_jobs_log_state";
   DROP TYPE "public"."enum_payload_jobs_task_slug";
+  DROP TYPE "public"."enum_header_nav_items_subcategories_link_type";
   DROP TYPE "public"."enum_header_nav_items_link_type";
   DROP TYPE "public"."enum_footer_nav_items_link_type";`)
 }
