@@ -1,0 +1,11 @@
+@import '~@payloadcms/ui/scss';
+
+.admin-bar {
+  @include small-break {
+    display: none;
+  }
+}
+
+.admin-bar a {
+  color: #000 !important;
+}
