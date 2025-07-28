@@ -22,27 +22,49 @@ export const GoodsArchive: React.FC<Props> = (props) => {
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
+  console.log('props:', {
+    goodsCount: goods.length,
+    availableCategoriesCount: availableCategories.length,
+  })
+  console.log('categories:', availableCategories)
+
   const categories = availableCategories.map((cat) => cat.title).sort()
 
+  console.log('available category:', availableCategories)
+  console.log('tabs:', categories)
+  console.log(
+    'Goods with their categories:',
+    goods.map((g) => ({
+      title: g.title,
+      categories: g.categories,
+      hasProducts: g.products && g.products.length > 0,
+      productCount: g.products ? g.products.length : 0,
+    })),
+  )
+
   const filteredGoods = goods.filter((good) => {
-    const firstProduct = good.products?.[0]
-    if (!firstProduct) {
+    if (!good.products || good.products.length === 0) {
       return false
     }
 
-    const { title, description, country } = firstProduct
     const searchLower = searchQuery.toLowerCase()
 
-    const matchesSearch =
-      title?.toLowerCase().includes(searchLower) ||
-      description?.toLowerCase().includes(searchLower) ||
-      country?.toLowerCase().includes(searchLower)
+    const hasMatchingProduct = good.products.some((product) => {
+      if (!product || !product.title) return false
 
-    if (!matchesSearch) return false
+      const { title, description, country } = product
+      return (
+        title?.toLowerCase().includes(searchLower) ||
+        description?.toLowerCase().includes(searchLower) ||
+        country?.toLowerCase().includes(searchLower)
+      )
+    })
+
+    if (!hasMatchingProduct) return false
 
     if (selectedCategory === 'all') return true
 
-    if (good.categories && Array.isArray(good.categories)) {
+    if (good.categories && Array.isArray(good.categories) && good.categories.length > 0) {
       return good.categories.some((category) => {
         if (category && typeof category === 'object') {
           if ('title' in category) {
@@ -98,8 +120,18 @@ export const GoodsArchive: React.FC<Props> = (props) => {
           ) : (
             <div className="space-y-6">
               {filteredGoods.map((good, index) => {
-                if (typeof good === 'object' && good !== null) {
-                  return <GoodsCard key={index} doc={good} relationTo="goods" locale={locale} />
+                if (typeof good === 'object' && good !== null && good.products) {
+                  return good.products.map((product, productIndex) => (
+                    <GoodsCard
+                      key={`${index}-${productIndex}`}
+                      doc={{
+                        ...good,
+                        products: [product],
+                      }}
+                      relationTo="goods"
+                      locale={locale}
+                    />
+                  ))
                 }
                 return null
               })}
