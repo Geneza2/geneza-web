@@ -74,6 +74,7 @@ export interface Config {
     users: User;
     openPositions: OpenPosition;
     products: Product;
+    goods: Good;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -92,6 +93,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     openPositions: OpenPositionsSelect<false> | OpenPositionsSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    goods: GoodsSelect<false> | GoodsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1025,6 +1027,53 @@ export interface ContactBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "goods".
+ */
+export interface Good {
+  id: number;
+  title: string;
+  products: {
+    image?: (number | null) | Media;
+    title: string;
+    description: string;
+    /**
+     * Country of origin
+     */
+    country: string;
+    id?: string | null;
+  }[];
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  categories?: (number | Category)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1223,6 +1272,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'products';
         value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'goods';
+        value: number | Good;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1820,6 +1873,36 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "goods_select".
+ */
+export interface GoodsSelect<T extends boolean = true> {
+  title?: T;
+  products?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        description?: T;
+        country?: T;
+        id?: T;
+      };
+  content?: T;
+  categories?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -2289,6 +2372,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'products';
           value: number | Product;
+        } | null)
+      | ({
+          relationTo: 'goods';
+          value: number | Good;
         } | null);
     global?: string | null;
     user?: (number | null) | User;

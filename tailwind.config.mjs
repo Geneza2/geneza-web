@@ -97,6 +97,9 @@ const config = {
         mono: ['var(--font-geist-mono)'],
         sans: ['var(--font-geist-sans)'],
       },
+      gridTemplateColumns: {
+        'auto-fit': 'repeat(auto-fit, minmax(200px, 1fr))',
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },

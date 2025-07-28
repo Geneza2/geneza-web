@@ -7,6 +7,7 @@ import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import localization from './i18n/localization'
 import { Categories } from './collections/Categories'
+import { Goods } from './collections/Goods'
 import { Media } from './collections/Media'
 import { OpenPositions } from './collections/OpenPositions'
 import { Pages } from './collections/Pages'
@@ -68,7 +69,7 @@ export default buildConfig({
       connectionString: process.env.POSTGRES_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, OpenPositions, Products],
+  collections: [Pages, Posts, Media, Categories, Users, OpenPositions, Products, Goods],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
