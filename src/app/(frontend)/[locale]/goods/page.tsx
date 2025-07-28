@@ -37,6 +37,12 @@ export default async function Page({ params: paramsPromise }: Args) {
       }),
     ])
 
+    console.log('Categories fetched:', categories.docs.length)
+    console.log(
+      'Categories data:',
+      categories.docs.map((c) => ({ id: c.id, title: c.title })),
+    )
+
     const allProducts = goods.docs.flatMap((doc) => {
       if (!doc.products || doc.products.length === 0) {
         return []

@@ -28,7 +28,10 @@ export const GoodsArchive: React.FC<Props> = (props) => {
   })
   console.log('categories:', availableCategories)
 
-  const categories = availableCategories.map((cat) => cat.title).sort()
+  const categories = goods
+    .map((good) => good.title)
+    .filter(Boolean)
+    .sort()
 
   console.log('available category:', availableCategories)
   console.log('tabs:', categories)
@@ -64,23 +67,7 @@ export const GoodsArchive: React.FC<Props> = (props) => {
 
     if (selectedCategory === 'all') return true
 
-    if (good.categories && Array.isArray(good.categories) && good.categories.length > 0) {
-      return good.categories.some((category) => {
-        if (category && typeof category === 'object') {
-          if ('title' in category) {
-            return category.title === selectedCategory
-          } else if ('id' in category && typeof (category as any).id === 'number') {
-            const foundCategory = availableCategories.find((cat) => cat.id === (category as any).id)
-            return foundCategory ? foundCategory.title === selectedCategory : false
-          }
-        } else if (typeof category === 'string') {
-          return category === selectedCategory
-        }
-        return false
-      })
-    }
-
-    return false
+    return good.title === selectedCategory
   })
 
   return (
