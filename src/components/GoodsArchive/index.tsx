@@ -4,10 +4,10 @@ import React, { useState } from 'react'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good } from '@/payload-types'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
 import { Input } from '@/components/ui/input'
 import { goodsTranslations } from '@/i18n/translations/goods'
-import { Search } from 'lucide-react'
+import { Search, Package } from 'lucide-react'
 
 export type Props = {
   goods: Good[]
@@ -71,46 +71,81 @@ export const GoodsArchive: React.FC<Props> = (props) => {
   })
 
   return (
-    <div className={cn('container')}>
-      <div className="mb-8">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            type="text"
-            placeholder={t.searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9BC273] focus:border-transparent"
-          />
+    <div className="container">
+      {/* Search & Filter Section */}
+      <div className="max-w-4xl mx-auto mb-12">
+        {/* Search */}
+        <div className="mb-8">
+          <div className="relative max-w-md mx-auto">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Input
+              type="text"
+              placeholder={t.searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 pr-4 py-4 text-base border-0 bg-white rounded-2xl shadow-lg focus:ring-2 focus:ring-[#9BC273] focus:ring-offset-2 transition-all duration-200"
+            />
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap justify-center gap-3">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
+              selectedCategory === 'all'
+                ? 'bg-[#9BC273] text-white shadow-lg scale-105'
+                : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:scale-105 hover:text-[#9BC273]'
+            }`}
+          >
+            {t.allCategories}
+          </button>
+          {categories.map((category, index) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
+                selectedCategory === category
+                  ? 'bg-[#9BC273] text-white shadow-lg scale-105'
+                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:scale-105 hover:text-[#9BC273]'
+              }`}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              {category}
+            </button>
+          ))}
         </div>
       </div>
 
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-        <TabsList className="grid w-full grid-cols-auto-fit mb-8">
-          <TabsTrigger value="all" className="text-sm font-medium">
-            {t.allCategories}
-          </TabsTrigger>
-          {categories.map((category) => (
-            <TabsTrigger key={category} value={category} className="text-sm font-medium">
-              {category}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <TabsContent value={selectedCategory} className="mt-0">
-          {filteredGoods.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">
-                {searchQuery ? t.noProducts : t.noProductsInCategory}
+      {/* Products Section */}
+      <div className="max-w-6xl mx-auto">
+        {filteredGoods.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+                <Package className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {searchQuery ? 'No products found' : 'No products available'}
+              </h3>
+              <p className="text-gray-600">
+                {searchQuery
+                  ? 'Try adjusting your search terms'
+                  : 'Check back later for new products'}
               </p>
             </div>
-          ) : (
-            <div className="space-y-6">
-              {filteredGoods.map((good, index) => {
-                if (typeof good === 'object' && good !== null && good.products) {
-                  return good.products.map((product, productIndex) => (
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredGoods.map((good, index) => {
+              if (typeof good === 'object' && good !== null && good.products) {
+                return good.products.map((product, productIndex) => (
+                  <div
+                    key={`${index}-${productIndex}`}
+                    className="animate-fade-in animate-slide-in-from-bottom-2"
+                    style={{ animationDelay: `${index * 75 + productIndex * 25}ms` }}
+                  >
                     <GoodsCard
-                      key={`${index}-${productIndex}`}
                       doc={{
                         ...good,
                         products: [product],
@@ -118,14 +153,14 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                       relationTo="goods"
                       locale={locale}
                     />
-                  ))
-                }
-                return null
-              })}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+                  </div>
+                ))
+              }
+              return null
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

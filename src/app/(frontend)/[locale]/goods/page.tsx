@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import { GoodsArchive } from '@/components/GoodsArchive'
 import { goodsTranslations } from '@/i18n/translations/goods'
+import { Package, AlertTriangle } from 'lucide-react'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -60,63 +61,71 @@ export default async function Page({ params: paramsPromise }: Args) {
     })
 
     return (
-      <div className="pt-24 pb-24">
-        <div className="container mb-16">
-          <div className="prose dark:prose-invert max-w-none">
-            <h1>{t.title}</h1>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="pt-20 pb-12 bg-white border-b border-gray-100">
+          <div className="container">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+                {t.title}
+              </h1>
+            </div>
           </div>
         </div>
 
-        <div className="container mb-8">
-          <div className="text-sm font-semibold">
-            {allProducts.length === 0 &&
-              (locale === 'rs' ? 'Nema rezultata pretrage.' : 'Search produced no results.')}
-            {allProducts.length > 0 &&
-              (locale === 'rs'
-                ? `Prikazano ${allProducts.length} ${allProducts.length > 1 ? 'proizvoda' : 'proizvod'}`
-                : `Showing ${allProducts.length} ${allProducts.length > 1 ? 'Products' : 'Product'}`)}
-          </div>
-          {allProducts.length === 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-              <p className="text-yellow-800 text-sm">
-                {locale === 'rs'
-                  ? 'Nema proizvoda za prikaz. Molimo dodajte proizvode u admin panelu.'
-                  : 'No products to display. Please add products in the admin panel.'}
-              </p>
+        <div className="py-12 sm:py-16">
+          {allProducts.length === 0 ? (
+            <div className="container">
+              <div className="max-w-md mx-auto text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+                  <Package className="w-10 h-10 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
+                </h3>
+                <p className="text-gray-600">
+                  {locale === 'rs'
+                    ? 'Molimo dodajte proizvode u admin panelu.'
+                    : 'Please add products in the admin panel.'}
+                </p>
+              </div>
             </div>
+          ) : (
+            <GoodsArchive
+              goods={goods.docs}
+              locale={locale}
+              availableCategories={categories.docs}
+            />
           )}
         </div>
-
-        {allProducts.length === 0 ? (
-          <div className="container">
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">
-                {locale === 'rs'
-                  ? 'Nema proizvoda za prikaz. Molimo dodajte proizvode u admin panelu.'
-                  : 'No products to display. Please add products in the admin panel.'}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <GoodsArchive goods={goods.docs} locale={locale} availableCategories={categories.docs} />
-        )}
       </div>
     )
   } catch (error) {
     console.error('Error loading goods:', error)
     return (
-      <div className="pt-24 pb-24">
-        <div className="container mb-16">
-          <div className="prose dark:prose-invert max-w-none">
-            <h1>{t.title}</h1>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="pt-20 pb-12 bg-white border-b border-gray-100">
+          <div className="container">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+                {t.title}
+              </h1>
+            </div>
           </div>
         </div>
-        <div className="container">
-          <p className="text-center text-gray-600">
-            {locale === 'rs'
-              ? 'Greška pri učitavanju proizvoda. Molimo pokušajte ponovo.'
-              : 'Error loading products. Please try again.'}
-          </p>
+        <div className="py-12 sm:py-16">
+          <div className="container">
+            <div className="max-w-md mx-auto text-center">
+              <div className="w-20 h-20 mx-auto mb-6 bg-red-50 rounded-2xl flex items-center justify-center">
+                <AlertTriangle className="w-10 h-10 text-red-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {locale === 'rs' ? 'Greška pri učitavanju' : 'Error loading products'}
+              </h3>
+              <p className="text-gray-600">
+                {locale === 'rs' ? 'Molimo pokušajte ponovo.' : 'Please try again.'}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     )
