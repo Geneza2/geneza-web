@@ -4,10 +4,10 @@ import React, { useState } from 'react'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good } from '@/payload-types'
-
 import { Input } from '@/components/ui/input'
-import { goodsTranslations } from '@/i18n/translations/goods'
+import { Button } from '@/components/ui/button'
 import { Search, Package } from 'lucide-react'
+import { goodsTranslations } from '@/i18n/translations/goods'
 
 export type Props = {
   goods: Good[]
@@ -16,34 +16,16 @@ export type Props = {
 }
 
 export const GoodsArchive: React.FC<Props> = (props) => {
-  const { goods, locale, availableCategories = [] } = props
+  const { goods, locale } = props
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
-  console.log('props:', {
-    goodsCount: goods.length,
-    availableCategoriesCount: availableCategories.length,
-  })
-  console.log('categories:', availableCategories)
-
   const categories = goods
     .map((good) => good.title)
     .filter(Boolean)
     .sort()
-
-  console.log('available category:', availableCategories)
-  console.log('tabs:', categories)
-  console.log(
-    'Goods with their categories:',
-    goods.map((g) => ({
-      title: g.title,
-      categories: g.categories,
-      hasProducts: g.products && g.products.length > 0,
-      productCount: g.products ? g.products.length : 0,
-    })),
-  )
 
   const filteredGoods = goods.filter((good) => {
     if (!good.products || good.products.length === 0) {
@@ -90,29 +72,31 @@ export const GoodsArchive: React.FC<Props> = (props) => {
 
         {/* Filters */}
         <div className="flex flex-wrap justify-center gap-3">
-          <button
+          <Button
             onClick={() => setSelectedCategory('all')}
+            variant={selectedCategory === 'all' ? 'default' : 'outline'}
             className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
               selectedCategory === 'all'
-                ? 'bg-[#9BC273] text-white shadow-lg scale-105'
-                : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:scale-105 hover:text-[#9BC273]'
+                ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 shadow-lg scale-105'
+                : 'hover:text-[#9BC273] hover:border-[#9BC273]'
             }`}
           >
             {t.allCategories}
-          </button>
+          </Button>
           {categories.map((category, index) => (
-            <button
+            <Button
               key={category}
               onClick={() => setSelectedCategory(category)}
+              variant={selectedCategory === category ? 'default' : 'outline'}
               className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
                 selectedCategory === category
-                  ? 'bg-[#9BC273] text-white shadow-lg scale-105'
-                  : 'bg-white text-gray-700 shadow-md hover:shadow-lg hover:scale-105 hover:text-[#9BC273]'
+                  ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 shadow-lg scale-105'
+                  : 'hover:text-[#9BC273] hover:border-[#9BC273]'
               }`}
               style={{ animationDelay: `${index * 50}ms` }}
             >
               {category}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -126,12 +110,10 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                 <Package className="w-10 h-10 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {searchQuery ? 'No products found' : 'No products available'}
+                {searchQuery ? t.noProducts : t.noProductsAvailable}
               </h3>
               <p className="text-gray-600">
-                {searchQuery
-                  ? 'Try adjusting your search terms'
-                  : 'Check back later for new products'}
+                {searchQuery ? t.tryAdjustingSearch : t.checkBackLater}
               </p>
             </div>
           </div>
