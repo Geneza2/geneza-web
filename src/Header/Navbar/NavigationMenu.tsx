@@ -53,7 +53,9 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ data, locale }) => {
                   const href =
                     typeof sub.link === 'string'
                       ? sub.link
-                      : getLinkHref({ link: sub.link }, locale)
+                      : sub.link
+                        ? getLinkHref({ link: sub.link }, locale)
+                        : '#'
 
                   return (
                     <ListItem key={index} title={sub.label} href={href}>
