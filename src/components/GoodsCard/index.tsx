@@ -5,7 +5,6 @@ import type { Good } from '@/payload-types'
 import { TypedLocale } from 'payload'
 import { Media } from '@/components/Media'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { MapPin, Package } from 'lucide-react'
 
 export const GoodsCard: React.FC<{
@@ -32,7 +31,6 @@ export const GoodsCard: React.FC<{
       )}
     >
       <div className="flex">
-        {/* Image Section */}
         {(image || metaImage) && (
           <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
             <Media
@@ -43,7 +41,6 @@ export const GoodsCard: React.FC<{
           </div>
         )}
 
-        {/* Content Section */}
         <div className="flex-1 p-4 sm:p-6">
           <CardHeader className="p-0 pb-2">
             <div className="flex items-start justify-between">
@@ -55,7 +52,6 @@ export const GoodsCard: React.FC<{
           </CardHeader>
 
           <CardContent className="p-0 space-y-3">
-            {/* Country Badge */}
             {country && (
               <div className="flex items-center text-gray-600">
                 <MapPin className="w-3 h-3 mr-1.5 text-gray-500" />
@@ -63,7 +59,6 @@ export const GoodsCard: React.FC<{
               </div>
             )}
 
-            {/* Description */}
             {description && (
               <p className="text-sm text-gray-600 line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
                 {description.length > 100 ? `${description.substring(0, 100)}...` : description}

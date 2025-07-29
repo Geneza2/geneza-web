@@ -1,11 +1,11 @@
 'use client'
-import { cn } from '@/utilities/ui'
 import React, { useState } from 'react'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good } from '@/payload-types'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { Search, Package } from 'lucide-react'
 import { goodsTranslations } from '@/i18n/translations/goods'
 
@@ -54,9 +54,7 @@ export const GoodsArchive: React.FC<Props> = (props) => {
 
   return (
     <div className="container">
-      {/* Search & Filter Section */}
       <div className="max-w-4xl mx-auto mb-12">
-        {/* Search */}
         <div className="mb-8">
           <div className="relative max-w-md mx-auto">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -70,7 +68,6 @@ export const GoodsArchive: React.FC<Props> = (props) => {
           </div>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap justify-center gap-3">
           <Button
             onClick={() => setSelectedCategory('all')}
@@ -101,21 +98,22 @@ export const GoodsArchive: React.FC<Props> = (props) => {
         </div>
       </div>
 
-      {/* Products Section */}
       <div className="max-w-6xl mx-auto">
         {filteredGoods.length === 0 ? (
           <div className="text-center py-16">
-            <div className="max-w-md mx-auto">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-                <Package className="w-10 h-10 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {searchQuery ? t.noProducts : t.noProductsAvailable}
-              </h3>
-              <p className="text-gray-600">
-                {searchQuery ? t.tryAdjustingSearch : t.checkBackLater}
-              </p>
-            </div>
+            <Card className="max-w-md mx-auto">
+              <CardContent className="pt-6">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+                  <Package className="w-10 h-10 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {searchQuery ? t.noProducts : t.noProductsAvailable}
+                </h3>
+                <p className="text-gray-600">
+                  {searchQuery ? t.tryAdjustingSearch : t.checkBackLater}
+                </p>
+              </CardContent>
+            </Card>
           </div>
         ) : (
           <div className="space-y-4">

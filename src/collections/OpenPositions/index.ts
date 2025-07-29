@@ -77,6 +77,7 @@ export const OpenPositions: CollectionConfig = {
           name: 'position',
           type: 'text',
           required: true,
+          localized: false,
         },
         {
           name: 'date',

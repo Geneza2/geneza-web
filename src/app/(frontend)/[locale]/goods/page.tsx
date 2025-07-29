@@ -6,6 +6,7 @@ import React from 'react'
 import { GoodsArchive } from '@/components/GoodsArchive'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { Package, AlertTriangle } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -75,19 +76,21 @@ export default async function Page({ params: paramsPromise }: Args) {
         <div className="py-12 sm:py-16">
           {allProducts.length === 0 ? (
             <div className="container">
-              <div className="max-w-md mx-auto text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-                  <Package className="w-10 h-10 text-gray-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
-                </h3>
-                <p className="text-gray-600">
-                  {locale === 'rs'
-                    ? 'Molimo dodajte proizvode u admin panelu.'
-                    : 'Please add products in the admin panel.'}
-                </p>
-              </div>
+              <Card className="max-w-md mx-auto text-center">
+                <CardContent className="pt-6">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+                    <Package className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
+                  </h3>
+                  <p className="text-gray-600">
+                    {locale === 'rs'
+                      ? 'Molimo dodajte proizvode u admin panelu.'
+                      : 'Please add products in the admin panel.'}
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           ) : (
             <GoodsArchive
@@ -114,17 +117,19 @@ export default async function Page({ params: paramsPromise }: Args) {
         </div>
         <div className="py-12 sm:py-16">
           <div className="container">
-            <div className="max-w-md mx-auto text-center">
-              <div className="w-20 h-20 mx-auto mb-6 bg-red-50 rounded-2xl flex items-center justify-center">
-                <AlertTriangle className="w-10 h-10 text-red-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {locale === 'rs' ? 'Greška pri učitavanju' : 'Error loading products'}
-              </h3>
-              <p className="text-gray-600">
-                {locale === 'rs' ? 'Molimo pokušajte ponovo.' : 'Please try again.'}
-              </p>
-            </div>
+            <Card className="max-w-md mx-auto text-center">
+              <CardContent className="pt-6">
+                <div className="w-20 h-20 mx-auto mb-6 bg-red-50 rounded-2xl flex items-center justify-center">
+                  <AlertTriangle className="w-10 h-10 text-red-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {locale === 'rs' ? 'Greška pri učitavanju' : 'Error loading products'}
+                </h3>
+                <p className="text-gray-600">
+                  {locale === 'rs' ? 'Molimo pokušajte ponovo.' : 'Please try again.'}
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

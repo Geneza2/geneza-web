@@ -14,7 +14,9 @@ import { generatePositionSlug } from '@/utilities/generatePositionSlug'
 import { openPositionsTranslations } from '@/i18n/translations/open-positions'
 import { Calendar, ChevronRight } from 'lucide-react'
 
-export type PositionCardData = Pick<OpenPosition, 'slug' | 'title' | 'jobOffers' | 'meta'>
+export type PositionCardData = Pick<OpenPosition, 'slug' | 'title' | 'jobOffers' | 'meta'> & {
+  englishPosition?: string
+}
 
 export const PositionCard: React.FC<{
   className?: string
@@ -26,7 +28,7 @@ export const PositionCard: React.FC<{
   const { className, doc, locale } = props
 
   const t = openPositionsTranslations[locale] || openPositionsTranslations.en
-  const { slug, jobOffers, meta } = doc || {}
+  const { slug, jobOffers, meta, englishPosition } = doc || {}
   const { image: metaImage } = meta || {}
 
   const firstJob = jobOffers?.[0]
@@ -35,7 +37,11 @@ export const PositionCard: React.FC<{
   const { image, position, date, requirements } = firstJob
   const firstTwoRequirements = requirements?.slice(0, 2) || []
 
-  const positionSlug = position ? generatePositionSlug(position) : slug
+  const positionSlug = englishPosition
+    ? generatePositionSlug(englishPosition)
+    : position
+      ? generatePositionSlug(position)
+      : slug
   const href = `/${locale}/open-positions/${positionSlug}`
 
   return (

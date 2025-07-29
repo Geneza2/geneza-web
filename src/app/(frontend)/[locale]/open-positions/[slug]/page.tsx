@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
@@ -16,6 +17,8 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { openPositionsTranslations } from '@/i18n/translations/open-positions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Calendar, CheckCircle, ExternalLink } from 'lucide-react'
 
 export async function generateStaticParams() {
   try {
@@ -74,102 +77,82 @@ export default async function Position({ params: paramsPromise }: Args) {
 
     if (!position) {
       return (
-        <article className="pt-16 pb-16">
-          <div className="container max-w-4xl">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold mb-4">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+          <Card className="max-w-2xl w-full text-center">
+            <CardContent className="p-12">
+              <h1 className="text-3xl font-bold text-gray-900 mb-6">
                 {locale === 'rs' ? 'Pozicija nije pronađena' : 'Position Not Found'}
               </h1>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 text-base mb-8">
                 {locale === 'rs'
                   ? 'Pozicija koju tražite ne postoji ili je uklonjena.'
                   : 'The position you are looking for does not exist or has been removed.'}
               </p>
-              <a
-                href={`/${locale}/open-positions`}
-                className="inline-flex items-center px-6 py-3 bg-[#9BC273] text-white rounded-lg hover:bg-[#8AB562] transition-colors"
-              >
-                {locale === 'rs' ? 'Nazad na pozicije' : 'Back to Positions'}
-              </a>
-            </div>
-          </div>
-        </article>
+              <Button asChild size="lg" className="bg-[#9BC273] hover:bg-[#8AB562] text-white">
+                <Link href={`/${locale}/open-positions`}>
+                  {locale === 'rs' ? 'Nazad na pozicije' : 'Back to Positions'}
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       )
     }
 
     return (
-      <article className="pt-16 pb-16">
+      <div className="min-h-screen bg-gray-50">
         <PayloadRedirects disableNotFound url={url} />
-
         {draft && <LivePreviewListener />}
 
-        <div className="container max-w-4xl">
-          <div className="space-y-8">
-            {position.jobOffers?.map((job, index) => (
-              <Card
-                key={job.id || index}
-                className="bg-white shadow-xl border-gray-100 hover:shadow-2xl transition-all duration-300 relative overflow-hidden"
-              >
-                {job.image && (
-                  <div className="relative w-full h-72 md:h-80 overflow-hidden">
-                    <Media
-                      resource={job.image}
-                      size="100vw"
-                      className="object-cover w-full h-full hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  </div>
-                )}
+        <div className="max-w-none mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {position.jobOffers?.map((job, index) => (
+            <Card key={job.id || index} className="overflow-hidden border-0 shadow-none">
+              {job.image && (
+                <div className="relative w-full h-96 lg:h-[500px] overflow-hidden">
+                  <Media resource={job.image} size="100vw" className="object-cover w-full h-full" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                </div>
+              )}
 
-                <CardContent className="p-8">
-                  <CardHeader className="p-0 mb-8">
-                    <CardTitle className="text-3xl font-bold text-gray-900 mb-4">
+              <CardContent className="p-8 lg:p-12">
+                <div className="max-w-6xl mx-auto">
+                  <div className="mb-8">
+                    <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight">
                       {job.position}
-                    </CardTitle>
+                    </h1>
                     {job.date && (
-                      <div className="inline-flex items-center px-4 py-2 bg-gray-50 rounded-full">
-                        <svg
-                          className="w-5 h-5 text-gray-500 mr-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <span className="text-gray-700 font-medium">
-                          {t.applicationDeadline}:{' '}
-                          {new Date(job.date)
-                            .toLocaleDateString('en-GB')
-                            .split('/')
-                            .reverse()
-                            .join('.')}
-                        </span>
-                      </div>
+                      <Badge
+                        variant="secondary"
+                        className="inline-flex items-center px-6 py-3 text-base"
+                      >
+                        <Calendar className="w-5 h-5 mr-3" />
+                        {t.applicationDeadline}:{' '}
+                        {new Date(job.date)
+                          .toLocaleDateString('en-GB')
+                          .split('/')
+                          .reverse()
+                          .join('.')}
+                      </Badge>
                     )}
-                  </CardHeader>
+                  </div>
 
-                  {job.requirements && job.requirements.length > 0 && (
-                    <div className="mb-8">
-                      <CardHeader className="px-0 pb-6">
-                        <div className="flex items-center">
-                          <div className="w-1 h-8 bg-[#9BC273] rounded-full mr-4"></div>
-                          <CardTitle className="text-2xl font-bold text-gray-900">
-                            {job.requirementsTitle || t.requirements}
-                          </CardTitle>
-                        </div>
-                      </CardHeader>
-                      <Card className="bg-gray-50 border-gray-100">
-                        <CardContent className="p-6">
+                  <div className="grid lg:grid-cols-2 gap-12">
+                    {job.requirements && job.requirements.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <div className="flex items-center">
+                            <div className="w-2 h-8 bg-[#9BC273] rounded-full mr-4" />
+                            <h2 className="text-2xl font-bold text-gray-900">
+                              {job.requirementsTitle || t.requirements}
+                            </h2>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
                           <ul className="space-y-4">
                             {job.requirements.map((req, reqIndex) => (
                               <li key={req.id || reqIndex} className="flex items-start group">
-                                <div className="w-2 h-2 bg-[#9BC273] rounded-full mt-3 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                                <span className="text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors duration-200">
+                                <div className="w-3 h-3 bg-[#9BC273] rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200" />
+                                <span className="text-gray-700 leading-relaxed text-base group-hover:text-gray-900 transition-colors duration-200">
                                   {req.item}
                                 </span>
                               </li>
@@ -177,26 +160,24 @@ export default async function Position({ params: paramsPromise }: Args) {
                           </ul>
                         </CardContent>
                       </Card>
-                    </div>
-                  )}
+                    )}
 
-                  {job.responsibilities && job.responsibilities.length > 0 && (
-                    <div className="mb-8">
-                      <CardHeader className="px-0 pb-6">
-                        <div className="flex items-center">
-                          <div className="w-1 h-8 bg-[#9BC273] rounded-full mr-4"></div>
-                          <CardTitle className="text-2xl font-bold text-gray-900">
-                            {job.responsibilitiesTitle || t.responsibilities}
-                          </CardTitle>
-                        </div>
-                      </CardHeader>
-                      <Card className="bg-gray-50 border-gray-100">
-                        <CardContent className="p-6">
+                    {job.responsibilities && job.responsibilities.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <div className="flex items-center">
+                            <div className="w-2 h-8 bg-[#9BC273] rounded-full mr-4" />
+                            <h2 className="text-2xl font-bold text-gray-900">
+                              {job.responsibilitiesTitle || t.responsibilities}
+                            </h2>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
                           <ul className="space-y-4">
                             {job.responsibilities.map((resp, respIndex) => (
                               <li key={resp.id || respIndex} className="flex items-start group">
-                                <div className="w-2 h-2 bg-[#9BC273] rounded-full mt-3 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                                <span className="text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors duration-200">
+                                <div className="w-3 h-3 bg-[#9BC273] rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200" />
+                                <span className="text-gray-700 leading-relaxed text-base group-hover:text-gray-900 transition-colors duration-200">
                                   {resp.item}
                                 </span>
                               </li>
@@ -204,100 +185,81 @@ export default async function Position({ params: paramsPromise }: Args) {
                           </ul>
                         </CardContent>
                       </Card>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   {job.callToAction && (
-                    <div className="bg-gradient-to-br from-[#9BC273] to-[#8AB562] rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
-                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
-                      <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <svg
-                            className="w-8 h-8 mr-3 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                    <Card className="mt-12 bg-gradient-to-br from-[#9BC273] to-[#8AB562] text-white border-0">
+                      <CardContent className="p-10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-20 translate-x-20" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full translate-y-16 -translate-x-16" />
+                        <div className="relative z-10 max-w-2xl">
+                          <div className="flex items-center mb-6">
+                            <CheckCircle className="w-8 h-8 mr-4 text-white" />
+                            <h3 className="text-2xl font-bold">{t.readyToApply}</h3>
+                          </div>
+                          <p className="text-green-50 mb-8 leading-relaxed text-lg">
+                            {t.applyMessage}
+                          </p>
+                          <Button
+                            asChild
+                            size="lg"
+                            className="bg-white text-[#9BC273] border-2 border-white hover:bg-gray-50 font-bold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 px-8 py-4 rounded-2xl"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <h3 className="text-2xl font-bold">{t.readyToApply}</h3>
+                            <Link
+                              href={job.callToAction.link}
+                              target={job.callToAction.openInNewTab ? '_blank' : '_self'}
+                              rel={
+                                job.callToAction.openInNewTab ? 'noopener noreferrer' : undefined
+                              }
+                              className="inline-flex items-center"
+                            >
+                              {job.callToAction.text}
+                              {job.callToAction.openInNewTab && (
+                                <ExternalLink className="ml-4 w-5 h-5" />
+                              )}
+                            </Link>
+                          </Button>
                         </div>
-                        <p className="text-green-50 mb-6 leading-relaxed text-lg">
-                          {t.applyMessage}
-                        </p>
-                        <Button
-                          asChild
-                          size="lg"
-                          className="bg-white text-[#9BC273] border-2 border-white hover:bg-gray-50 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
-                        >
-                          <a
-                            href={job.callToAction.link}
-                            target={job.callToAction.openInNewTab ? '_blank' : '_self'}
-                            rel={job.callToAction.openInNewTab ? 'noopener noreferrer' : undefined}
-                            className="inline-flex items-center"
-                          >
-                            {job.callToAction.text}
-                            {job.callToAction.openInNewTab && (
-                              <svg
-                                className="ml-3 w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                />
-                              </svg>
-                            )}
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </article>
+      </div>
     )
   } catch (error) {
     console.error('Error loading position:', error)
     return (
-      <article className="pt-16 pb-16">
-        <div className="container max-w-4xl">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">{locale === 'rs' ? 'Greška' : 'Error'}</h1>
-            <p className="text-gray-600 mb-8">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <Card className="max-w-2xl w-full text-center">
+          <CardContent className="p-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">
+              {locale === 'rs' ? 'Greška' : 'Error'}
+            </h1>
+            <p className="text-gray-600 text-base mb-8">
               {locale === 'rs'
                 ? 'Došlo je do greške prilikom učitavanja pozicije.'
                 : 'An error occurred while loading the position.'}
             </p>
-            <a
-              href={`/${locale}/open-positions`}
-              className="inline-flex items-center px-6 py-3 bg-[#9BC273] text-white rounded-lg hover:bg-[#8AB562] transition-colors"
-            >
-              {locale === 'rs' ? 'Nazad na pozicije' : 'Back to Positions'}
-            </a>
-          </div>
-        </div>
-      </article>
+            <Button asChild size="lg" className="bg-[#9BC273] hover:bg-[#8AB562] text-white">
+              <Link href={`/${locale}/open-positions`}>
+                {locale === 'rs' ? 'Nazad na pozicije' : 'Back to Positions'}
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     )
   }
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const position = await queryPositionBySlug({ slug, locale: 'en' }) // Assuming English for metadata lookup
+  const position = await queryPositionBySlug({ slug, locale: 'en' })
 
   return generateMeta({ doc: position })
 }
