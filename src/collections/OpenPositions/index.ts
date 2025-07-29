@@ -72,6 +72,7 @@ export const OpenPositions: CollectionConfig = {
           name: 'image',
           type: 'upload',
           relationTo: 'media',
+          localized: false,
         },
         {
           name: 'position',

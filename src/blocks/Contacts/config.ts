@@ -96,6 +96,7 @@ export const ContactBlock: Block = {
           type: 'upload',
           relationTo: 'media',
           required: true,
+          localized: false,
         },
         {
           name: 'name',

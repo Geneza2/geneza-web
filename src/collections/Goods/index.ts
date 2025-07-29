@@ -48,6 +48,7 @@ export const Goods: CollectionConfig = {
           name: 'image',
           type: 'upload',
           relationTo: 'media',
+          localized: false,
         },
         {
           name: 'title',

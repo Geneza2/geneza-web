@@ -14,12 +14,14 @@ export const ZigZagLeft: Block = {
           type: 'upload',
           relationTo: 'media',
           required: false,
+          localized: false,
         },
         {
           name: 'image',
           type: 'upload',
           relationTo: 'media',
           required: true,
+          localized: false,
         },
         {
           name: 'title',

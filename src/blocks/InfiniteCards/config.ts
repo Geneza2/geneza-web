@@ -24,6 +24,7 @@ export const InfiniteCards: Block = {
           relationTo: 'media',
           label: 'Image',
           required: true,
+          localized: false,
         },
         {
           name: 'link',
