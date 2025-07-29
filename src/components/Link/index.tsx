@@ -3,7 +3,7 @@ import { cn } from '@/utilities/ui'
 import Link from 'next/link'
 import React from 'react'
 
-import type { Page, Post, Product, OpenPosition, Category } from '@/payload-types'
+import type { Page, Post, Product, OpenPosition, Category, Good } from '@/payload-types'
 
 // Map collection names to their route paths
 const getCollectionPath = (relationTo: string): string => {
@@ -12,6 +12,7 @@ const getCollectionPath = (relationTo: string): string => {
     posts: 'posts',
     products: 'products',
     openPositions: 'open-positions',
+    goods: 'goods',
     categories: 'categories',
   }
 
@@ -26,8 +27,8 @@ type CMSLinkType = {
   locale?: string
   newTab?: boolean | null
   reference?: {
-    relationTo: 'pages' | 'posts' | 'products' | 'openPositions' | 'categories'
-    value: Page | Post | Product | OpenPosition | Category | string | number
+    relationTo: 'pages' | 'posts' | 'products' | 'openPositions' | 'goods' | 'categories'
+    value: Page | Post | Product | OpenPosition | Good | Category | string | number
   } | null
   size?: ButtonProps['size'] | null
   type?: 'custom' | 'reference' | null

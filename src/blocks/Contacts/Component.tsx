@@ -128,7 +128,7 @@ export const ContactComponent: React.FC<ContactBlock> = ({ title, companyInfo, c
             <Card key={contact.id} className="bg-white">
               <CardHeader className="pb-2">
                 <div className="w-32 h-32 relative mx-auto">
-                  {typeof contact.avatar === 'object' && contact.avatar.url ? (
+                  {contact.avatar && typeof contact.avatar === 'object' && contact.avatar.url ? (
                     <Image
                       src={contact.avatar.url}
                       alt={contact.avatar.alt || contact.name}

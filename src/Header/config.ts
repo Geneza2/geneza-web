@@ -22,6 +22,7 @@ export const Header: GlobalConfig = {
           type: 'upload',
           relationTo: 'media',
           required: false,
+          localized: false,
           admin: {
             description: 'Optional image for this main nav link',
           },
@@ -50,6 +51,7 @@ export const Header: GlobalConfig = {
             },
             link({
               appearances: false,
+              disableLabel: true,
               overrides: {
                 name: 'link',
                 admin: {

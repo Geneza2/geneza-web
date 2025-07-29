@@ -194,6 +194,10 @@ export interface Page {
                   value: number | OpenPosition;
                 } | null)
               | ({
+                  relationTo: 'goods';
+                  value: number | Good;
+                } | null)
+              | ({
                   relationTo: 'categories';
                   value: number | Category;
                 } | null);
@@ -549,6 +553,53 @@ export interface OpenPosition {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "goods".
+ */
+export interface Good {
+  id: number;
+  title: string;
+  products: {
+    image?: (number | null) | Media;
+    title: string;
+    description: string;
+    /**
+     * Country of origin
+     */
+    country: string;
+    id?: string | null;
+  }[];
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  categories?: (number | Category)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CallToActionBlock".
  */
 export interface CallToActionBlock {
@@ -588,6 +639,10 @@ export interface CallToActionBlock {
             | ({
                 relationTo: 'openPositions';
                 value: number | OpenPosition;
+              } | null)
+            | ({
+                relationTo: 'goods';
+                value: number | Good;
               } | null)
             | ({
                 relationTo: 'categories';
@@ -650,6 +705,10 @@ export interface ContentBlock {
             | ({
                 relationTo: 'openPositions';
                 value: number | OpenPosition;
+              } | null)
+            | ({
+                relationTo: 'goods';
+                value: number | Good;
               } | null)
             | ({
                 relationTo: 'categories';
@@ -1024,53 +1083,6 @@ export interface ContactBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'contactBlock';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "goods".
- */
-export interface Good {
-  id: number;
-  title: string;
-  products: {
-    image?: (number | null) | Media;
-    title: string;
-    description: string;
-    /**
-     * Country of origin
-     */
-    country: string;
-    id?: string | null;
-  }[];
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  categories?: (number | Category)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2185,6 +2197,10 @@ export interface Header {
                 value: number | OpenPosition;
               } | null)
             | ({
+                relationTo: 'goods';
+                value: number | Good;
+              } | null)
+            | ({
                 relationTo: 'categories';
                 value: number | Category;
               } | null);
@@ -2208,7 +2224,7 @@ export interface Header {
               /**
                * Link to an internal page or external URL
                */
-              link: {
+              link?: {
                 type?: ('reference' | 'custom') | null;
                 newTab?: boolean | null;
                 reference?:
@@ -2229,11 +2245,14 @@ export interface Header {
                       value: number | OpenPosition;
                     } | null)
                   | ({
+                      relationTo: 'goods';
+                      value: number | Good;
+                    } | null)
+                  | ({
                       relationTo: 'categories';
                       value: number | Category;
                     } | null);
                 url?: string | null;
-                label: string;
               };
               id?: string | null;
             }[]
@@ -2271,6 +2290,10 @@ export interface Footer {
             | ({
                 relationTo: 'openPositions';
                 value: number | OpenPosition;
+              } | null)
+            | ({
+                relationTo: 'goods';
+                value: number | Good;
               } | null)
             | ({
                 relationTo: 'categories';
@@ -2315,7 +2338,6 @@ export interface HeaderSelect<T extends boolean = true> {
                     newTab?: T;
                     reference?: T;
                     url?: T;
-                    label?: T;
                   };
               id?: T;
             };

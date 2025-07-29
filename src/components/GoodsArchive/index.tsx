@@ -6,7 +6,7 @@ import type { Good } from '@/payload-types'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Package } from 'lucide-react'
+import { Search, Package, Filter } from 'lucide-react'
 import { goodsTranslations } from '@/i18n/translations/goods'
 
 export type Props = {
@@ -54,92 +54,111 @@ export const GoodsArchive: React.FC<Props> = (props) => {
 
   return (
     <div className="container">
-      <div className="max-w-4xl mx-auto mb-12">
-        <div className="mb-8">
-          <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="text"
-              placeholder={t.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-4 text-base border-0 bg-white rounded-2xl shadow-lg focus:ring-2 focus:ring-[#9BC273] focus:ring-offset-2 transition-all duration-200"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-3">
-          <Button
-            onClick={() => setSelectedCategory('all')}
-            variant={selectedCategory === 'all' ? 'default' : 'outline'}
-            className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
-              selectedCategory === 'all'
-                ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 shadow-lg scale-105'
-                : 'hover:text-[#9BC273] hover:border-[#9BC273]'
-            }`}
-          >
-            {t.allCategories}
-          </Button>
-          {categories.map((category, index) => (
-            <Button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              variant={selectedCategory === category ? 'default' : 'outline'}
-              className={`px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                selectedCategory === category
-                  ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 shadow-lg scale-105'
-                  : 'hover:text-[#9BC273] hover:border-[#9BC273]'
-              }`}
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto">
-        {filteredGoods.length === 0 ? (
-          <div className="text-center py-16">
-            <Card className="max-w-md mx-auto">
-              <CardContent className="pt-6">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-                  <Package className="w-10 h-10 text-gray-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {searchQuery ? t.noProducts : t.noProductsAvailable}
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar: 1/3 width on desktop */}
+        <div className="lg:basis-1/3 lg:max-w-xs flex-shrink-0">
+          <Card className="sticky top-8">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Filter className="w-5 h-5 text-gray-600" />
+                <h3 className="font-semibold text-lg">
+                  {locale === 'rs' ? 'Kategorije' : 'Categories'}
                 </h3>
-                <p className="text-gray-600">
-                  {searchQuery ? t.tryAdjustingSearch : t.checkBackLater}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredGoods.map((good, index) => {
-              if (typeof good === 'object' && good !== null && good.products) {
-                return good.products.map((product, productIndex) => (
-                  <div
-                    key={`${index}-${productIndex}`}
-                    className="animate-fade-in animate-slide-in-from-bottom-2"
-                    style={{ animationDelay: `${index * 75 + productIndex * 25}ms` }}
+              </div>
+              <div className="space-y-2">
+                <Button
+                  onClick={() => setSelectedCategory('all')}
+                  variant={selectedCategory === 'all' ? 'default' : 'ghost'}
+                  className={`w-full justify-start ${
+                    selectedCategory === 'all'
+                      ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 text-white'
+                      : 'hover:bg-gray-100'
+                  }`}
+                >
+                  {t.allCategories}
+                </Button>
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    variant={selectedCategory === category ? 'default' : 'ghost'}
+                    className={`w-full justify-start ${
+                      selectedCategory === category
+                        ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 text-white'
+                        : 'hover:bg-gray-100'
+                    }`}
                   >
-                    <GoodsCard
-                      doc={{
-                        ...good,
-                        products: [product],
-                      }}
-                      relationTo="goods"
-                      locale={locale}
-                    />
-                  </div>
-                ))
-              }
-              return null
-            })}
-          </div>
-        )}
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content: 2/3 width on desktop */}
+        <div className="lg:basis-2/3 flex-1">
+          <Card>
+            <CardContent className="p-6">
+              {/* Search Bar */}
+              <div className="mb-8">
+                <div className="relative max-w-md">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Input
+                    type="text"
+                    placeholder={t.searchPlaceholder}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12 pr-4 py-4 text-base border-0 bg-white rounded-2xl shadow-lg focus:ring-2 focus:ring-[#9BC273] focus:ring-offset-2 transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              {/* Results */}
+              {filteredGoods.length === 0 ? (
+                <div className="text-center py-16">
+                  <Card className="max-w-md mx-auto">
+                    <CardContent className="pt-6">
+                      <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+                        <Package className="w-10 h-10 text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {searchQuery ? t.noProducts : t.noProductsAvailable}
+                      </h3>
+                      <p className="text-gray-600">
+                        {searchQuery ? t.tryAdjustingSearch : t.checkBackLater}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredGoods.map((good, index) => {
+                    if (typeof good === 'object' && good !== null && good.products) {
+                      return good.products.map((product, productIndex) => (
+                        <div
+                          key={`${index}-${productIndex}`}
+                          className="animate-fade-in animate-slide-in-from-bottom-2"
+                          style={{ animationDelay: `${index * 75 + productIndex * 25}ms` }}
+                        >
+                          <GoodsCard
+                            doc={{
+                              ...good,
+                              products: [product],
+                            }}
+                            relationTo="goods"
+                            locale={locale}
+                          />
+                        </div>
+                      ))
+                    }
+                    return null
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
