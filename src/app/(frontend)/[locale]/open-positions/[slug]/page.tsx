@@ -26,6 +26,7 @@ export async function generateStaticParams() {
       limit: 1000,
       overrideAccess: false,
       pagination: false,
+      locale: 'en',
       select: {
         slug: true,
         jobOffers: true,
@@ -69,7 +70,7 @@ export default async function Position({ params: paramsPromise }: Args) {
   const t = openPositionsTranslations[locale] || openPositionsTranslations.en
 
   try {
-    const position = await queryPositionBySlug({ slug })
+    const position = await queryPositionBySlug({ slug, locale })
 
     if (!position) {
       return (
@@ -296,48 +297,78 @@ export default async function Position({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const position = await queryPositionBySlug({ slug })
+  const position = await queryPositionBySlug({ slug, locale: 'en' }) // Assuming English for metadata lookup
 
   return generateMeta({ doc: position })
 }
 
-const queryPositionBySlug = cache(async ({ slug }: { slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
+const queryPositionBySlug = cache(
+  async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
+    const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayload({ config: configPromise })
+    const payload = await getPayload({ config: configPromise })
 
-  try {
-    const result = await payload.find({
-      collection: 'openPositions',
-      draft,
-      limit: 100,
-      overrideAccess: draft,
-      pagination: false,
-      depth: 2,
-    })
+    try {
+      const englishResult = await payload.find({
+        collection: 'openPositions',
+        draft,
+        limit: 100,
+        overrideAccess: draft,
+        pagination: false,
+        depth: 2,
+        locale: 'en',
+      })
 
-    for (const doc of result.docs) {
-      if (doc.jobOffers && Array.isArray(doc.jobOffers)) {
-        for (const jobOffer of doc.jobOffers) {
-          if (jobOffer && jobOffer.position) {
-            const positionSlug = generatePositionSlug(jobOffer.position)
-            if (positionSlug === slug) {
-              return {
-                ...doc,
-                jobOffers: [jobOffer],
+      let foundDocId = null
+      let foundJobOfferIndex = null
+
+      for (const doc of englishResult.docs) {
+        if (doc.jobOffers && Array.isArray(doc.jobOffers)) {
+          for (let i = 0; i < doc.jobOffers.length; i++) {
+            const jobOffer = doc.jobOffers[i]
+            if (jobOffer && jobOffer.position) {
+              const positionSlug = generatePositionSlug(jobOffer.position)
+              if (positionSlug === slug) {
+                foundDocId = doc.id
+                foundJobOfferIndex = i
+                break
               }
             }
           }
         }
+        if (foundDocId !== null) break
       }
-      if (doc.slug === slug) {
-        return doc
-      }
-    }
 
-    return null
-  } catch (error) {
-    console.error('Error querying position by slug:', error)
-    return null
-  }
-})
+      if (foundDocId === null || foundJobOfferIndex === null) return null
+
+      const result = await payload.find({
+        collection: 'openPositions',
+        draft,
+        limit: 1,
+        overrideAccess: draft,
+        pagination: false,
+        depth: 2,
+        locale: locale,
+        where: {
+          id: {
+            equals: foundDocId,
+          },
+        },
+      })
+
+      const doc = result.docs[0]
+      if (!doc || !doc.jobOffers || !Array.isArray(doc.jobOffers)) return null
+
+      const specificJobOffer = doc.jobOffers[foundJobOfferIndex]
+      if (!specificJobOffer) return null
+
+      return {
+        ...doc,
+        jobOffers: [specificJobOffer],
+      }
+    } catch (error) {
+      console.error('Error querying position by slug:', error)
+      return null
+    }
+  },
+)

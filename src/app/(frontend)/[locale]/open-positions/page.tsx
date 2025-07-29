@@ -27,6 +27,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       depth: 2,
       limit: 100,
       overrideAccess: false,
+      locale: locale,
       select: {
         title: true,
         slug: true,
