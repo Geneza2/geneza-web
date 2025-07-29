@@ -54,7 +54,7 @@ export const PositionCard: React.FC<{
     >
       <div className="flex flex-col md:flex-row min-h-[320px]">
         {(image || metaImage) && (
-          <div className="md:w-80 h-64 md:h-full relative flex-shrink-0 overflow-hidden">
+          <div className="md:w-80 h-full relative flex-shrink-0 overflow-hidden">
             <Media
               resource={image || metaImage}
               size="400px"
