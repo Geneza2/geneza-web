@@ -25,7 +25,7 @@ export const getCachedGlobal = (slug: Global, depth = 0, locale: PayloadLocale =
 
   return unstable_cache(
     async () => getGlobal(slug, depth, normalizedLocale),
-    [slug, normalizedLocale],
+    [slug, normalizedLocale, depth.toString()],
     {
       tags: [`global_${slug}_${normalizedLocale}`],
     },

@@ -15,23 +15,22 @@ import PageClient from './[slug]/page.client'
 
 type Args = {
   params: Promise<{
-    slug?: string
     locale: TypedLocale
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  const { slug = 'home', locale } = await paramsPromise
-  const url = '/' + slug
+  const { locale } = await paramsPromise
+  const url = '/'
 
   let page: PageType | null
 
   page = await queryPage({
-    slug,
+    slug: 'home',
     locale,
   })
 
-  if (!page && slug === 'home') {
+  if (!page) {
     page = homeStatic as PageType
   }
 
@@ -52,10 +51,10 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
-  const { locale, slug = 'home' } = await params
+  const { locale } = await params
   const page = await queryPage({
     locale,
-    slug,
+    slug: 'home',
   })
 
   return generateMeta({ doc: page })

@@ -36,6 +36,7 @@ export const Goods: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       name: 'products',
@@ -54,16 +55,19 @@ export const Goods: CollectionConfig = {
           name: 'title',
           type: 'text',
           required: true,
+          localized: true,
         },
         {
           name: 'description',
           type: 'textarea',
           required: true,
+          localized: true,
         },
         {
           name: 'country',
           type: 'text',
           required: true,
+          localized: true,
           admin: {
             description: 'Country of origin',
           },
@@ -80,6 +84,7 @@ export const Goods: CollectionConfig = {
               name: 'content',
               type: 'richText',
               required: true,
+              localized: true,
               editor: lexicalEditor({
                 features: ({ rootFeatures }) => [
                   ...rootFeatures,

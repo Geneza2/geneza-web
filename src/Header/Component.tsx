@@ -14,7 +14,7 @@ type HeaderProps = {
 }
 
 export async function Header({ locale }: HeaderProps) {
-  const headerData: HeaderType = await getCachedGlobal('header', 2, locale ?? 'en')()
+  const headerData: HeaderType = await getCachedGlobal('header', 3, locale ?? 'en')()
 
   return (
     <header className="w-full relative z-20 border-b border-border p-4 lg:px-12 bg-white">

@@ -6,7 +6,7 @@ import type { Good } from '@/payload-types'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Package, Filter } from 'lucide-react'
+import { Search, Package, Filter, Menu } from 'lucide-react'
 import { goodsTranslations } from '@/i18n/translations/goods'
 
 export type Props = {
@@ -55,12 +55,11 @@ export const GoodsArchive: React.FC<Props> = (props) => {
   return (
     <div className="container">
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar: 1/3 width on desktop */}
         <div className="lg:basis-1/3 lg:max-w-xs flex-shrink-0">
-          <Card className="sticky top-8">
+          <Card className="sticky top-8 bg-white">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Filter className="w-5 h-5 text-gray-600" />
+                <Menu className="w-5 h-5 text-gray-600" />
                 <h3 className="font-semibold text-lg">
                   {locale === 'rs' ? 'Kategorije' : 'Categories'}
                 </h3>
@@ -72,7 +71,7 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                   className={`w-full justify-start ${
                     selectedCategory === 'all'
                       ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 text-white'
-                      : 'hover:bg-gray-100'
+                      : 'hover:bg-accent'
                   }`}
                 >
                   {t.allCategories}
@@ -85,7 +84,7 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                     className={`w-full justify-start ${
                       selectedCategory === category
                         ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 text-white'
-                        : 'hover:bg-gray-100'
+                        : 'hover:bg-accent'
                     }`}
                   >
                     {category}
@@ -96,11 +95,9 @@ export const GoodsArchive: React.FC<Props> = (props) => {
           </Card>
         </div>
 
-        {/* Main Content: 2/3 width on desktop */}
         <div className="lg:basis-2/3 flex-1">
           <Card>
             <CardContent className="p-6">
-              {/* Search Bar */}
               <div className="mb-8">
                 <div className="relative max-w-md">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -114,7 +111,6 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                 </div>
               </div>
 
-              {/* Results */}
               {filteredGoods.length === 0 ? (
                 <div className="text-center py-16">
                   <Card className="max-w-md mx-auto">

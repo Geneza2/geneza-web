@@ -12,7 +12,7 @@ type FooterProps = {
 }
 
 export async function Footer({ locale }: FooterProps) {
-  const footerData: FooterType = (await getCachedGlobal('footer', 1)()) || {}
+  const footerData: FooterType = (await getCachedGlobal('footer', 2, locale ?? 'en')()) || {}
   const navItems = footerData?.navItems || []
 
   return (

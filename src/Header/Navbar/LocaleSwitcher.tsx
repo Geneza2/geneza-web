@@ -19,8 +19,12 @@ export function LanguageSwitcher() {
   const pathname = usePathname()
   const [, startTransition] = useTransition()
 
+  const pathSegments = pathname.split('/')
+  const currentLocale =
+    pathSegments[1] === 'en' || pathSegments[1] === 'rs' ? pathSegments[1] : locale
+
   const onSelectChange = (newLocale: string) => {
-    if (newLocale === locale) return
+    if (newLocale === currentLocale) return
 
     startTransition(() => {
       const segments = pathname.split('/')
@@ -31,12 +35,13 @@ export function LanguageSwitcher() {
     })
   }
 
-  const placeholderText = locale === 'rs' ? 'Jezik' : 'Language'
-  const getLabel = (lang: (typeof languages)[0]) => (locale === 'rs' ? lang.labelRs : lang.labelEn)
+  const placeholderText = currentLocale === 'rs' ? 'Jezik' : 'Language'
+  const getLabel = (lang: (typeof languages)[0]) =>
+    currentLocale === 'rs' ? lang.labelRs : lang.labelEn
 
   return (
     <div className="flex items-center">
-      <Select onValueChange={onSelectChange} value={locale}>
+      <Select onValueChange={onSelectChange} value={currentLocale}>
         <SelectTrigger className="w-[80px] h-10 text-base px-4">
           <SelectValue placeholder={placeholderText} />
         </SelectTrigger>

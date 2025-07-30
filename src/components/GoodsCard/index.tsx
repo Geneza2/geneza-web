@@ -26,7 +26,7 @@ export const GoodsCard: React.FC<{
   return (
     <Card
       className={cn(
-        'group overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02]',
+        'group overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-white',
         className,
       )}
     >

@@ -40,8 +40,12 @@ const MobileLanguageSwitcher: React.FC<{ onLanguageChange: () => void }> = ({
   const pathname = usePathname()
   const [, startTransition] = useTransition()
 
+  const pathSegments = pathname.split('/')
+  const currentLocale =
+    pathSegments[1] === 'en' || pathSegments[1] === 'rs' ? pathSegments[1] : locale
+
   const onSelectChange = (newLocale: string) => {
-    if (newLocale === locale) return
+    if (newLocale === currentLocale) return
 
     startTransition(() => {
       const segments = pathname.split('/')
@@ -53,12 +57,13 @@ const MobileLanguageSwitcher: React.FC<{ onLanguageChange: () => void }> = ({
     })
   }
 
-  const placeholderText = locale === 'rs' ? 'Jezik' : 'Language'
-  const getLabel = (lang: (typeof languages)[0]) => (locale === 'rs' ? lang.labelRs : lang.labelEn)
+  const placeholderText = currentLocale === 'rs' ? 'Jezik' : 'Language'
+  const getLabel = (lang: (typeof languages)[0]) =>
+    currentLocale === 'rs' ? lang.labelRs : lang.labelEn
 
   return (
     <div className="flex items-center gap-2">
-      <Select onValueChange={onSelectChange} value={locale}>
+      <Select onValueChange={onSelectChange} value={currentLocale}>
         <SelectTrigger className="w-full h-12 text-base px-4">
           <SelectValue placeholder={placeholderText} />
         </SelectTrigger>
