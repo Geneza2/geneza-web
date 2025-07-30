@@ -18,6 +18,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
+import { revalidateGoods, revalidateDelete } from './hooks/revalidateGoods'
 
 export const Goods: CollectionConfig = {
   slug: 'goods',
@@ -139,5 +140,9 @@ export const Goods: CollectionConfig = {
       schedulePublish: true,
     },
     maxPerDoc: 50,
+  },
+  hooks: {
+    afterChange: [revalidateGoods],
+    afterDelete: [revalidateDelete],
   },
 }
