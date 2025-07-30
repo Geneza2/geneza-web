@@ -1,7 +1,30 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import createNextIntlPlugin from 'next-intl/plugin'
 import redirects from './redirects.js'
+import fs from 'fs'
+import path from 'path'
+
 const withNextIntl = createNextIntlPlugin('src/i18n/requests.ts')
+
+const ensureCacheDirs = () => {
+  const cacheDirs = [
+    '.next/cache/images',
+    '.next/cache/next-babel-loader',
+    '.next/cache/next-minifier',
+    '.next/cache/swc',
+  ]
+
+  cacheDirs.forEach((dir) => {
+    const fullPath = path.join(process.cwd(), dir)
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true })
+    }
+  })
+}
+
+if (process.env.NODE_ENV === 'development') {
+  ensureCacheDirs()
+}
 
 const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
@@ -20,6 +43,7 @@ const nextConfig = {
         }
       }),
     ],
+    unoptimized: process.env.NODE_ENV === 'development',
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
