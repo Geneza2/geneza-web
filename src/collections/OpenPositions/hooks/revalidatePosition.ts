@@ -17,7 +17,6 @@ export const revalidatePositions: CollectionAfterChangeHook = ({
       revalidateTag('open-positions-sitemap')
     }
 
-    // If the position was previously published, we need to revalidate the old path
     if (previousDoc._status === 'published' && doc._status !== 'published') {
       const oldPath = `/open-positions/${previousDoc.slug}`
 

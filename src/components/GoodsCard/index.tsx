@@ -13,7 +13,7 @@ export const GoodsCard: React.FC<{
   relationTo?: 'goods'
   locale: TypedLocale
 }> = (props) => {
-  const { className, doc, locale } = props
+  const { className, doc } = props
 
   const { products, meta } = doc || {}
   const { image: metaImage } = meta || {}
