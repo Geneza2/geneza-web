@@ -31,7 +31,10 @@ export function LanguageSwitcher() {
       segments[1] = newLocale
 
       const newPath = segments.join('/') || '/'
-      router.replace(newPath)
+      // Preserve query parameters when switching locales
+      const searchParams = window.location.search
+      const finalPath = searchParams ? `${newPath}${searchParams}` : newPath
+      router.replace(finalPath)
     })
   }
 

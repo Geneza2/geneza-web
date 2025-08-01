@@ -1,13 +1,19 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good } from '@/payload-types'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Package, Filter, Menu } from 'lucide-react'
+import { Search, Package, Menu } from 'lucide-react'
 import { goodsTranslations } from '@/i18n/translations/goods'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+
+type Category = {
+  slug: string
+  title: string
+}
 
 export type Props = {
   goods: Good[]
@@ -15,41 +21,59 @@ export type Props = {
   availableCategories?: Array<{ id: number; title: string }>
 }
 
-export const GoodsArchive: React.FC<Props> = (props) => {
-  const { goods, locale } = props
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+export const GoodsArchive: React.FC<Props> = ({ goods, locale }) => {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const selectedCategory = searchParams.get('category') || 'all'
+  const searchQuery = searchParams.get('search') || ''
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
-  const categories = goods
-    .map((good) => good.title)
-    .filter(Boolean)
-    .sort()
+  const updateURLParams = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString())
 
-  const filteredGoods = goods.filter((good) => {
-    if (!good.products || good.products.length === 0) {
-      return false
-    }
-
-    const searchLower = searchQuery.toLowerCase()
-
-    const hasMatchingProduct = good.products.some((product) => {
-      if (!product || !product.title) return false
-
-      const { title, description, country } = product
-      return (
-        title?.toLowerCase().includes(searchLower) ||
-        description?.toLowerCase().includes(searchLower) ||
-        country?.toLowerCase().includes(searchLower)
-      )
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '') {
+        params.delete(key)
+      } else {
+        params.set(key, value)
+      }
     })
 
-    if (!hasMatchingProduct) return false
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
-    if (selectedCategory === 'all') return true
+  const categories: Category[] = goods
+    .map((good) => ({
+      slug: good.slug || '',
+      title: good.title || '',
+    }))
+    .filter((category) => category.slug && category.title)
+    .sort((a, b) => a.title.localeCompare(b.title))
 
-    return good.title === selectedCategory
+  const filteredGoods = goods.filter((good) => {
+    if (!good.products?.length) return false
+
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase()
+      const hasMatchingProduct = good.products.some((product) => {
+        if (!product?.title) return false
+        return (
+          product.title.toLowerCase().includes(searchLower) ||
+          product.description?.toLowerCase().includes(searchLower) ||
+          product.country?.toLowerCase().includes(searchLower)
+        )
+      })
+      if (!hasMatchingProduct) return false
+    }
+
+    if (selectedCategory !== 'all') {
+      return good.slug === selectedCategory
+    }
+
+    return true
   })
 
   return (
@@ -66,7 +90,7 @@ export const GoodsArchive: React.FC<Props> = (props) => {
               </div>
               <div className="space-y-2">
                 <Button
-                  onClick={() => setSelectedCategory('all')}
+                  onClick={() => updateURLParams({ category: null })}
                   variant={selectedCategory === 'all' ? 'default' : 'ghost'}
                   className={`w-full justify-start ${
                     selectedCategory === 'all'
@@ -78,16 +102,16 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                 </Button>
                 {categories.map((category) => (
                   <Button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    variant={selectedCategory === category ? 'default' : 'ghost'}
+                    key={category.slug}
+                    onClick={() => updateURLParams({ category: category.slug })}
+                    variant={selectedCategory === category.slug ? 'default' : 'ghost'}
                     className={`w-full justify-start ${
-                      selectedCategory === category
+                      selectedCategory === category.slug
                         ? 'bg-[#9BC273] hover:bg-[#9BC273]/90 text-white'
                         : 'hover:bg-accent'
                     }`}
                   >
-                    {category}
+                    {category.title}
                   </Button>
                 ))}
               </div>
@@ -105,7 +129,7 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                     type="text"
                     placeholder={t.searchPlaceholder}
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => updateURLParams({ search: e.target.value || null })}
                     className="pl-12 pr-4 py-4 text-base border-0 bg-white rounded-2xl shadow-lg focus:ring-2 focus:ring-[#9BC273] focus:ring-offset-2 transition-all duration-200"
                   />
                 </div>
@@ -129,13 +153,13 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredGoods.map((good, index) => {
-                    if (typeof good === 'object' && good !== null && good.products) {
-                      return good.products.map((product, productIndex) => (
+                  {filteredGoods.flatMap(
+                    (good, goodIndex) =>
+                      good.products?.map((product, productIndex) => (
                         <div
-                          key={`${index}-${productIndex}`}
+                          key={`${good.slug}-${productIndex}`}
                           className="animate-fade-in animate-slide-in-from-bottom-2"
-                          style={{ animationDelay: `${index * 75 + productIndex * 25}ms` }}
+                          style={{ animationDelay: `${goodIndex * 75 + productIndex * 25}ms` }}
                         >
                           <GoodsCard
                             doc={{
@@ -146,10 +170,8 @@ export const GoodsArchive: React.FC<Props> = (props) => {
                             locale={locale}
                           />
                         </div>
-                      ))
-                    }
-                    return null
-                  })}
+                      )) || [],
+                  )}
                 </div>
               )}
             </CardContent>

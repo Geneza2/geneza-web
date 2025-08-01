@@ -17,7 +17,17 @@ export const getLinkHref = (item: { link: Record<string, any> }, locale?: TypedL
     link?.label === 'Goods' ||
     (link?.type === 'reference' && link?.reference?.relationTo === 'goods')
   ) {
-    return locale ? `/${locale}/goods` : '/goods'
+    const baseUrl = locale ? `/${locale}/goods` : '/goods'
+
+    // If it's a specific goods reference, add the category parameter
+    if (link?.type === 'reference' && link?.reference?.relationTo === 'goods') {
+      const refValue = link.reference.value
+      if (typeof refValue === 'object' && refValue && 'slug' in refValue && refValue.slug) {
+        return `${baseUrl}?category=${refValue.slug}`
+      }
+    }
+
+    return baseUrl
   }
 
   if (link?.type === 'custom' && link?.url) {

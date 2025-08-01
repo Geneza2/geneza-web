@@ -52,7 +52,9 @@ const MobileLanguageSwitcher: React.FC<{ onLanguageChange: () => void }> = ({
       segments[1] = newLocale
 
       const newPath = segments.join('/') || '/'
-      router.replace(newPath)
+      const searchParams = window.location.search
+      const finalPath = searchParams ? `${newPath}${searchParams}` : newPath
+      router.replace(finalPath)
       onLanguageChange() // Close the mobile menu
     })
   }

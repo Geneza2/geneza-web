@@ -14,8 +14,10 @@ export const formatSlugHook =
     }
 
     if (operation === 'create' || !data?.slug) {
-      const fallbackData = data?.[fallback] || data?.[fallback]
-
+      let fallbackData = data?.[fallback] || data?.[fallback]
+      if (fallbackData && typeof fallbackData === 'object' && fallbackData.en) {
+        fallbackData = fallbackData.en
+      }
       if (fallbackData && typeof fallbackData === 'string') {
         return formatSlug(fallbackData)
       }

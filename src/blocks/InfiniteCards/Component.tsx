@@ -31,7 +31,7 @@ export const InfiniteCards: React.FC<Props> = ({ heading, cards, className }) =>
       <div className={cn('relative z-20 max-w-full mx-auto overflow-hidden', className)}>
         <ul
           className={cn(
-            'flex w-max min-w-full shrink-0 flex-nowrap gap-4 py-4 animate-scroll',
+            'flex w-max min-w-full shrink-0 flex-nowrap gap-4 py-4 animate-infinite-scroll',
             pauseClassName,
           )}
           style={animationStyle}

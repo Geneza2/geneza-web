@@ -61,8 +61,11 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     if (typeof refValue === 'object' && refValue && 'slug' in refValue && refValue.slug) {
       if (reference.relationTo === 'pages') {
         href = `/${locale || 'en'}/${refValue.slug}`
+      } else if (reference.relationTo === 'goods') {
+        // For goods, use the main goods page with category parameter
+        href = `/${locale || 'en'}/goods?category=${refValue.slug}`
       } else {
-        // For all collections, use the mapped path
+        // For all other collections, use the mapped path
         const collectionPath = getCollectionPath(reference.relationTo)
         href = `/${locale || 'en'}/${collectionPath}/${refValue.slug}`
       }

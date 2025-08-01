@@ -56,6 +56,7 @@ const config = {
         'scale-105': 'scale-105 0.2s ease-out',
         'card-hover': 'card-hover 0.3s ease-out',
         'filter-hover': 'filter-hover 0.2s ease-out',
+        'infinite-scroll': 'infinite-scroll 25s linear infinite',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -161,6 +162,10 @@ const config = {
         'filter-hover': {
           from: { transform: 'scale(1)' },
           to: { transform: 'scale(1.05)' },
+        },
+        'infinite-scroll': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
         },
       },
       typography: () => ({
