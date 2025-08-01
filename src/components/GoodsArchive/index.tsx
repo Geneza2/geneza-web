@@ -1,14 +1,13 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good } from '@/payload-types'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Package, Menu } from 'lucide-react'
+import { Search, Package } from 'lucide-react'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { GoodsSidebar } from '../GoodsSidebar'
 
@@ -20,37 +19,91 @@ type Category = {
 export type Props = {
   goods: Good[]
   locale: TypedLocale
+  availableCategories?: any[]
 }
 
-export const GoodsArchive: React.FC<Props> = ({ goods, locale }) => {
+export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategories = [] }) => {
   const searchParams = useSearchParams()
 
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-
-  useEffect(() => {
-    const initialCategory = searchParams.get('category')
-    const initialSearch = searchParams.get('search')
-
-    if (initialCategory) setSelectedCategory(initialCategory)
-    if (initialSearch) setSearchQuery(initialSearch)
-  }, [searchParams])
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => searchParams.get('category') || 'all',
+  )
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '')
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
-  const categories: Category[] = goods
-    .map((good) => ({
-      slug: good.slug || '',
-      title: good.title || '',
-    }))
-    .filter((category) => category.slug && category.title)
-    .sort((a, b) => a.title.localeCompare(b.title))
+  // Update state when URL parameters change
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category') || 'all'
+    const searchFromUrl = searchParams.get('search') || ''
+
+    setSelectedCategory(categoryFromUrl)
+    setSearchQuery(searchFromUrl)
+  }, [searchParams])
+
+  // Debug logging
+  console.log('GoodsArchive props:', {
+    goodsCount: goods.length,
+    availableCategoriesCount: availableCategories.length,
+    selectedCategory,
+    searchQuery,
+  })
+
+  // Use availableCategories if provided, otherwise fall back to goods-based categories
+  const categories: Category[] =
+    availableCategories.length > 0
+      ? availableCategories
+          .map((category) => ({
+            slug: category.slug || '',
+            title: category.title || '',
+          }))
+          .filter((category) => category.slug && category.title)
+      : goods
+          .map((good) => ({
+            slug: good.slug || '',
+            title: good.title || '',
+          }))
+          .filter((category) => category.slug && category.title)
+          .sort((a, b) => a.title.localeCompare(b.title))
+
+  console.log('Categories for sidebar:', categories)
 
   const filteredGoods = goods
     .map((good) => {
       if (!good.products?.length) return null
 
-      const matchesCategory = selectedCategory === 'all' || good.slug === selectedCategory
+      // Check if the good belongs to the selected category
+      let matchesCategory = selectedCategory === 'all'
+
+      if (selectedCategory !== 'all') {
+        if (availableCategories.length > 0) {
+          // When we have availableCategories, check if the good has any of the selected category
+          matchesCategory =
+            good.categories?.some((cat: any) => {
+              // Handle both populated and unpopulated category references
+              const categorySlug = typeof cat === 'object' && cat?.slug ? cat.slug : null
+              console.log('Checking category:', {
+                cat,
+                categorySlug,
+                selectedCategory,
+                matches: categorySlug === selectedCategory,
+              })
+              return categorySlug === selectedCategory
+            }) || false
+        } else {
+          // Fallback to slug-based filtering when no categories are available
+          matchesCategory = good.slug === selectedCategory
+        }
+      }
+
+      console.log('Good filtering:', {
+        goodTitle: good.title,
+        goodSlug: good.slug,
+        goodCategories: good.categories,
+        selectedCategory,
+        matchesCategory,
+      })
+
       if (!matchesCategory) return null
 
       const matchingProducts = good.products.filter((product) => {
@@ -72,6 +125,8 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale }) => {
       }
     })
     .filter((item): item is Good => item !== null)
+
+  console.log('Filtered goods count:', filteredGoods.length)
 
   return (
     <div className="container">

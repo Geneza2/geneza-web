@@ -22,7 +22,7 @@ export const getLinkHref = (item: { link: Record<string, any> }, locale?: TypedL
     // If it's a specific goods reference, add the category parameter
     if (link?.type === 'reference' && link?.reference?.relationTo === 'goods') {
       const refValue = link.reference.value
-      if (typeof refValue === 'object' && refValue && 'slug' in refValue && refValue.slug) {
+      if (refValue && typeof refValue === 'object' && 'slug' in refValue && refValue.slug) {
         return `${baseUrl}?category=${refValue.slug}`
       }
     }

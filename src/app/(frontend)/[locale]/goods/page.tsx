@@ -41,31 +41,20 @@ export default async function Page({ params: paramsPromise }: Args) {
       }),
     ])
 
-    console.log('Categories fetched:', categories.docs.length)
-    console.log(
-      'Categories data:',
-      categories.docs.map((c) => ({ id: c.id, title: c.title })),
-    )
-
-    const allProducts = goods.docs.flatMap((doc) => {
-      if (!doc.products || doc.products.length === 0) {
-        return []
-      }
-
-      return doc.products
-        .filter((product) => product && product.title)
-        .map((product) => ({
-          title: doc.title,
-          slug: doc.slug || '',
-          products: [product],
-          categories: doc.categories || [],
-          meta: doc.meta || {},
-        }))
+    goods.docs.forEach((good, index) => {
+      console.log(`Good ${index + 1}:`, {
+        title: good.title,
+        slug: good.slug,
+        categories: good.categories,
+        productsCount: good.products?.length || 0,
+      })
     })
+
+    const hasProducts = goods.docs.some((doc) => doc.products && doc.products.length > 0)
 
     return (
       <div className="py-12 sm:py-16">
-        {allProducts.length === 0 ? (
+        {!hasProducts ? (
           <div className="container">
             <Card className="max-w-md mx-auto text-center">
               <CardContent className="pt-6">
