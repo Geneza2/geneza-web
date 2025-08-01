@@ -96,7 +96,6 @@ export const Products: CollectionConfig = {
     {
       name: 'nutritiveInfo',
       type: 'group',
-      localized: true,
       fields: [
         {
           name: 'calories',
@@ -118,28 +117,6 @@ export const Products: CollectionConfig = {
           admin: {
             placeholder: 'Carbohydrates (g)',
           },
-        },
-
-        {
-          name: 'additionalNutrients',
-          type: 'array',
-          fields: [
-            {
-              name: 'name',
-              type: 'text',
-              required: true,
-            },
-            {
-              name: 'value',
-              type: 'text',
-              required: true,
-            },
-            {
-              name: 'unit',
-              type: 'text',
-              required: true,
-            },
-          ],
         },
       ],
     },
@@ -198,7 +175,6 @@ export const Products: CollectionConfig = {
     {
       name: 'cutSizes',
       type: 'array',
-      localized: true,
       fields: [
         {
           name: 'name',

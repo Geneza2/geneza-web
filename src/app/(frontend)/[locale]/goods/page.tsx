@@ -5,7 +5,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import { GoodsArchive } from '@/components/GoodsArchive'
 import { goodsTranslations } from '@/i18n/translations/goods'
-import { Package, AlertTriangle } from 'lucide-react'
+import { Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 
 export const dynamic = 'force-static'
@@ -41,15 +41,6 @@ export default async function Page({ params: paramsPromise }: Args) {
       }),
     ])
 
-    goods.docs.forEach((good, index) => {
-      console.log(`Good ${index + 1}:`, {
-        title: good.title,
-        slug: good.slug,
-        categories: good.categories,
-        productsCount: good.products?.length || 0,
-      })
-    })
-
     const hasProducts = goods.docs.some((doc) => doc.products && doc.products.length > 0)
 
     return (
@@ -64,11 +55,6 @@ export default async function Page({ params: paramsPromise }: Args) {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
                 </h3>
-                <p className="text-gray-600">
-                  {locale === 'rs'
-                    ? 'Molimo dodajte proizvode u admin panelu.'
-                    : 'Please add products in the admin panel.'}
-                </p>
               </CardContent>
             </Card>
           </div>
@@ -88,23 +74,6 @@ export default async function Page({ params: paramsPromise }: Args) {
                 {t.title}
               </h1>
             </div>
-          </div>
-        </div>
-        <div className="py-12 sm:py-16">
-          <div className="container">
-            <Card className="max-w-md mx-auto text-center">
-              <CardContent className="pt-6">
-                <div className="w-20 h-20 mx-auto mb-6 bg-red-50 rounded-2xl flex items-center justify-center">
-                  <AlertTriangle className="w-10 h-10 text-red-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {locale === 'rs' ? 'Greška pri učitavanju' : 'Error loading products'}
-                </h3>
-                <p className="text-gray-600">
-                  {locale === 'rs' ? 'Molimo pokušajte ponovo.' : 'Please try again.'}
-                </p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

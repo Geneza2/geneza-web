@@ -16,7 +16,6 @@ export const Carousel: Block = {
           type: 'upload',
           relationTo: 'media',
           required: true,
-          localized: false,
         },
         {
           name: 'title',

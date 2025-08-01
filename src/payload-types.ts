@@ -447,14 +447,6 @@ export interface Product {
     calories?: number | null;
     protein?: number | null;
     carbohydrates?: number | null;
-    additionalNutrients?:
-      | {
-          name: string;
-          value: string;
-          unit: string;
-          id?: string | null;
-        }[]
-      | null;
   };
   productInfo?: {
     origin?: string | null;
@@ -1840,14 +1832,6 @@ export interface ProductsSelect<T extends boolean = true> {
         calories?: T;
         protein?: T;
         carbohydrates?: T;
-        additionalNutrients?:
-          | T
-          | {
-              name?: T;
-              value?: T;
-              unit?: T;
-              id?: T;
-            };
       };
   productInfo?:
     | T

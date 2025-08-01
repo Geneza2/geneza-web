@@ -85,40 +85,21 @@ export default async function Page({ params: paramsPromise }: Args) {
     return (
       <div className="pt-24 pb-24">
         <div className="container mb-16">
-          <div className="prose dark:prose-invert max-w-none">
+          <div className="prose max-w-none">
             <h1>{t.title}</h1>
           </div>
-        </div>
-
-        <div className="container mb-8">
-          <Badge variant="outline" className="text-sm font-semibold">
-            {allPositions.length === 0 &&
-              (locale === 'rs' ? 'Nema rezultata pretrage.' : 'Search produced no results.')}
-            {allPositions.length > 0 &&
-              (locale === 'rs'
-                ? `Prikazano ${allPositions.length} ${allPositions.length > 1 ? 'otvorenih pozicija' : 'otvorena pozicija'}`
-                : `Showing ${allPositions.length} ${allPositions.length > 1 ? 'Open Positions' : 'Open Position'}`)}
-          </Badge>
         </div>
 
         <OpenPositionsArchive openPositions={allPositions} locale={locale} />
       </div>
     )
   } catch (error) {
-    console.error('Error loading open positions:', error)
     return (
       <div className="pt-24 pb-24">
         <div className="container mb-16">
-          <div className="prose dark:prose-invert max-w-none">
+          <div className="prose max-w-none">
             <h1>{t.title}</h1>
           </div>
-        </div>
-        <div className="container">
-          <Badge variant="destructive" className="text-center">
-            {locale === 'rs'
-              ? 'Greška pri učitavanju pozicija. Molimo pokušajte ponovo.'
-              : 'Error loading positions. Please try again.'}
-          </Badge>
         </div>
       </div>
     )

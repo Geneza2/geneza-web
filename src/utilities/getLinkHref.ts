@@ -12,7 +12,7 @@ const collectionPathMap: Record<string, string> = {
 export const getLinkHref = (item: { link: Record<string, any> }, locale?: TypedLocale): string => {
   const link = item.link
 
-  // Special handling for goods link - always point to main goods page
+  // Special handling for goods link - always point to main goods page with category parameter
   if (
     link?.label === 'Goods' ||
     (link?.type === 'reference' && link?.reference?.relationTo === 'goods')
@@ -44,6 +44,19 @@ export const getLinkHref = (item: { link: Record<string, any> }, locale?: TypedL
 
   if (!slug) return locale ? `/${locale}` : '/'
 
+  // For goods, always use category parameter approach
+  if (relationTo === 'goods') {
+    const baseUrl = locale ? `/${locale}/goods` : '/goods'
+    return `${baseUrl}?category=${slug}`
+  }
+
+  // For products and open-positions, use simple page routes without individual slugs
+  if (relationTo === 'products' || relationTo === 'openPositions') {
+    const collectionPath = collectionPathMap[relationTo] || relationTo
+    return locale ? `/${locale}/${collectionPath}` : `/${collectionPath}`
+  }
+
+  // For other collections, use standard slug-based routing
   if (relationTo && relationTo !== 'pages') {
     const collectionPath = collectionPathMap[relationTo] || relationTo
     return locale ? `/${locale}/${collectionPath}/${slug}` : `/${collectionPath}/${slug}`
