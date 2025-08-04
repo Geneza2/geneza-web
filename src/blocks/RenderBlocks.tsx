@@ -12,6 +12,7 @@ import { InfiniteCards } from '@/blocks/InfiniteCards/Component'
 import { TypedLocale } from 'payload'
 import { ZigZagLeftBlock } from '@/blocks/ZigZagLeft/Component'
 import { ZigZagRightBlock } from '@/blocks/ZigZagRight/Component'
+import { ProductsBlock } from '@/blocks/Products/Component'
 import { ContactComponent } from './Contacts/Component'
 
 const blockComponents = {
@@ -25,6 +26,7 @@ const blockComponents = {
   zigZagLeft: ZigZagLeftBlock,
   zigZagRight: ZigZagRightBlock,
   contactBlock: ContactComponent,
+  products: ProductsBlock,
 }
 
 export const RenderBlocks: React.FC<{

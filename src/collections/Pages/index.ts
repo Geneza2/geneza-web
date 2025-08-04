@@ -10,6 +10,7 @@ import { Carousel } from '../../blocks/Carousel/config'
 import { InfiniteCards } from '../../blocks/InfiniteCards/config'
 import { ZigZagLeft } from '../../blocks/ZigZagLeft/config'
 import { ZigZagRight } from '../../blocks/ZigZagRight/config'
+import { Products } from '../../blocks/Products/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -89,6 +90,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 ZigZagLeft,
                 ZigZagRight,
                 ContactBlock,
+                Products,
               ],
               required: true,
               localized: true,

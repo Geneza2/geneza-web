@@ -224,6 +224,7 @@ export interface Page {
     | ZigZagLeftBlock
     | ZigZagRightBlock
     | ContactBlock
+    | ProductsBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1078,6 +1079,16 @@ export interface ContactBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productsBlock".
+ */
+export interface ProductsBlock {
+  products: (number | Product)[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'products';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1384,6 +1395,7 @@ export interface PagesSelect<T extends boolean = true> {
         zigZagLeft?: T | ZigZagLeftBlockSelect<T>;
         zigZagRight?: T | ZigZagRightBlockSelect<T>;
         contactBlock?: T | ContactBlockSelect<T>;
+        products?: T | ProductsBlockSelect<T>;
       };
   meta?:
     | T
@@ -1603,6 +1615,15 @@ export interface ContactBlockSelect<T extends boolean = true> {
         phone?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productsBlock_select".
+ */
+export interface ProductsBlockSelect<T extends boolean = true> {
+  products?: T;
   id?: T;
   blockName?: T;
 }
