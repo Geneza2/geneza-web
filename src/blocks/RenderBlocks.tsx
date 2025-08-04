@@ -48,7 +48,7 @@ export const RenderBlocks: React.FC<{
 
             if (Block) {
               return (
-                <div className="my-16" key={index}>
+                <div className="" key={index}>
                   {/* @ts-expect-error - Block components have dynamic props that TypeScript cannot infer */}
                   <Block {...block} locale={locale} />
                 </div>

@@ -117,3 +117,83 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+/* Admin bar and header layout */
+.admin-bar {
+  height: 40px;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-bar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Ensure main content is positioned below fixed header */
+body > div:first-child {
+  padding-top: 0;
+}
+
+/* Main content spacing - adjust based on admin bar visibility */
+main {
+  transition: padding-top 0.3s ease;
+  padding-top: 140px; /* Increased from 104px to 140px for more gaps */
+}
+
+/* When admin bar is hidden, reduce main content padding */
+body.admin-bar-hidden main {
+  padding-top: 100px; /* Increased from 64px to 100px for more gaps */
+}
+
+/* Swiper pagination styles - ensure they're applied */
+.swiper-pagination-bullet {
+  background-color: var(--swiper-pagination-color) !important;
+  opacity: var(--swiper-pagination-bullet-opacity) !important;
+  width: var(--swiper-pagination-bullet-width) !important;
+  height: var(--swiper-pagination-bullet-height) !important;
+  margin: 0 var(--swiper-pagination-bullet-horizontal-gap) !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: var(--swiper-pagination-color) !important;
+  opacity: var(--swiper-pagination-bullet-opacity) !important;
+}
+
+.swiper-pagination-bullet-inactive {
+  background-color: var(--swiper-pagination-bullet-inactive-color) !important;
+  opacity: var(--swiper-pagination-bullet-inactive-opacity) !important;
+}
+
+/* Ensure pagination container is properly positioned */
+.swiper-pagination {
+  position: absolute !important;
+  bottom: var(--swiper-pagination-bottom) !important;
+  right: var(--swiper-pagination-right) !important;
+  left: var(--swiper-pagination-left) !important;
+  top: var(--swiper-pagination-top) !important;
+  z-index: 10 !important;
+}
+
+/* Carousel block specific styling */
+.carousel-block {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Allow carousel to be positioned right below navbar when needed */
+.carousel-block.position-below-nav {
+  margin-top: -140px; /* Updated to match new main padding */
+}
+
+body.admin-bar-hidden .carousel-block.position-below-nav {
+  margin-top: -100px; /* Updated to match new main padding when admin bar is hidden */
+}

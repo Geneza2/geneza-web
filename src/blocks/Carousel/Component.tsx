@@ -28,7 +28,7 @@ type Props = {
 
 export const CarouselBlock: React.FC<Props> = ({ className, slides }) => {
   return (
-    <div className={cn('mx-auto my-8 w-full', className)}>
+    <div className={cn('mx-auto w-full carousel-block', className)}>
       <Swiper
         modules={[Autoplay, Pagination, Parallax]}
         slidesPerView={1}

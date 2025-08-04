@@ -17,7 +17,10 @@ export async function Header({ locale }: HeaderProps) {
   const headerData: HeaderType = await getCachedGlobal('header', 3, locale ?? 'en')()
 
   return (
-    <header className="w-full relative z-20 border-b border-border p-4 lg:px-12 bg-white">
+    <header
+      className="w-full border-b border-border p-4 lg:px-12 bg-white/70 backdrop-blur-md"
+      id="main-header"
+    >
       <div className="hidden md:flex items-center justify-between w-full">
         <div className="flex items-center w-[120px] min-w-[120px]">
           <Link className="flex items-center" href={`/${locale || 'en'}`}>

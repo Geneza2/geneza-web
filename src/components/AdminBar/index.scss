@@ -4,8 +4,44 @@
   @include small-break {
     display: none;
   }
+  
+  // Hide admin bar by default
+  display: none;
+  
+  // Position admin bar at the top
+  height: 40px;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 60;
+}
+
+// Show admin bar when user is authenticated
+.admin-bar.admin-bar-visible {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .admin-bar a {
   color: #000 !important;
+}
+
+// Ensure header is positioned below admin bar
+#main-header {
+  transition: top 0.3s ease;
+}
+
+// Admin bar content alignment
+.admin-bar [data-payload-admin-bar] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.admin-bar [data-payload-admin-bar] > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
 }

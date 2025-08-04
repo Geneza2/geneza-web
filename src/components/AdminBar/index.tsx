@@ -43,23 +43,30 @@ export const AdminBar: React.FC<{
   const router = useRouter()
 
   const onAuthChange = React.useCallback((user: PayloadMeUser) => {
-    setShow(Boolean(user?.id))
+    const isVisible = Boolean(user?.id)
+    setShow(isVisible)
+
+    if (isVisible) {
+      document.body.classList.remove('admin-bar-hidden')
+    } else {
+      document.body.classList.add('admin-bar-hidden')
+    }
   }, [])
 
   return (
     <div
-      className={cn(baseClass, 'py-2 bg-white text-black', {
-        block: show,
-        hidden: !show,
+      className={cn(baseClass, {
+        'admin-bar-visible': show,
+        'admin-bar-hidden': !show,
       })}
     >
       <div className="container">
         <PayloadAdminBar
           {...adminBarProps}
-          className="py-2 text-black"
+          className="py-2 text-black w-full"
           classNames={{
-            controls: 'font-medium text-black',
-            logo: 'text-black',
+            controls: 'font-medium text-black flex items-center gap-4',
+            logo: 'text-black font-semibold',
             user: 'text-black',
           }}
           cmsURL={getClientSideURL()}
@@ -81,6 +88,7 @@ export const AdminBar: React.FC<{
             padding: 0,
             position: 'relative',
             zIndex: 'unset',
+            width: '100%',
           }}
         />
       </div>
