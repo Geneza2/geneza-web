@@ -26,7 +26,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     locale,
   })
 
-  if (!page && slug === 'home') {
+  if (!page && (slug === 'home' || slug === 'production')) {
     page = homeStatic
   }
 

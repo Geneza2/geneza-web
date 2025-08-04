@@ -26,7 +26,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   let page: PageType | null
 
   page = await queryPage({
-    slug: 'home',
+    slug: 'production',
     locale,
   })
 
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { locale } = await params
   const page = await queryPage({
     locale,
-    slug: 'home',
+    slug: 'production',
   })
 
   return generateMeta({ doc: page })

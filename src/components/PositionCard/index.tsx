@@ -55,14 +55,15 @@ export const PositionCard: React.FC<{
     >
       <div className="flex flex-col md:flex-row min-h-[320px]">
         {(image || metaImage) && (
-          <div className="md:w-80 h-full relative flex-shrink-0 overflow-hidden">
+          <div className="md:w-80 h-48 md:h-full relative flex-shrink-0 overflow-hidden bg-gray-100">
             <Image
               src={getImageUrl(image || metaImage)}
               alt={position || 'Position image'}
               width={320}
               height={240}
               sizes="(max-width: 768px) 100vw, 320px"
-              className="object-cover hover:scale-105 transition-transform duration-500"
+              className="object-cover w-full h-full hover:scale-105 transition-transform duration-500"
+              fill
             />
           </div>
         )}
