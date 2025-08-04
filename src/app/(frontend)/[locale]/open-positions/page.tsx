@@ -90,6 +90,17 @@ export default async function Page({ params: paramsPromise }: Args) {
           </div>
         </div>
 
+        <div className="container mb-8">
+          <Badge variant="outline" className="text-sm font-semibold">
+            {allPositions.length === 0 &&
+              (locale === 'rs' ? 'Nema rezultata pretrage.' : 'Search produced no results.')}
+            {allPositions.length > 0 &&
+              (locale === 'rs'
+                ? `Prikazano ${allPositions.length} ${allPositions.length > 1 ? 'otvorenih pozicija' : 'otvorena pozicija'}`
+                : `Showing ${allPositions.length} ${allPositions.length > 1 ? 'Open Positions' : 'Open Position'}`)}
+          </Badge>
+        </div>
+
         <OpenPositionsArchive openPositions={allPositions} locale={locale} />
       </div>
     )

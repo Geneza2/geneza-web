@@ -313,19 +313,6 @@ export default async function ProductPage({ params: paramsPromise }: Args) {
                       <span>{product.nutritiveInfo.carbohydrates}g</span>
                     </div>
                   )}
-                  {product.nutritiveInfo.additionalNutrients &&
-                    product.nutritiveInfo.additionalNutrients.length > 0 && (
-                      <div className="pt-4 border-t space-y-3">
-                        {product.nutritiveInfo.additionalNutrients.map((nutrient, index) => (
-                          <div key={index} className="flex justify-between py-2 border-b">
-                            <span className="font-medium">{nutrient.name}:</span>
-                            <span>
-                              {nutrient.value} {nutrient.unit}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                 </CardContent>
               </Card>
             )}

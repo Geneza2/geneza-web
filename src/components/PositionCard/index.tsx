@@ -7,12 +7,13 @@ import React from 'react'
 import type { OpenPosition } from '@/payload-types'
 import { TypedLocale } from 'payload'
 
-import { Media } from '@/components/Media'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { generatePositionSlug } from '@/utilities/generatePositionSlug'
 import { openPositionsTranslations } from '@/i18n/translations/open-positions'
 import { Calendar, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
+import { getImageUrl } from '@/utilities/getImageUrl'
 
 export type PositionCardData = Pick<OpenPosition, 'slug' | 'title' | 'jobOffers' | 'meta'> & {
   englishPosition?: string
@@ -55,10 +56,13 @@ export const PositionCard: React.FC<{
       <div className="flex flex-col md:flex-row min-h-[320px]">
         {(image || metaImage) && (
           <div className="md:w-80 h-full relative flex-shrink-0 overflow-hidden">
-            <Media
-              resource={image || metaImage}
-              size="400px"
-              className="object-cover w-full h-full hover:scale-105 transition-transform duration-500"
+            <Image
+              src={getImageUrl(image || metaImage)}
+              alt={position || 'Position image'}
+              width={320}
+              height={240}
+              sizes="(max-width: 768px) 100vw, 320px"
+              className="object-cover hover:scale-105 transition-transform duration-500"
             />
           </div>
         )}
@@ -107,7 +111,7 @@ export const PositionCard: React.FC<{
                   ))}
                 </ul>
 
-                <div className="flex items-center justify-end pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-end pt-4">
                   <Button
                     asChild
                     size="sm"
