@@ -240,11 +240,6 @@ export default async function Position({ params: paramsPromise }: Args) {
             <h1 className="text-3xl font-bold text-gray-900 mb-6">
               {locale === 'rs' ? 'Greška' : 'Error'}
             </h1>
-            <p className="text-gray-600 text-base mb-8">
-              {locale === 'rs'
-                ? 'Došlo je do greške prilikom učitavanja pozicije.'
-                : 'An error occurred while loading the position.'}
-            </p>
             <Button asChild size="lg" className="bg-[#9BC273] hover:bg-[#8AB562] text-white">
               <Link href={`/${locale}/open-positions`}>
                 {locale === 'rs' ? 'Nazad na pozicije' : 'Back to Positions'}
