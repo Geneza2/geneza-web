@@ -21,7 +21,6 @@ export const OpenPositionsArchive: React.FC<Props> = (props) => {
               <PositionCard key={index} doc={position} relationTo="openPositions" locale={locale} />
             )
           }
-
           return null
         })}
       </div>

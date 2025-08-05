@@ -4,5 +4,9 @@ export const getImageUrl = (
   img: number | Media | null | undefined,
   fallback = '/noimg.svg',
 ): string => {
-  return typeof img === 'object' && img?.url ? img.url : fallback
+  if (img && typeof img === 'object' && 'url' in img && typeof img.url === 'string') {
+    return img.url
+  }
+
+  return fallback
 }
