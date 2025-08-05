@@ -89,6 +89,20 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
     },
   ]
 
+  if (disableLabel) {
+    linkTypes.push({
+      name: 'anchor',
+      type: 'text',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'reference',
+        description:
+          'Optional: Add section ID to scroll to (e.g., "steam-treatment" for #steam-treatment)',
+        placeholder: 'section-id',
+      },
+      label: 'Section ID',
+    })
+  }
+
   if (!disableLabel) {
     linkTypes.map((linkType) => ({
       ...linkType,

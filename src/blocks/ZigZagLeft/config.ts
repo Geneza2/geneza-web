@@ -5,6 +5,14 @@ export const ZigZagLeft: Block = {
   interfaceName: 'zigZagLeftBlock',
   fields: [
     {
+      name: 'sectionId',
+      type: 'text',
+      label: 'Section ID',
+      admin: {
+        description: 'Unique ID for this section (used for navigation links)',
+      },
+    },
+    {
       name: 'content',
       type: 'group',
       localized: true,

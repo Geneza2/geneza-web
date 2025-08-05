@@ -16,6 +16,7 @@ type Media = {
 type Props = {
   className?: string
   background?: Media
+  sectionId?: string
   content: {
     image: Media
     title: string
@@ -28,11 +29,12 @@ type Props = {
   }
 }
 
-export const ZigZagLeftBlock: React.FC<Props> = ({ className, background, content }) => {
+export const ZigZagLeftBlock: React.FC<Props> = ({ className, background, sectionId, content }) => {
   const { image, title, description, callToAction } = content
 
   return (
     <section
+      id={sectionId}
       className={cn('w-full transition-all duration-300 ease-in-out', className)}
       style={{
         background: background?.url ? `url(${background.url}) center / cover no-repeat` : '#fff',
@@ -55,7 +57,7 @@ export const ZigZagLeftBlock: React.FC<Props> = ({ className, background, conten
             </div>
 
             <div className="space-y-4 md:space-y-6 px-4 md:px-0 order-2 flex flex-col justify-center h-full">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300 ease-in-out">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 transition-colors duration-300 ease-in-out">
                 {title}
               </h2>
               {description && (

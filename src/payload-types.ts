@@ -1009,6 +1009,10 @@ export interface InfiniteCardsBlock {
  * via the `definition` "zigZagLeftBlock".
  */
 export interface ZigZagLeftBlock {
+  /**
+   * Unique ID for this section (used for navigation links)
+   */
+  sectionId?: string | null;
   content: {
     background?: (number | null) | Media;
     image: number | Media;
@@ -1029,6 +1033,10 @@ export interface ZigZagLeftBlock {
  * via the `definition` "zigZagRightBlock".
  */
 export interface ZigZagRightBlock {
+  /**
+   * Unique ID for this section (used for navigation links)
+   */
+  sectionId?: string | null;
   content: {
     background?: (number | null) | Media;
     image: number | Media;
@@ -1545,6 +1553,7 @@ export interface InfiniteCardsBlockSelect<T extends boolean = true> {
  * via the `definition` "zigZagLeftBlock_select".
  */
 export interface ZigZagLeftBlockSelect<T extends boolean = true> {
+  sectionId?: T;
   content?:
     | T
     | {
@@ -1568,6 +1577,7 @@ export interface ZigZagLeftBlockSelect<T extends boolean = true> {
  * via the `definition` "zigZagRightBlock_select".
  */
 export interface ZigZagRightBlockSelect<T extends boolean = true> {
+  sectionId?: T;
   content?:
     | T
     | {
@@ -2262,6 +2272,10 @@ export interface Header {
                       value: number | Category;
                     } | null);
                 url?: string | null;
+                /**
+                 * Optional: Add section ID to scroll to (e.g., "steam-treatment" for #steam-treatment)
+                 */
+                anchor?: string | null;
               };
               id?: string | null;
             }[]
@@ -2347,6 +2361,7 @@ export interface HeaderSelect<T extends boolean = true> {
                     newTab?: T;
                     reference?: T;
                     url?: T;
+                    anchor?: T;
                   };
               id?: T;
             };

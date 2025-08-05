@@ -16,6 +16,7 @@ type Media = {
 type Props = {
   className?: string
   background?: Media
+  sectionId?: string
   content: {
     image: Media
     title: string
@@ -28,11 +29,17 @@ type Props = {
   }
 }
 
-export const ZigZagRightBlock: React.FC<Props> = ({ className, background, content }) => {
+export const ZigZagRightBlock: React.FC<Props> = ({
+  className,
+  background,
+  sectionId,
+  content,
+}) => {
   const { image, title, description, callToAction } = content
 
   return (
     <section
+      id={sectionId}
       className={cn('w-full transition-all duration-300 ease-in-out', className)}
       style={{
         background: background?.url ? `url(${background.url}) center / cover no-repeat` : '#fff',
@@ -42,7 +49,7 @@ export const ZigZagRightBlock: React.FC<Props> = ({ className, background, conte
         <Card className="border-0 bg-transparent shadow-none">
           <CardContent className="p-0 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
             <div className="space-y-4 md:space-y-6 px-4 md:px-0 order-2 md:order-1 flex flex-col justify-center h-full">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300 ease-in-out">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 transition-colors duration-300 ease-in-out">
                 {title}
               </h2>
               {description && (

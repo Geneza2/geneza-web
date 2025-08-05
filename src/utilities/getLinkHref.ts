@@ -23,16 +23,19 @@ export const getLinkHref = (item: { link: Record<string, any> }, locale?: TypedL
     if (link?.type === 'reference' && link?.reference?.relationTo === 'goods') {
       const refValue = link.reference.value
       if (refValue && typeof refValue === 'object' && 'slug' in refValue && refValue.slug) {
-        return `${baseUrl}?category=${refValue.slug}`
+        const url = `${baseUrl}?category=${refValue.slug}`
+        return link?.anchor ? `${url}#${link.anchor}` : url
       }
     }
 
-    return baseUrl
+    const url = baseUrl
+    return link?.anchor ? `${url}#${link.anchor}` : url
   }
 
   if (link?.type === 'custom' && link?.url) {
     const url = link.url as string
-    return locale ? `/${locale}${url.startsWith('/') ? url : `/${url}`}` : url
+    const fullUrl = locale ? `/${locale}${url.startsWith('/') ? url : `/${url}`}` : url
+    return link?.anchor ? `${fullUrl}#${link.anchor}` : fullUrl
   }
 
   const reference = link?.reference as
@@ -42,26 +45,33 @@ export const getLinkHref = (item: { link: Record<string, any> }, locale?: TypedL
   const ref = reference?.value
   const slug = typeof ref === 'object' && ref && 'slug' in ref ? ref.slug : ''
 
-  if (!slug) return locale ? `/${locale}` : '/'
+  if (!slug) {
+    const url = locale ? `/${locale}` : '/'
+    return link?.anchor ? `${url}#${link.anchor}` : url
+  }
 
   // For goods, always use category parameter approach
   if (relationTo === 'goods') {
     const baseUrl = locale ? `/${locale}/goods` : '/goods'
-    return `${baseUrl}?category=${slug}`
+    const url = `${baseUrl}?category=${slug}`
+    return link?.anchor ? `${url}#${link.anchor}` : url
   }
 
   // For products and open-positions, use simple page routes without individual slugs
   if (relationTo === 'products' || relationTo === 'openPositions') {
     const collectionPath = collectionPathMap[relationTo] || relationTo
-    return locale ? `/${locale}/${collectionPath}` : `/${collectionPath}`
+    const url = locale ? `/${locale}/${collectionPath}` : `/${collectionPath}`
+    return link?.anchor ? `${url}#${link.anchor}` : url
   }
 
   // For other collections, use standard slug-based routing
   if (relationTo && relationTo !== 'pages') {
     const collectionPath = collectionPathMap[relationTo] || relationTo
-    return locale ? `/${locale}/${collectionPath}/${slug}` : `/${collectionPath}/${slug}`
+    const url = locale ? `/${locale}/${collectionPath}/${slug}` : `/${collectionPath}/${slug}`
+    return link?.anchor ? `${url}#${link.anchor}` : url
   }
 
   // For pages, just use the slug directly
-  return locale ? `/${locale}/${slug}` : `/${slug}`
+  const url = locale ? `/${locale}/${slug}` : `/${slug}`
+  return link?.anchor ? `${url}#${link.anchor}` : url
 }
