@@ -9,8 +9,6 @@ import { Header } from '@/Header/Component'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { NextIntlClientProvider } from 'next-intl'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import { Providers } from '@/providers'
-import { InitTheme } from '@/providers/Theme/InitTheme'
 import './globals.css'
 import { TypedLocale } from 'payload'
 import { draftMode } from 'next/headers'
@@ -37,17 +35,15 @@ export default async function RootLayout({ children, params }: Args) {
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
       <body>
-        <Providers>
-          <NextIntlClientProvider>
-            <div className="relative z-50">
-              <AdminBar adminBarProps={{ preview: isEnabled }} />
-              <Header locale={locale} />
-            </div>
-            <LivePreviewListener />
-            <main>{children}</main>
-            <Footer locale={locale} />
-          </NextIntlClientProvider>
-        </Providers>
+        <NextIntlClientProvider>
+          <div className="relative z-50">
+            <AdminBar adminBarProps={{ preview: isEnabled }} />
+            <Header locale={locale} />
+          </div>
+          <LivePreviewListener />
+          <main>{children}</main>
+          <Footer locale={locale} />
+        </NextIntlClientProvider>
       </body>
     </html>
   )

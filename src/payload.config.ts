@@ -37,7 +37,6 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
-    theme: 'light',
     user: Users.slug,
     livePreview: {
       breakpoints: [
