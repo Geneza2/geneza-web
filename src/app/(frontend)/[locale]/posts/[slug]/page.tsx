@@ -12,7 +12,6 @@ import type { Post } from '@/payload-types'
 
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
-import _PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export async function generateStaticParams() {
