@@ -6,12 +6,11 @@ import { GeistSans } from 'geist/font/sans'
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
-import { Providers } from '@/providers'
-import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { NextIntlClientProvider } from 'next-intl'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-
+import { Providers } from '@/providers'
+import { InitTheme } from '@/providers/Theme/InitTheme'
 import './globals.css'
 import { TypedLocale } from 'payload'
 import { draftMode } from 'next/headers'
@@ -34,7 +33,6 @@ export default async function RootLayout({ children, params }: Args) {
       suppressHydrationWarning
     >
       <head>
-        <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
@@ -59,7 +57,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'https://localhost:3000'),
   openGraph: mergeOpenGraph(),
   twitter: {
-    card: 'summary_large_image',
     creator: 'geneza',
   },
 }

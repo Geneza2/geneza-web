@@ -11,7 +11,6 @@ import { homeStatic } from '@/endpoints/seed/home-static'
 import type { Page as PageType } from '@/payload-types'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
-import PageClient from './[slug]/page.client'
 
 type Args = {
   params: Promise<{
@@ -42,7 +41,6 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   return (
     <article className="pb-24">
-      <PageClient />
       <PayloadRedirects disableNotFound url={url} />
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} locale={locale} />

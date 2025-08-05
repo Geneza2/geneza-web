@@ -9,7 +9,6 @@ import { TypedLocale } from 'payload'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
-import PageClient from './page.client'
 
 type Params = {
   slug?: string
@@ -38,7 +37,6 @@ export default async function Page({ params }: { params: Promise<Params> }) {
 
   return (
     <article className="pb-24">
-      <PageClient />
       <PayloadRedirects disableNotFound url={url} />
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} locale={locale} />
