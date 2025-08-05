@@ -15,11 +15,19 @@ type Product = {
 
 type Props = {
   className?: string
+  title: string
+  description: string
   products: Product[]
   locale: TypedLocale
 }
 
-export const ProductsBlock: React.FC<Props> = ({ className, products, locale }) => {
+export const ProductsBlock: React.FC<Props> = ({
+  className,
+  title,
+  description,
+  products,
+  locale,
+}) => {
   if (!products || products.length === 0) {
     return null
   }
@@ -27,6 +35,13 @@ export const ProductsBlock: React.FC<Props> = ({ className, products, locale }) 
   return (
     <section className={cn('w-full py-16 sm:py-20', className)}>
       <div className="container">
+        {/* Title and Description Section */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{title}</h2>
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">{description}</p>
+        </div>
+
+        {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {products.map((product) => {
             const { title: productTitle, slug, image } = product

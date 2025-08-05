@@ -99,12 +99,15 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ data, locale }) => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <button className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-ring">
-          <Menu className="w-6 h-6" />
+        <button className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-black/20 bg-transparent hover:bg-black/10 transition-colors">
+          <Menu className="w-6 h-6 text-black" />
           <span className="sr-only">Open navigation menu</span>
         </button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-screen max-w-full p-0 overflow-y-auto max-h-screen">
+      <SheetContent
+        side="right"
+        className="w-screen max-w-full p-0 overflow-y-auto max-h-screen bg-white"
+      >
         <div className="flex items-center justify-between p-4 border-b border-border">
           <Logo />
         </div>

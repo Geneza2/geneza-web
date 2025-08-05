@@ -45,7 +45,7 @@ export function LanguageSwitcher() {
   return (
     <div className="flex items-center">
       <Select onValueChange={onSelectChange} value={currentLocale}>
-        <SelectTrigger className="w-[80px] h-10 text-base px-4">
+        <SelectTrigger className="w-[80px] h-10 text-base px-4 bg-transparent border-black/20 text-black hover:text-black hover:border-black/40 transition-colors">
           <SelectValue placeholder={placeholderText} />
         </SelectTrigger>
         <SelectContent>

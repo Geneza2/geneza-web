@@ -41,12 +41,12 @@ export default async function RootLayout({ children, params }: Args) {
       <body>
         <Providers>
           <NextIntlClientProvider>
-            <div className="fixed top-0 left-0 right-0 z-50">
+            <div className="relative z-50">
               <AdminBar adminBarProps={{ preview: isEnabled }} />
               <Header locale={locale} />
             </div>
             <LivePreviewListener />
-            <main className="pt-28">{children}</main>
+            <main>{children}</main>
             <Footer locale={locale} />
           </NextIntlClientProvider>
         </Providers>

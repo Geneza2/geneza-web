@@ -29,8 +29,13 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ data, locale }) => {
       <NavigationMenuList className="justify-center w-full">
         {navItems.map((item) => (
           <NavigationMenuItem key={item.id}>
-            <NavigationMenuTrigger>
-              <Link href={getLinkHref(item, locale)}>{item.link.label}</Link>
+            <NavigationMenuTrigger className="bg-transparent hover:bg-white/20 text-black hover:text-black border-none shadow-none">
+              <Link
+                href={getLinkHref(item, locale)}
+                className="text-black hover:text-black transition-colors"
+              >
+                {item.link.label}
+              </Link>
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-2 grid-cols-3 grid-rows-3 w-[800px]">

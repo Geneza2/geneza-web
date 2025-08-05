@@ -5,6 +5,18 @@ export const Products: Block = {
   interfaceName: 'productsBlock',
   fields: [
     {
+      name: 'title',
+      type: 'text',
+      required: true,
+      label: 'Title',
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      required: true,
+      label: 'Description',
+    },
+    {
       name: 'products',
       type: 'relationship',
       relationTo: 'products',

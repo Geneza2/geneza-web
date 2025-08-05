@@ -18,7 +18,7 @@ export async function Header({ locale }: HeaderProps) {
 
   return (
     <header
-      className="w-full border-b border-border p-4 lg:px-12 bg-white/70 backdrop-blur-md"
+      className="w-full p-4 lg:px-12 bg-white/90 backdrop-blur-md relative z-10"
       id="main-header"
     >
       <div className="hidden md:flex items-center justify-between w-full">

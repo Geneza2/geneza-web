@@ -1082,6 +1082,8 @@ export interface ContactBlock {
  * via the `definition` "productsBlock".
  */
 export interface ProductsBlock {
+  title: string;
+  description: string;
   products: (number | Product)[];
   id?: string | null;
   blockName?: string | null;
@@ -1623,6 +1625,8 @@ export interface ContactBlockSelect<T extends boolean = true> {
  * via the `definition` "productsBlock_select".
  */
 export interface ProductsBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
   products?: T;
   id?: T;
   blockName?: T;

@@ -16,34 +16,24 @@
   :root {
     --background: 0 0% 96%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 240 5% 96%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     --primary: 90 39% 61%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 240 6% 80%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-
     --radius: 0.75rem;
-
     --success: 196 52% 74%;
     --warning: 34 89% 85%;
     --error: 10 100% 86%;
@@ -52,51 +42,26 @@
   [data-theme='dark'] {
     --background: 0 0% 0%;
     --foreground: 210 40% 98%;
-
     --card: 0 0% 4%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 90 39% 61%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 0, 0%, 15%, 0.8;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-
     --success: 196 100% 14%;
     --warning: 34 51% 25%;
     --error: 10 39% 43%;
-    --swiper-pagination-color: rgb(255,255,255);
-    --swiper-pagination-left: auto;
-    --swiper-pagination-right: 8px;
-    --swiper-pagination-bottom: 8px;
-    --swiper-pagination-top: auto;
-    --swiper-pagination-fraction-color: inherit;
-    --swiper-pagination-progressbar-bg-color: rgba(0, 0, 0, 0.25);
-    --swiper-pagination-progressbar-size: 4px;
-    --swiper-pagination-bullet-size: 12px;
-    --swiper-pagination-bullet-width: 12px;
-    --swiper-pagination-bullet-height: 12px;
-    --swiper-pagination-bullet-inactive-color: #d9d9d9;
-    --swiper-pagination-bullet-inactive-opacity: 0.4;
-    --swiper-pagination-bullet-opacity: 1;
-    --swiper-pagination-bullet-horizontal-gap: 4px;
-    --swiper-pagination-bullet-vertical-gap: 6px;
   }
 }
 
@@ -118,7 +83,6 @@ html[data-theme='light'] {
   opacity: initial;
 }
 
-/* Admin bar and header layout */
 .admin-bar {
   height: 40px;
   background-color: white;
@@ -138,62 +102,58 @@ html[data-theme='light'] {
   padding: 0 1rem;
 }
 
-/* Ensure main content is positioned below fixed header */
 body > div:first-child {
   padding-top: 0;
 }
 
-/* Main content spacing - adjust based on admin bar visibility */
 main {
   transition: padding-top 0.3s ease;
-  padding-top: 140px; /* Increased from 104px to 140px for more gaps */
+  padding-top: 0;
 }
 
-/* When admin bar is hidden, reduce main content padding */
 body.admin-bar-hidden main {
-  padding-top: 100px; /* Increased from 64px to 100px for more gaps */
+  padding-top: 0;
 }
 
-/* Swiper pagination styles - ensure they're applied */
+.swiper-pagination {
+  position: absolute !important;
+  bottom: 40px !important;
+  right: 8px !important;
+  left: auto !important;
+  top: auto !important;
+  z-index: 20 !important;
+}
+
 .swiper-pagination-bullet {
-  background-color: var(--swiper-pagination-color) !important;
-  opacity: var(--swiper-pagination-bullet-opacity) !important;
-  width: var(--swiper-pagination-bullet-width) !important;
-  height: var(--swiper-pagination-bullet-height) !important;
-  margin: 0 var(--swiper-pagination-bullet-horizontal-gap) !important;
+  background-color: rgba(107, 114, 128, 0.6) !important;
+  opacity: 1 !important;
+  width: 12px !important;
+  height: 12px !important;
+  margin: 0 4px !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
 }
 
 .swiper-pagination-bullet-active {
-  background-color: var(--swiper-pagination-color) !important;
-  opacity: var(--swiper-pagination-bullet-opacity) !important;
+  background-color: rgb(255,255,255) !important;
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
 }
 
-.swiper-pagination-bullet-inactive {
-  background-color: var(--swiper-pagination-bullet-inactive-color) !important;
-  opacity: var(--swiper-pagination-bullet-inactive-opacity) !important;
-}
-
-/* Ensure pagination container is properly positioned */
-.swiper-pagination {
-  position: absolute !important;
-  bottom: var(--swiper-pagination-bottom) !important;
-  right: var(--swiper-pagination-right) !important;
-  left: var(--swiper-pagination-left) !important;
-  top: var(--swiper-pagination-top) !important;
-  z-index: 10 !important;
-}
-
-/* Carousel block specific styling */
 .carousel-block {
-  margin-top: 0;
+  margin-top: -104px;
   margin-bottom: 0;
 }
 
-/* Allow carousel to be positioned right below navbar when needed */
-.carousel-block.position-below-nav {
-  margin-top: -140px; /* Updated to match new main padding */
+body.admin-bar-hidden .carousel-block {
+  margin-top: -64px;
 }
 
-body.admin-bar-hidden .carousel-block.position-below-nav {
-  margin-top: -100px; /* Updated to match new main padding when admin bar is hidden */
+#main-header {
+  color: black;
+}
+
+#main-header * {
+  color: inherit;
 }
