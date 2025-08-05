@@ -5,7 +5,6 @@ import configPromise from '@payload-config'
 import { cache } from 'react'
 import Image from 'next/image'
 import { ArrowLeft, Info, ChefHat, Apple, MapPin, Calendar, Clock, Package } from 'lucide-react'
-
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { ProductOrderForm } from '@/components/ProductOrderForm'

@@ -1,15 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
-
 import { TypedLocale } from 'payload'
-
 import { generateMeta } from '@/utilities/generateMeta'
 import { generatePositionSlug } from '@/utilities/generatePositionSlug'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
