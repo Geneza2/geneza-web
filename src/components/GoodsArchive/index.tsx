@@ -26,7 +26,6 @@ export type Props = {
 export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategories = [] }) => {
   const searchParams = useSearchParams()
 
-  // Initialized once from URL params (no reactive updates)
   const defaultCategory = searchParams.get('category') || 'all'
   const defaultSearch = searchParams.get('search') || ''
 
@@ -118,14 +117,14 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
                     placeholder={t.searchPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 pr-4 py-4 text-base border-0 bg-white rounded-2xl shadow-lg focus:ring-2 focus:ring-[#9BC273] focus:ring-offset-2 transition-all duration-200"
+                    className="pl-12 pr-4 py-4 text-base border-0 bg-white rounded-2xl transition-all duration-200"
                   />
                 </div>
               </div>
 
               {filteredGoods.length === 0 ? (
-                <div className="text-center py-16">
-                  <Card className="max-w-md mx-auto">
+                <div className="text-center py-16 animate-fade-in">
+                  <Card className="max-w-md mx-auto animate-slide-up">
                     <CardContent className="pt-6">
                       <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center gap-2">
                         <Package className="w-16 h-16 text-gray-400" />
@@ -145,9 +144,15 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredGoods.flatMap((good) =>
+                  {filteredGoods.flatMap((good, goodIndex) =>
                     good.products.map((product, productIndex) => (
-                      <div key={`${good.slug}-${productIndex}`}>
+                      <div
+                        key={`${good.slug}-${productIndex}`}
+                        className="animate-fade-in-up"
+                        style={{
+                          animationDelay: `${(goodIndex * good.products.length + productIndex) * 50}ms`,
+                        }}
+                      >
                         <GoodsCard
                           doc={{
                             ...good,

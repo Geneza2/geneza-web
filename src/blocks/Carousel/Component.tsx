@@ -81,7 +81,7 @@ export const CarouselBlock: React.FC<Props> = ({ className, slides }) => {
                       href={slide.callToAction.link}
                       target={slide.callToAction.openInNewTab ? '_blank' : '_self'}
                       rel={slide.callToAction.openInNewTab ? 'noopener noreferrer' : undefined}
-                      className="block md:inline-block text-gray-900 rounded bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium text-center text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                      className="block md:inline-block text-gray-900 rounded bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium text-center text-sm px-5 py-2.5 dark:bg-[#9BC273] dark:text-white dark:border-gray-600 dark:hover:bg-[#9ab97b] dark:hover:border-gray-600 dark:focus:ring-gray-700"
                       data-swiper-parallax-opacity="0"
                       data-swiper-parallax="-100"
                     >

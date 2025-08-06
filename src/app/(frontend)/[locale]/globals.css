@@ -86,8 +86,8 @@ body.admin-bar-hidden main {
 .swiper-pagination-bullet {
   background-color: rgba(107, 114, 128, 0.6) !important;
   opacity: 1 !important;
-  width: 12px !important;
-  height: 12px !important;
+  width: 10px !important;
+  height: 10px !important;
   margin: 0 4px !important;
   border-radius: 50% !important;
   cursor: pointer !important;
@@ -97,7 +97,7 @@ body.admin-bar-hidden main {
 .swiper-pagination-bullet-active {
   background-color: rgb(255,255,255) !important;
   opacity: 1 !important;
-  transform: scale(1.2) !important;
+  transform: scale(1.1) !important;
 }
 
 .carousel-block {

@@ -49,14 +49,14 @@ export const GoodsCard: React.FC<{
             <CardTitle className="text-sm sm:text-base font-semibold text-gray-900 line-clamp-1 group-hover:text-[#9BC273] transition-colors duration-200 flex-1 mr-2">
               {title}
             </CardTitle>
-            <Package className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 mt-0.5" />
+            <Package className="w-6 h-6 text-[#9BC273] flex-shrink-0 mt-0.5" />
           </div>
 
           <div className="space-y-0.5">
             {country && (
               <div className="flex items-center text-gray-500">
-                <MapPin className="w-2.5 h-2.5 mr-1 text-gray-400" />
-                <span className="text-xs font-medium">{country}</span>
+                <MapPin className="w-4 h-4 mr-1 text-[#9BC273]" />
+                <span className="text-xs font-semibold">{country}</span>
               </div>
             )}
 
