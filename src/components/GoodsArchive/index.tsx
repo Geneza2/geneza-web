@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Search, Package } from 'lucide-react'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { GoodsSidebar } from '../GoodsSidebar'
+import { Logo } from '../Logo/Logo'
 
 type Category = {
   slug: string
@@ -25,31 +26,18 @@ export type Props = {
 export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategories = [] }) => {
   const searchParams = useSearchParams()
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    () => searchParams.get('category') || 'all',
-  )
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '')
+  // Initialized once from URL params (no reactive updates)
+  const defaultCategory = searchParams.get('category') || 'all'
+  const defaultSearch = searchParams.get('search') || ''
+
+  const [selectedCategory, setSelectedCategory] = useState(defaultCategory)
+  const [searchQuery, setSearchQuery] = useState(defaultSearch)
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
-  // Update state when URL parameters change
-  useEffect(() => {
-    const categoryFromUrl = searchParams.get('category') || 'all'
-    const searchFromUrl = searchParams.get('search') || ''
+  const sortCategoriesReverseAlphabetical = (a: Category, b: Category) =>
+    b.title.localeCompare(a.title)
 
-    setSelectedCategory(categoryFromUrl)
-    setSearchQuery(searchFromUrl)
-  }, [searchParams])
-
-  // Debug logging
-  console.log('GoodsArchive props:', {
-    goodsCount: goods.length,
-    availableCategoriesCount: availableCategories.length,
-    selectedCategory,
-    searchQuery,
-  })
-
-  // Use availableCategories if provided, otherwise fall back to goods-based categories
   const categories: Category[] =
     availableCategories.length > 0
       ? availableCategories
@@ -58,51 +46,32 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
             title: category.title || '',
           }))
           .filter((category) => category.slug && category.title)
+          .sort(sortCategoriesReverseAlphabetical)
       : goods
           .map((good) => ({
             slug: good.slug || '',
             title: good.title || '',
           }))
           .filter((category) => category.slug && category.title)
-          .sort((a, b) => a.title.localeCompare(b.title))
-
-  console.log('Categories for sidebar:', categories)
+          .sort(sortCategoriesReverseAlphabetical)
 
   const filteredGoods = goods
     .map((good) => {
       if (!good.products?.length) return null
 
-      // Check if the good belongs to the selected category
       let matchesCategory = selectedCategory === 'all'
 
       if (selectedCategory !== 'all') {
         if (availableCategories.length > 0) {
-          // When we have availableCategories, check if the good has any of the selected category
           matchesCategory =
             good.categories?.some((cat: any) => {
-              // Handle both populated and unpopulated category references
               const categorySlug = typeof cat === 'object' && cat?.slug ? cat.slug : null
-              console.log('Checking category:', {
-                cat,
-                categorySlug,
-                selectedCategory,
-                matches: categorySlug === selectedCategory,
-              })
               return categorySlug === selectedCategory
             }) || false
         } else {
-          // Fallback to slug-based filtering when no categories are available
           matchesCategory = good.slug === selectedCategory
         }
       }
-
-      console.log('Good filtering:', {
-        goodTitle: good.title,
-        goodSlug: good.slug,
-        goodCategories: good.categories,
-        selectedCategory,
-        matchesCategory,
-      })
 
       if (!matchesCategory) return null
 
@@ -125,8 +94,6 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
       }
     })
     .filter((item): item is Good => item !== null)
-
-  console.log('Filtered goods count:', filteredGoods.length)
 
   return (
     <div className="container">
@@ -160,9 +127,13 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
                 <div className="text-center py-16">
                   <Card className="max-w-md mx-auto">
                     <CardContent className="pt-6">
-                      <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-                        <Package className="w-10 h-10 text-gray-400" />
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center gap-2">
+                        <Package className="w-16 h-16 text-gray-400" />
+                        <div className="select-none">
+                          <Logo />
+                        </div>
                       </div>
+
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">
                         {searchQuery ? t.noProducts : t.noProductsAvailable}
                       </h3>

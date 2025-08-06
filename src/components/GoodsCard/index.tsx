@@ -3,9 +3,10 @@ import { cn } from '@/utilities/ui'
 import React from 'react'
 import type { Good } from '@/payload-types'
 import { TypedLocale } from 'payload'
-import { Media } from '@/components/Media'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MapPin, Package } from 'lucide-react'
+import { getImageUrl } from '@/utilities/getImageUrl'
 
 export const GoodsCard: React.FC<{
   className?: string
@@ -30,41 +31,41 @@ export const GoodsCard: React.FC<{
         className,
       )}
     >
-      <div className="flex">
+      <div className="flex h-24 sm:h-32">
         {(image || metaImage) && (
-          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
-            <Media
-              resource={image || metaImage}
-              size="200px"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 relative overflow-hidden">
+            <Image
+              src={getImageUrl(image || metaImage)}
+              alt={getImageUrl(image || metaImage, 'Product image')}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-110"
+              sizes="(max-width: 640px) 96px, 128px"
             />
           </div>
         )}
 
-        <div className="flex-1 p-4 sm:p-6">
-          <CardHeader className="p-0 pb-2">
-            <div className="flex items-start justify-between">
-              <CardTitle className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 group-hover:text-[#9BC273] transition-colors duration-200">
-                {title}
-              </CardTitle>
-              <Package className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
-            </div>
-          </CardHeader>
+        <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-h-0">
+          <div className="flex items-start justify-between mb-1.5">
+            <CardTitle className="text-sm sm:text-base font-semibold text-gray-900 line-clamp-1 group-hover:text-[#9BC273] transition-colors duration-200 flex-1 mr-2">
+              {title}
+            </CardTitle>
+            <Package className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 mt-0.5" />
+          </div>
 
-          <CardContent className="p-0 space-y-3">
+          <div className="space-y-0.5">
             {country && (
-              <div className="flex items-center text-gray-600">
-                <MapPin className="w-3 h-3 mr-1.5 text-gray-500" />
+              <div className="flex items-center text-gray-500">
+                <MapPin className="w-2.5 h-2.5 mr-1 text-gray-400" />
                 <span className="text-xs font-medium">{country}</span>
               </div>
             )}
 
             {description && (
-              <p className="text-sm text-gray-600 line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
-                {description.length > 100 ? `${description.substring(0, 100)}...` : description}
+              <p className="text-xs text-gray-500 line-clamp-1 group-hover:text-gray-600 transition-colors duration-200">
+                {description}
               </p>
             )}
-          </CardContent>
+          </div>
         </div>
       </div>
     </Card>
