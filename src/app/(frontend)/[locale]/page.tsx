@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
