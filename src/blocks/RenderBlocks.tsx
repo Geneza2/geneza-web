@@ -47,15 +47,6 @@ export const RenderBlocks: React.FC<{
             const Block = blockComponents[blockType]
 
             if (Block) {
-              if (blockType === 'zigZagLeft' || blockType === 'zigZagRight') {
-                return (
-                  <div className="" key={index}>
-                    {/* @ts-expect-error - Block components have dynamic props that TypeScript cannot infer */}
-                    <Block {...block} locale={locale} sectionId={block.sectionId} />
-                  </div>
-                )
-              }
-
               return (
                 <div className="" key={index}>
                   {/* @ts-expect-error - Block components have dynamic props that TypeScript cannot infer */}

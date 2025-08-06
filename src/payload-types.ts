@@ -201,6 +201,10 @@ export interface Page {
                   relationTo: 'categories';
                   value: number | Category;
                 } | null);
+            /**
+             * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+             */
+            anchor?: string | null;
             url?: string | null;
             label: string;
             /**
@@ -641,6 +645,10 @@ export interface CallToActionBlock {
                 relationTo: 'categories';
                 value: number | Category;
               } | null);
+          /**
+           * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+           */
+          anchor?: string | null;
           url?: string | null;
           label: string;
           /**
@@ -707,6 +715,10 @@ export interface ContentBlock {
                 relationTo: 'categories';
                 value: number | Category;
               } | null);
+          /**
+           * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+           */
+          anchor?: string | null;
           url?: string | null;
           label: string;
           /**
@@ -1384,6 +1396,7 @@ export interface PagesSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    anchor?: T;
                     url?: T;
                     label?: T;
                     appearance?: T;
@@ -1436,6 +1449,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               label?: T;
               appearance?: T;
@@ -1462,6 +1476,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               label?: T;
               appearance?: T;
@@ -2223,6 +2238,10 @@ export interface Header {
                 relationTo: 'categories';
                 value: number | Category;
               } | null);
+          /**
+           * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+           */
+          anchor?: string | null;
           url?: string | null;
           label: string;
         };
@@ -2271,11 +2290,11 @@ export interface Header {
                       relationTo: 'categories';
                       value: number | Category;
                     } | null);
-                url?: string | null;
                 /**
-                 * Optional: Add section ID to scroll to (e.g., "steam-treatment" for #steam-treatment)
+                 * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
                  */
                 anchor?: string | null;
+                url?: string | null;
               };
               id?: string | null;
             }[]
@@ -2322,6 +2341,10 @@ export interface Footer {
                 relationTo: 'categories';
                 value: number | Category;
               } | null);
+          /**
+           * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+           */
+          anchor?: string | null;
           url?: string | null;
           label: string;
         };
@@ -2345,6 +2368,7 @@ export interface HeaderSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               label?: T;
             };
@@ -2360,8 +2384,8 @@ export interface HeaderSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
-                    url?: T;
                     anchor?: T;
+                    url?: T;
                   };
               id?: T;
             };
@@ -2385,6 +2409,7 @@ export interface FooterSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              anchor?: T;
               url?: T;
               label?: T;
             };

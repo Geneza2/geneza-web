@@ -9,68 +9,65 @@ const collectionPathMap: Record<string, string> = {
   categories: 'categories',
 }
 
-export const getLinkHref = (item: { link: Record<string, any> }, locale?: TypedLocale): string => {
+type LinkData = {
+  type?: 'reference' | 'custom' | null
+  url?: string | null
+  label?: string | null
+  anchor?: string | null
+  reference?: {
+    relationTo?: string
+    value?: { slug?: string | null } | number
+  } | null
+}
+
+export const getLinkHref = (item: { link: LinkData }, locale?: TypedLocale): string => {
   const link = item.link
-  const anchor = link?.anchor ? `#${link.anchor}` : ''
 
-  // Helper to safely join paths
-  const withLocale = (path: string) => (locale ? `/${locale}${path}` : path)
+  if (!link) {
+    return locale ? `/${locale}` : '/'
+  }
 
-  // 1. Handle Goods special case
-  if (
-    link?.label === 'Goods' ||
-    (link?.type === 'reference' && link?.reference?.relationTo === 'goods')
-  ) {
-    const base = withLocale('/goods')
+  // Handle custom URLs
+  if (link.type === 'custom' && link.url) {
+    const url = link.url
+    const fullUrl = locale ? `/${locale}${url.startsWith('/') ? url : `/${url}`}` : url
+    return link.anchor ? `${fullUrl}#${link.anchor}` : fullUrl
+  }
 
-    const ref = link?.reference?.value
-    const slug = ref && typeof ref === 'object' && 'slug' in ref ? ref.slug : null
+  // Handle reference links
+  if (link.type === 'reference' && link.reference) {
+    const { relationTo, value } = link.reference
+    const slug = typeof value === 'object' && value && 'slug' in value ? value.slug : ''
 
-    if (slug) {
-      return `${base}?category=${slug}${anchor}`
+    // Special handling for goods
+    if (relationTo === 'goods') {
+      const baseUrl = locale ? `/${locale}/goods` : '/goods'
+      const url = slug ? `${baseUrl}?category=${slug}` : baseUrl
+      return link.anchor ? `${url}#${link.anchor}` : url
     }
 
-    return `${base}${anchor}`
+    // Handle products and open-positions (no individual slugs)
+    if (relationTo === 'products' || relationTo === 'openPositions') {
+      const collectionPath = collectionPathMap[relationTo] || relationTo
+      const url = locale ? `/${locale}/${collectionPath}` : `/${collectionPath}`
+      return link.anchor ? `${url}#${link.anchor}` : url
+    }
+
+    // Handle other collections with slug-based routing
+    if (relationTo && relationTo !== 'pages') {
+      const collectionPath = collectionPathMap[relationTo] || relationTo
+      const url = locale ? `/${locale}/${collectionPath}/${slug}` : `/${collectionPath}/${slug}`
+      return link.anchor ? `${url}#${link.anchor}` : url
+    }
+
+    // Handle pages (just use slug directly)
+    if (relationTo === 'pages') {
+      const url = locale ? `/${locale}/${slug}` : `/${slug}`
+      return link.anchor ? `${url}#${link.anchor}` : url
+    }
   }
 
-  // 2. Custom URL
-  if (link?.type === 'custom' && link?.url) {
-    const url = link.url as string
-    const fullPath = url.startsWith('/') ? url : `/${url}`
-    return `${withLocale(fullPath)}${anchor}`
-  }
-
-  // 3. Reference-based routing
-  const reference = link?.reference as {
-    relationTo?: string
-    value?: { slug?: string | null }
-  }
-
-  const relationTo = reference?.relationTo
-  const slug = reference?.value?.slug
-
-  if (!slug) {
-    // Fallback to homepage if no slug
-    return `${withLocale('')}${anchor}`
-  }
-
-  // 4. Goods reference (should’ve already been caught, but double-safe)
-  if (relationTo === 'goods') {
-    return `${withLocale('/goods')}?category=${slug}${anchor}`
-  }
-
-  // 5. Non-detailed collections (no slug in URL)
-  if (relationTo === 'products' || relationTo === 'openPositions') {
-    const path = collectionPathMap[relationTo] || relationTo
-    return `${withLocale(`/${path}`)}${anchor}`
-  }
-
-  // 6. Slug-based collection routes
-  if (relationTo && relationTo !== 'pages') {
-    const path = collectionPathMap[relationTo] || relationTo
-    return `${withLocale(`/${path}/${slug}`)}${anchor}`
-  }
-
-  // 7. Default: regular pages
-  return `${withLocale(`/${slug}`)}${anchor}`
+  // Fallback to home page
+  const url = locale ? `/${locale}` : '/'
+  return link.anchor ? `${url}#${link.anchor}` : url
 }

@@ -79,6 +79,17 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       required: true,
     },
     {
+      name: 'anchor',
+      type: 'text',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'reference',
+        description: 'Optional: Add section ID to scroll to (e.g., "Page" for #section-id)',
+        placeholder: 'section-id',
+      },
+      label: 'Section ID',
+      required: false,
+    },
+    {
       name: 'url',
       type: 'text',
       admin: {
@@ -89,29 +100,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
     },
   ]
 
-  if (disableLabel) {
-    linkTypes.push({
-      name: 'anchor',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => siblingData?.type === 'reference',
-        description:
-          'Optional: Add section ID to scroll to (e.g., "steam-treatment" for #steam-treatment)',
-        placeholder: 'section-id',
-      },
-      label: 'Section ID',
-    })
-  }
-
   if (!disableLabel) {
-    linkTypes.map((linkType) => ({
-      ...linkType,
-      admin: {
-        ...linkType.admin,
-        width: '50%',
-      },
-    }))
-
     linkResult.fields.push({
       type: 'row',
       fields: [
