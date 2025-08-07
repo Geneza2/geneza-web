@@ -125,12 +125,8 @@ export default async function ProductPage({ params: p }: Args) {
                   {(cutSizes ?? []).map((cut, i) => (
                     <span
                       key={cut.id ?? `${cut.name}-${i}`}
-                      className={`rounded-full border px-3 py-1.5 text-sm transition-all ${
-                        i === 0
-                          ? 'text-white border-transparent'
-                          : 'text-gray-600 border-gray-300 hover:border-gray-400'
-                      }`}
-                      style={i === 0 ? { backgroundColor: '#9BC273' } : {}}
+                      className="rounded-full border px-3 py-1.5 text-sm transition-all text-white border-transparent"
+                      style={{ backgroundColor: '#9BC273' }}
                     >
                       {cut.name}
                     </span>
@@ -212,7 +208,7 @@ export default async function ProductPage({ params: p }: Args) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ProductOrderForm productTitle={title} locale={locale} />
+            <ProductOrderForm productTitle={title} locale={locale} cutSizes={cutSizes || []} />
           </CardContent>
         </Card>
       </div>

@@ -7,6 +7,12 @@ import { GoodsArchive } from '@/components/GoodsArchive'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import type { Product } from '@/payload-types'
+
+type CutSize = {
+  id?: string | null
+  name: string
+}
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -41,6 +47,40 @@ export default async function Page({ params: paramsPromise }: Args) {
       }),
     ])
 
+    const productTitles = new Set<string>()
+    goods.docs.forEach((good) => {
+      good.products?.forEach((product) => {
+        if (product.title) {
+          productTitles.add(product.title)
+        }
+      })
+    })
+
+    const productCutSizes: Record<string, CutSize[]> = {}
+
+    for (const title of productTitles) {
+      try {
+        const productsResponse = await payload.find({
+          collection: 'products',
+          where: {
+            title: {
+              equals: title,
+            },
+          },
+          limit: 1,
+          depth: 1,
+          locale: locale,
+        })
+
+        if (productsResponse.docs.length > 0) {
+          const product = productsResponse.docs[0] as Product
+          if (product.cutSizes && product.cutSizes.length > 0) {
+            productCutSizes[title] = product.cutSizes
+          }
+        }
+      } catch (error) {}
+    }
+
     const hasProducts = goods.docs.some((doc) => doc.products && doc.products.length > 0)
 
     return (
@@ -59,7 +99,12 @@ export default async function Page({ params: paramsPromise }: Args) {
             </Card>
           </div>
         ) : (
-          <GoodsArchive goods={goods.docs} locale={locale} availableCategories={categories.docs} />
+          <GoodsArchive
+            goods={goods.docs}
+            locale={locale}
+            availableCategories={categories.docs}
+            productCutSizes={productCutSizes}
+          />
         )}
       </div>
     )

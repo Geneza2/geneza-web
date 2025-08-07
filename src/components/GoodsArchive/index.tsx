@@ -17,13 +17,24 @@ type Category = {
   title: string
 }
 
+type CutSize = {
+  id?: string | null
+  name: string
+}
+
 export type Props = {
   goods: Good[]
   locale: TypedLocale
   availableCategories?: any[]
+  productCutSizes?: Record<string, CutSize[]>
 }
 
-export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategories = [] }) => {
+export const GoodsArchive: React.FC<Props> = ({
+  goods,
+  locale,
+  availableCategories = [],
+  productCutSizes = {},
+}) => {
   const searchParams = useSearchParams()
 
   const defaultCategory = searchParams.get('category') || 'all'
@@ -31,6 +42,7 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
 
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory)
   const [searchQuery, setSearchQuery] = useState(defaultSearch)
+  const [selectedCutSizes, setSelectedCutSizes] = useState<Record<string, string>>({})
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
@@ -53,6 +65,13 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
           }))
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesReverseAlphabetical)
+
+  const handleCutSizeChange = (productId: string, cutSize: string) => {
+    setSelectedCutSizes((prev) => ({
+      ...prev,
+      [productId]: cutSize,
+    }))
+  }
 
   const filteredGoods = goods
     .map((good) => {
@@ -145,24 +164,29 @@ export const GoodsArchive: React.FC<Props> = ({ goods, locale, availableCategori
               ) : (
                 <div className="space-y-4">
                   {filteredGoods.flatMap((good, goodIndex) =>
-                    good.products.map((product, productIndex) => (
-                      <div
-                        key={`${good.slug}-${productIndex}`}
-                        className="animate-fade-in-up"
-                        style={{
-                          animationDelay: `${(goodIndex * good.products.length + productIndex) * 50}ms`,
-                        }}
-                      >
-                        <GoodsCard
-                          doc={{
-                            ...good,
-                            products: [product],
+                    good.products.map((product, productIndex) => {
+                      const productId = `${good.slug}-${productIndex}`
+                      const cutSizes = productCutSizes[product.title] || []
+
+                      return (
+                        <div
+                          key={productId}
+                          className="animate-fade-in-up"
+                          style={{
+                            animationDelay: `${(goodIndex * good.products.length + productIndex) * 50}ms`,
                           }}
-                          relationTo="goods"
-                          locale={locale}
-                        />
-                      </div>
-                    )),
+                        >
+                          <GoodsCard
+                            doc={{
+                              ...good,
+                              products: [product],
+                            }}
+                            relationTo="goods"
+                            locale={locale}
+                          />
+                        </div>
+                      )
+                    }),
                   )}
                 </div>
               )}

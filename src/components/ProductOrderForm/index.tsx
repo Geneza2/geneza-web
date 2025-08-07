@@ -6,21 +6,33 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/utilities/ui'
 
-import { Mail, Phone, User, Package, Send } from 'lucide-react'
+import { Mail, Phone, User, Package, Send, Scissors } from 'lucide-react'
+
+type CutSize = {
+  id?: string | null
+  name: string
+}
 
 interface ProductOrderFormProps {
   productTitle: string
   locale: string
+  cutSizes?: CutSize[]
 }
 
-export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({ productTitle, locale }) => {
+export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({
+  productTitle,
+  locale,
+  cutSizes = [],
+}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     company: '',
     quantity: '',
+    cutSize: '',
     message: '',
   })
 
@@ -44,6 +56,7 @@ export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({ productTitle
         phone: '',
         company: '',
         quantity: '',
+        cutSize: '',
         message: '',
       })
     }, 3000)
@@ -51,6 +64,10 @@ export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({ productTitle
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleCutSizeChange = (cutSizeId: string) => {
+    setFormData((prev) => ({ ...prev, cutSize: cutSizeId }))
   }
 
   const texts = {
@@ -62,6 +79,8 @@ export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({ productTitle
       phone: 'Phone Number',
       company: 'Company Name',
       quantity: 'Quantity (if applicable)',
+      cutSize: 'Cut Size',
+      cutSizePlaceholder: 'Select cut size',
       message: 'Additional Message',
       messagePlaceholder: 'Tell us more about your requirements...',
       submit: 'Send Request',
@@ -77,6 +96,8 @@ export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({ productTitle
       phone: 'Broj Telefona',
       company: 'Naziv Kompanije',
       quantity: 'Količina (ako je primenljivo)',
+      cutSize: 'Veličina Reza',
+      cutSizePlaceholder: 'Izaberite veličinu reza',
       message: 'Dodatna Poruka',
       messagePlaceholder: 'Recite nam više o vašim potrebama...',
       submit: 'Pošaljite Zahtev',
@@ -173,19 +194,50 @@ export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({ productTitle
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="quantity" className="flex items-center text-gray-700">
-              <Package className="w-4 h-4 mr-2" />
-              {t.quantity}
-            </Label>
-            <Input
-              id="quantity"
-              type="text"
-              value={formData.quantity}
-              onChange={(e) => handleChange('quantity', e.target.value)}
-              className="rounded-xl"
-              placeholder="e.g., 500kg"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="quantity" className="flex items-center text-gray-700">
+                <Package className="w-4 h-4 mr-2" />
+                {t.quantity}
+              </Label>
+              <Input
+                id="quantity"
+                type="text"
+                value={formData.quantity}
+                onChange={(e) => handleChange('quantity', e.target.value)}
+                className="rounded-xl"
+                placeholder="e.g., 500kg"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center text-gray-700">
+                <Scissors className="w-4 h-4 mr-2" />
+                {t.cutSize}
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {cutSizes.map((cut: CutSize, i: number) => {
+                  const cutId = cut.id || `${cut.name}-${i}`
+                  const isSelected = formData.cutSize === cutId
+                  return (
+                    <button
+                      key={cutId}
+                      type="button"
+                      onClick={() => handleCutSizeChange(cutId)}
+                      className={cn(
+                        'rounded-full border px-3 py-1.5 text-sm transition-all hover:scale-105',
+                        isSelected
+                          ? 'text-white border-transparent'
+                          : 'text-gray-600 border-gray-300 hover:border-gray-400',
+                      )}
+                      style={isSelected ? { backgroundColor: '#9BC273' } : {}}
+                    >
+                      {cut.name}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -207,6 +259,16 @@ export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({ productTitle
             <p className="text-sm text-gray-600">
               <strong>{locale === 'rs' ? 'Proizvod:' : 'Product:'}</strong> {productTitle}
             </p>
+            {formData.cutSize && (
+              <p className="text-sm text-gray-600 mt-1">
+                <strong>{locale === 'rs' ? 'Veličina Reza:' : 'Cut Size:'}</strong>{' '}
+                {
+                  cutSizes.find(
+                    (s: CutSize, i: number) => (s.id || `${s.name}-${i}`) === formData.cutSize,
+                  )?.name
+                }
+              </p>
+            )}
           </div>
 
           <Button
