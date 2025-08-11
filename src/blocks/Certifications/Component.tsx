@@ -2,8 +2,8 @@
 
 import React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { cn } from '@/utilities/ui'
+import { Button } from '@/components/ui/button'
 
 type Certification = {
   image?: { url: string }
@@ -41,9 +41,15 @@ export const Certifications: React.FC<Props> = ({ heading, certifications, class
             )
 
             return pdfFile?.url ? (
-              <button key={index} onClick={() => window.open(pdfFile.url, '_blank')}>
+              <Button
+                key={index}
+                variant="ghost"
+                size="clear"
+                className="p-0 h-auto w-auto hover:bg-transparent focus:bg-transparent active:bg-transparent"
+                onClick={() => window.open(pdfFile.url, '_blank')}
+              >
                 {content}
-              </button>
+              </Button>
             ) : (
               <div key={index}>{content}</div>
             )
