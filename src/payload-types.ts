@@ -225,6 +225,7 @@ export interface Page {
     | FormBlock
     | CarouselBlock
     | InfiniteCardsBlock
+    | CertificationsBlock
     | ZigZagLeftBlock
     | ZigZagRightBlock
     | ContactBlock
@@ -1018,6 +1019,28 @@ export interface InfiniteCardsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CertificationsBlock".
+ */
+export interface CertificationsBlock {
+  heading: string;
+  certifications?:
+    | {
+        image: number | Media;
+        title: string;
+        pdfFile?: (number | null) | Media;
+        /**
+         * This field is automatically populated when a PDF file is uploaded
+         */
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'certifications';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "zigZagLeftBlock".
  */
 export interface ZigZagLeftBlock {
@@ -1415,6 +1438,7 @@ export interface PagesSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
         infiniteCards?: T | InfiniteCardsBlockSelect<T>;
+        certifications?: T | CertificationsBlockSelect<T>;
         zigZagLeft?: T | ZigZagLeftBlockSelect<T>;
         zigZagRight?: T | ZigZagRightBlockSelect<T>;
         contactBlock?: T | ContactBlockSelect<T>;
@@ -1558,6 +1582,24 @@ export interface InfiniteCardsBlockSelect<T extends boolean = true> {
           | {
               url?: T;
             };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CertificationsBlock_select".
+ */
+export interface CertificationsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  certifications?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        pdfFile?: T;
+        link?: T;
         id?: T;
       };
   id?: T;

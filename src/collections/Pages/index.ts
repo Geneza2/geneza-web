@@ -8,6 +8,7 @@ import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { Carousel } from '../../blocks/Carousel/config'
 import { InfiniteCards } from '../../blocks/InfiniteCards/config'
+import { Certifications } from '../../blocks/Certifications/config'
 import { ZigZagLeft } from '../../blocks/ZigZagLeft/config'
 import { ZigZagRight } from '../../blocks/ZigZagRight/config'
 import { Products } from '../../blocks/Products/config'
@@ -87,6 +88,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 FormBlock,
                 Carousel,
                 InfiniteCards,
+                Certifications,
                 ZigZagLeft,
                 ZigZagRight,
                 ContactBlock,

@@ -9,6 +9,7 @@ import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { CarouselBlock } from '@/blocks/Carousel/Component'
 import { InfiniteCards } from '@/blocks/InfiniteCards/Component'
+import { Certifications } from '@/blocks/Certifications/Component'
 import { TypedLocale } from 'payload'
 import { ZigZagLeftBlock } from '@/blocks/ZigZagLeft/Component'
 import { ZigZagRightBlock } from '@/blocks/ZigZagRight/Component'
@@ -23,6 +24,7 @@ const blockComponents = {
   mediaBlock: MediaBlock,
   carousel: CarouselBlock,
   infiniteCards: InfiniteCards,
+  certifications: Certifications,
   zigZagLeft: ZigZagLeftBlock,
   zigZagRight: ZigZagRightBlock,
   contactBlock: ContactComponent,
