@@ -9,10 +9,10 @@ import { TypedLocale } from 'payload'
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { locale } = await params
-  return generateMeta({
+  return {
     title: locale === 'rs' ? 'Proizvodi' : 'Products',
     description: locale === 'rs' ? 'Pregled svih naših proizvoda' : 'Overview of all our products',
-  })
+  }
 }
 
 type Args = {
@@ -34,8 +34,8 @@ const queryProducts = cache(async ({ locale }: { locale: TypedLocale }) => {
 })
 
 export default async function ProductsPage({ params: p }: Args) {
+  const { locale } = await p
   try {
-    const { locale } = await p
     const products = await queryProducts({ locale })
 
     return (
@@ -53,27 +53,29 @@ export default async function ProductsPage({ params: p }: Args) {
           </div>
 
           {products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map((product) => (
                 <Link
                   key={product.id}
                   href={`/${locale}/products/${product.slug}`}
-                  className="group block bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden"
+                  className="group block rounded-lg transition-all duration-500 overflow-hidden transform hover:scale-105 hover:-translate-y-2"
                 >
                   {product.image && (
                     <div className="relative aspect-square overflow-hidden">
                       <Media
                         resource={product.image}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:rotate-1"
                       />
                     </div>
                   )}
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#9BC273] transition-colors duration-200">
+                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#9BC273] transition-all duration-300 transform group-hover:scale-105">
                       {product.title}
                     </h3>
                     {product.scientificName && (
-                      <p className="text-sm text-gray-600 italic mt-1">{product.scientificName}</p>
+                      <p className="text-sm text-gray-600 italic mt-1 group-hover:text-gray-700 transition-colors duration-300">
+                        {product.scientificName}
+                      </p>
                     )}
                   </div>
                 </Link>

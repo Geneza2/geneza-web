@@ -42,7 +42,7 @@ export const ProductsBlock: React.FC<Props> = ({
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((product, index) => {
             const { title: productTitle, slug, image } = product
 
@@ -50,17 +50,17 @@ export const ProductsBlock: React.FC<Props> = ({
               <Link
                 key={product.id}
                 href={`/${locale}/products/${slug}`}
-                className="group block text-center h-full"
+                className="group block text-center h-full transform transition-all duration-300 hover:scale-105 hover:-translate-y-2"
               >
                 {image && (
-                  <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-72 mx-auto">
+                  <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-72 mx-auto rounded-lg transition-all duration-300">
                     <Media
                       resource={image}
-                      className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-contain transition-all duration-500 group-hover:scale-105 group-hover:rotate-1"
                     />
                   </div>
                 )}
-                <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#9BC273] transition-colors duration-200">
+                <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#9BC273] transition-all duration-300 transform group-hover:scale-105">
                   {productTitle}
                 </h3>
               </Link>
