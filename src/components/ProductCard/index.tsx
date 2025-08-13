@@ -13,8 +13,8 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, locale }) => {
   return (
     <Link href={`/${locale}/products/${product.slug}`} className="group block h-full">
-      <Card className="h-full bg-white shadow-lg border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
-        <div className="relative aspect-[4/3] overflow-hidden">
+      <Card className="h-full bg-white shadow-lg border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden flex flex-col">
+        <div className="relative aspect-square overflow-hidden flex-shrink-0">
           {product.image ? (
             <Media
               resource={product.image}
@@ -29,7 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, locale }) => 
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 
-        <CardContent className="p-3">
+        <CardContent className="p-3 flex-1 flex flex-col justify-between">
           <h3 className="text-base font-bold text-gray-900 group-hover:text-[#9BC273] transition-colors duration-200 line-clamp-2">
             {product.title}
           </h3>
