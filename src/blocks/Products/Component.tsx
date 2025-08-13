@@ -33,16 +33,16 @@ export const ProductsBlock: React.FC<Props> = ({
   }
 
   return (
-    <section className={cn('w-full py-16 sm:py-20', className)}>
+    <section className={cn('w-full py-8 sm:py-12', className)}>
       <div className="container">
         {/* Title and Description Section */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">{title}</h2>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">{description}</p>
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{title}</h2>
+          <p className="text-base text-gray-700 max-w-3xl mx-auto leading-relaxed">{description}</p>
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {products.map((product) => {
             const { title: productTitle, slug, image } = product
 
@@ -53,14 +53,14 @@ export const ProductsBlock: React.FC<Props> = ({
                 className="group block text-center"
               >
                 {image && (
-                  <div className="relative w-full aspect-square overflow-hidden mb-6 max-w-80 mx-auto">
+                  <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-64 mx-auto">
                     <Media
                       resource={image}
                       className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
                 )}
-                <h3 className="text-xl font-semibold text-gray-800 group-hover:text-[#9BC273] transition-colors duration-200">
+                <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#9BC273] transition-colors duration-200">
                   {productTitle}
                 </h3>
               </Link>

@@ -14,7 +14,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, locale }) => 
   return (
     <Link href={`/${locale}/products/${product.slug}`} className="group block h-full">
       <Card className="h-full bg-white shadow-lg border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
-        <div className="relative aspect-square overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden">
           {product.image ? (
             <Media
               resource={product.image}
@@ -29,12 +29,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, locale }) => 
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 
-        <CardContent className="p-6">
-          <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#9BC273] transition-colors duration-200 line-clamp-2">
+        <CardContent className="p-3">
+          <h3 className="text-base font-bold text-gray-900 group-hover:text-[#9BC273] transition-colors duration-200 line-clamp-2">
             {product.title}
           </h3>
 
-          <div className="mt-4 flex items-center text-[#9BC273]">
+          <div className="mt-2 flex items-center text-[#9BC273]">
             <span className="text-sm font-medium">
               {locale === 'rs' ? 'Pogledaj detalje' : 'View Details'}
             </span>
