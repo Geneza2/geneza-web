@@ -317,36 +317,314 @@ export const seed = async ({
         ],
       },
     }),
-    payload.updateGlobal({
-      slug: 'footer',
-      data: {
-        navItems: [
-          {
-            link: {
-              type: 'custom',
-              label: 'Admin',
-              url: '/admin',
+    // Create footer with localized content
+    await Promise.all([
+      // English footer
+      payload.updateGlobal({
+        slug: 'footer',
+        data: {
+          branding: {
+            missionStatement:
+              'Our vision is to provide convenience and help increase your sales business.',
+            socialMedia: {
+              facebook: 'https://facebook.com/geneza',
+              instagram: 'https://instagram.com/geneza',
+              linkedin: 'https://linkedin.com/company/geneza',
+              tiktok: 'https://tiktok.com/@geneza',
             },
           },
-          {
-            link: {
-              type: 'custom',
-              label: 'Source Code',
-              newTab: true,
-              url: 'https://github.com/payloadcms/payload/tree/main/templates/website',
+          sitemapSections: [
+            {
+              title: 'Products',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'All Products',
+                    url: '/products',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'New Arrivals',
+                    url: '/products?new=true',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Featured',
+                    url: '/products?featured=true',
+                  },
+                },
+              ],
+            },
+            {
+              title: 'Goods',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'All Goods',
+                    url: '/goods',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Categories',
+                    url: '/goods/categories',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Special Offers',
+                    url: '/goods?offers=true',
+                  },
+                },
+              ],
+            },
+            {
+              title: 'Services',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Consulting',
+                    url: '/services/consulting',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Support',
+                    url: '/services/support',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Training',
+                    url: '/services/training',
+                  },
+                },
+              ],
+            },
+            {
+              title: 'About',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Our Story',
+                    url: '/about',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Team',
+                    url: '/about/team',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Contact',
+                    url: '/contact',
+                  },
+                },
+              ],
+            },
+          ],
+          contactInfo: {
+            email: 'geneza@geneza.com',
+            phone: '+381 24 4874 987',
+            address: '24420 Kanjiža, Srbija Put Narodnih heroja 17',
+          },
+          copyright: '©2025 Geneza. All rights reserved.',
+          navItems: [
+            {
+              link: {
+                type: 'custom',
+                label: 'Privacy Policy',
+                url: '/privacy',
+              },
+            },
+            {
+              link: {
+                type: 'custom',
+                label: 'Terms of Service',
+                url: '/terms',
+              },
+            },
+            {
+              link: {
+                type: 'custom',
+                label: 'Admin',
+                url: '/admin',
+              },
+            },
+          ],
+        },
+        locale: 'en',
+      }),
+
+      // Serbian footer
+      payload.updateGlobal({
+        slug: 'footer',
+        data: {
+          branding: {
+            missionStatement:
+              'Naša vizija je da pružimo praktičnost i pomognemo da povećate vaš poslovni promet.',
+            socialMedia: {
+              facebook: 'https://facebook.com/geneza',
+              instagram: 'https://instagram.com/geneza',
+              linkedin: 'https://linkedin.com/company/geneza',
+              tiktok: 'https://tiktok.com/@geneza',
             },
           },
-          {
-            link: {
-              type: 'custom',
-              label: 'Payload',
-              newTab: true,
-              url: 'https://payloadcms.com/',
+          sitemapSections: [
+            {
+              title: 'Proizvodi',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Svi proizvodi',
+                    url: '/products',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Nove kolekcije',
+                    url: '/products?new=true',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Izdvojeno',
+                    url: '/products?featured=true',
+                  },
+                },
+              ],
             },
+            {
+              title: 'Roba',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Sva roba',
+                    url: '/goods',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Kategorije',
+                    url: '/goods/categories',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Posebne ponude',
+                    url: '/goods?offers=true',
+                  },
+                },
+              ],
+            },
+            {
+              title: 'Usluge',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Konsalting',
+                    url: '/services/consulting',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Podrška',
+                    url: '/services/support',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Obučavanje',
+                    url: '/services/training',
+                  },
+                },
+              ],
+            },
+            {
+              title: 'O nama',
+              links: [
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Naša priča',
+                    url: '/about',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Tim',
+                    url: '/about/team',
+                  },
+                },
+                {
+                  link: {
+                    type: 'custom',
+                    label: 'Kontakt',
+                    url: '/contact',
+                  },
+                },
+              ],
+            },
+          ],
+          contactInfo: {
+            email: 'geneza@geneza.com',
+            phone: '+381 24 4874 987',
+            address: '24420 Kanjiža, Srbija Put Narodnih heroja 17',
           },
-        ],
-      },
-    }),
+          copyright: '©2025 Geneza. Sva prava zadržana.',
+          navItems: [
+            {
+              link: {
+                type: 'custom',
+                label: 'Politika privatnosti',
+                url: '/privacy',
+              },
+            },
+            {
+              link: {
+                type: 'custom',
+                label: 'Uslovi korišćenja',
+                url: '/terms',
+              },
+            },
+            {
+              link: {
+                type: 'custom',
+                label: 'Admin',
+                url: '/admin',
+              },
+            },
+          ],
+        },
+        locale: 'rs',
+      }),
+    ]),
   ])
 
   payload.logger.info('Seeded database successfully!')

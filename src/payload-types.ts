@@ -2353,6 +2353,67 @@ export interface Header {
  */
 export interface Footer {
   id: number;
+  branding?: {
+    missionStatement?: string | null;
+    socialMedia?: {
+      facebook?: string | null;
+      instagram?: string | null;
+      linkedin?: string | null;
+      tiktok?: string | null;
+    };
+  };
+  sitemapSections?:
+    | {
+        title: string;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'products';
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: 'openPositions';
+                      value: number | OpenPosition;
+                    } | null)
+                  | ({
+                      relationTo: 'goods';
+                      value: number | Good;
+                    } | null)
+                  | ({
+                      relationTo: 'categories';
+                      value: number | Category;
+                    } | null);
+                /**
+                 * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+                 */
+                anchor?: string | null;
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  contactInfo?: {
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+  };
+  copyright?: string | null;
   navItems?:
     | {
         link: {
@@ -2442,6 +2503,48 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
+  branding?:
+    | T
+    | {
+        missionStatement?: T;
+        socialMedia?:
+          | T
+          | {
+              facebook?: T;
+              instagram?: T;
+              linkedin?: T;
+              tiktok?: T;
+            };
+      };
+  sitemapSections?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    anchor?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  contactInfo?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  copyright?: T;
   navItems?:
     | T
     | {
