@@ -12,7 +12,7 @@ const getOpenPositionsSitemap = unstable_cache(
       'https://example.com'
 
     const results = await payload.find({
-      collection: 'open-positions',
+      collection: 'openPositions',
       overrideAccess: false,
       draft: false,
       depth: 0,
@@ -60,4 +60,3 @@ export async function GET() {
 
   return getServerSideSitemap(sitemap)
 }
-

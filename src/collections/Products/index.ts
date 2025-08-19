@@ -17,7 +17,6 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
-import { revalidateProduct } from './hooks/revalidateProduct'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -167,7 +166,7 @@ export const Products: CollectionConfig = {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
-              localized: false,
+              required: true,
             },
           ],
         },
@@ -213,9 +212,6 @@ export const Products: CollectionConfig = {
     },
     ...slugField(),
   ],
-  hooks: {
-    afterChange: [revalidateProduct],
-  },
   versions: {
     drafts: {
       autosave: { interval: 100 },

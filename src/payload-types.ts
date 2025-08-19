@@ -392,6 +392,7 @@ export interface Media {
 export interface Category {
   id: number;
   title: string;
+  description?: string | null;
   slug?: string | null;
   slugLock?: boolean | null;
   parent?: (number | null) | Category;
@@ -462,7 +463,7 @@ export interface Product {
     certifications?:
       | {
           name: string;
-          image?: (number | null) | Media;
+          image: number | Media;
           id?: string | null;
         }[]
       | null;
@@ -495,7 +496,7 @@ export interface OpenPosition {
   id: number;
   title: string;
   jobOffers: {
-    image?: (number | null) | Media;
+    image: number | Media;
     position: string;
     date: string;
     requirementsTitle?: string | null;
@@ -1828,6 +1829,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
+  description?: T;
   slug?: T;
   slugLock?: T;
   parent?: T;

@@ -1,15 +1,16 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good } from '@/payload-types'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, Package } from 'lucide-react'
+import { Search, Package, ArrowRight, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { goodsTranslations } from '@/i18n/translations/goods'
-import { GoodsSidebar } from '../GoodsSidebar'
+import { GoodsSidebar } from '@/components/GoodsSidebar'
 import { Logo } from '../Logo/Logo'
 
 type Category = {
@@ -36,13 +37,44 @@ export const GoodsArchive: React.FC<Props> = ({
   productCutSizes = {},
 }) => {
   const searchParams = useSearchParams()
+  const router = useRouter()
 
-  const defaultCategory = searchParams.get('category') || 'all'
-  const defaultSearch = searchParams.get('search') || ''
+  const selectedCategory = searchParams.get('category') || 'all'
+  const searchQuery = searchParams.get('search') || ''
 
-  const [selectedCategory, setSelectedCategory] = useState(defaultCategory)
-  const [searchQuery, setSearchQuery] = useState(defaultSearch)
+  const [searchInput, setSearchInput] = useState(searchQuery)
   const [selectedCutSizes, setSelectedCutSizes] = useState<Record<string, string>>({})
+
+  const setSelectedCategory = (category: string) => {}
+
+  const updateSearchInURL = (query: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (query.trim()) {
+      params.set('search', query)
+    } else {
+      params.delete('search')
+    }
+    router.push(`${window.location.pathname}?${params.toString()}`, { scroll: false })
+  }
+
+  const handleSearchInputChange = (query: string) => {
+    setSearchInput(query)
+  }
+
+  const handleSearchSubmit = () => {
+    updateSearchInURL(searchInput)
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit()
+    }
+  }
+
+  const clearSearch = () => {
+    setSearchInput('')
+    updateSearchInURL('')
+  }
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
@@ -129,16 +161,45 @@ export const GoodsArchive: React.FC<Props> = ({
           <Card>
             <CardContent className="p-6">
               <div className="mb-8">
-                <div className="relative max-w-md">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <Input
-                    type="text"
-                    placeholder={t.searchPlaceholder}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 pr-4 py-4 text-base border-0 bg-white rounded-2xl transition-all duration-200"
-                  />
+                <div className="flex gap-2 max-w-md">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Input
+                      type="text"
+                      placeholder={t.searchPlaceholder}
+                      value={searchInput}
+                      onChange={(e) => handleSearchInputChange(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="pl-12 pr-12 py-4 text-base border-0 bg-white rounded-2xl transition-all duration-200"
+                    />
+                    {searchQuery && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearSearch}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  {searchInput !== searchQuery && (
+                    <Button
+                      onClick={handleSearchSubmit}
+                      size="lg"
+                      className="px-4 py-4 rounded-2xl"
+                    >
+                      <ArrowRight className="w-5 h-5" />
+                    </Button>
+                  )}
                 </div>
+                {searchInput !== searchQuery && searchInput.trim() && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {locale === 'rs'
+                      ? 'Pritisnite Enter ili kliknite da pretražite'
+                      : 'Press Enter or click to search'}
+                  </p>
+                )}
               </div>
 
               {filteredGoods.length === 0 ? (

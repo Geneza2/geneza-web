@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Menu } from 'lucide-react'
 import { TypedLocale } from 'payload'
 import { goodsTranslations } from '@/i18n/translations/goods'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 type Category = {
   slug: string
@@ -26,6 +27,24 @@ export const GoodsSidebar: React.FC<Props> = ({
   locale,
 }) => {
   const t = goodsTranslations[locale] || goodsTranslations.en
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const handleCategoryClick = (categorySlug: string) => {
+    // Update local state first
+    setSelectedCategory(categorySlug)
+
+    // Update URL with category parameter
+    const params = new URLSearchParams(searchParams.toString())
+    if (categorySlug === 'all') {
+      params.delete('category')
+    } else {
+      params.set('category', categorySlug)
+    }
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    router.push(newUrl, { scroll: false })
+  }
 
   return (
     <Card className="sticky top-8 bg-white">
@@ -36,7 +55,7 @@ export const GoodsSidebar: React.FC<Props> = ({
         </div>
         <div className="space-y-2">
           <Button
-            onClick={() => setSelectedCategory('all')}
+            onClick={() => handleCategoryClick('all')}
             variant={selectedCategory === 'all' ? 'default' : 'ghost'}
             className={`w-full justify-start ${
               selectedCategory === 'all'
@@ -49,7 +68,7 @@ export const GoodsSidebar: React.FC<Props> = ({
           {categories.map((category) => (
             <Button
               key={category.slug}
-              onClick={() => setSelectedCategory(category.slug)}
+              onClick={() => handleCategoryClick(category.slug)}
               variant={selectedCategory === category.slug ? 'default' : 'ghost'}
               className={`w-full justify-start ${
                 selectedCategory === category.slug

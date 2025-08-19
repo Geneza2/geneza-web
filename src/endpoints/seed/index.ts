@@ -126,81 +126,77 @@ export const seed = async ({
       file: hero1Buffer,
     }),
 
+    // Create categories for goods
     payload.create({
       collection: 'categories',
       data: {
-        title: 'Technology',
-        breadcrumbs: [
-          {
-            label: 'Technology',
-            url: '/technology',
-          },
-        ],
+        title: 'Fresh Produce',
+        description: 'Fresh fruits and vegetables',
       },
+      locale: 'en',
     }),
 
     payload.create({
       collection: 'categories',
       data: {
-        title: 'News',
-        breadcrumbs: [
-          {
-            label: 'News',
-            url: '/news',
-          },
-        ],
+        title: 'Fresh Produce',
+        description: 'Sveže voće i povrće',
       },
+      locale: 'rs',
     }),
 
     payload.create({
       collection: 'categories',
       data: {
-        title: 'Finance',
-        breadcrumbs: [
-          {
-            label: 'Finance',
-            url: '/finance',
-          },
-        ],
+        title: 'Dairy Products',
+        description: 'Milk, cheese, and dairy items',
       },
-    }),
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Design',
-        breadcrumbs: [
-          {
-            label: 'Design',
-            url: '/design',
-          },
-        ],
-      },
+      locale: 'en',
     }),
 
     payload.create({
       collection: 'categories',
       data: {
-        title: 'Software',
-        breadcrumbs: [
-          {
-            label: 'Software',
-            url: '/software',
-          },
-        ],
+        title: 'Dairy Products',
+        description: 'Mlečni proizvodi',
       },
+      locale: 'rs',
     }),
 
     payload.create({
       collection: 'categories',
       data: {
-        title: 'Engineering',
-        breadcrumbs: [
-          {
-            label: 'Engineering',
-            url: '/engineering',
-          },
-        ],
+        title: 'Meat & Poultry',
+        description: 'Fresh meat and poultry products',
       },
+      locale: 'en',
+    }),
+
+    payload.create({
+      collection: 'categories',
+      data: {
+        title: 'Meat & Poultry',
+        description: 'Meso i živina',
+      },
+      locale: 'rs',
+    }),
+
+    payload.create({
+      collection: 'categories',
+      data: {
+        title: 'Bakery',
+        description: 'Fresh bread and baked goods',
+      },
+      locale: 'en',
+    }),
+
+    payload.create({
+      collection: 'categories',
+      data: {
+        title: 'Bakery',
+        description: 'Pekara',
+      },
+      locale: 'rs',
     }),
   ])
 
@@ -373,15 +369,15 @@ export const seed = async ({
                 {
                   link: {
                     type: 'custom',
-                    label: 'Categories',
-                    url: '/goods/categories',
+                    label: 'Fresh Produce',
+                    url: '/goods?category=fresh-produce',
                   },
                 },
                 {
                   link: {
                     type: 'custom',
-                    label: 'Special Offers',
-                    url: '/goods?offers=true',
+                    label: 'Dairy Products',
+                    url: '/goods?category=dairy-products',
                   },
                 },
               ],
@@ -526,15 +522,15 @@ export const seed = async ({
                 {
                   link: {
                     type: 'custom',
-                    label: 'Kategorije',
-                    url: '/goods/categories',
+                    label: 'Sveže voće i povrće',
+                    url: '/goods?category=fresh-produce',
                   },
                 },
                 {
                   link: {
                     type: 'custom',
-                    label: 'Posebne ponude',
-                    url: '/goods?offers=true',
+                    label: 'Mlečni proizvodi',
+                    url: '/goods?category=dairy-products',
                   },
                 },
               ],

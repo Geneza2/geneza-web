@@ -14,12 +14,18 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'updatedAt'],
   },
   fields: [
     {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
+    },
+    {
+      name: 'description',
+      type: 'textarea',
       localized: true,
     },
     ...slugField(),
