@@ -12,6 +12,15 @@ export const Certifications: Block = {
       required: true,
     },
     {
+      name: 'description',
+      type: 'textarea',
+      label: 'Section Description',
+      localized: true,
+      admin: {
+        description: 'Description text that appears below the section title',
+      },
+    },
+    {
       name: 'certifications',
       type: 'array',
       label: 'Certifications',

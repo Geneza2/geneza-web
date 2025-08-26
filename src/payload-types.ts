@@ -1005,11 +1005,25 @@ export interface CarouselBlock {
  */
 export interface InfiniteCardsBlock {
   heading: string;
+  /**
+   * Description text that appears below the section title
+   */
+  description?: string | null;
   cards?:
     | {
+        /**
+         * Upload the partner's logo (recommended: PNG or SVG format)
+         */
         image: number | Media;
-        link: {
-          url: string;
+        /**
+         * Name of the partner (used for accessibility)
+         */
+        title?: string | null;
+        link?: {
+          /**
+           * Link to partner's website (optional)
+           */
+          url?: string | null;
         };
         id?: string | null;
       }[]
@@ -1024,6 +1038,10 @@ export interface InfiniteCardsBlock {
  */
 export interface CertificationsBlock {
   heading: string;
+  /**
+   * Description text that appears below the section title
+   */
+  description?: string | null;
   certifications?:
     | {
         image: number | Media;
@@ -1574,10 +1592,12 @@ export interface CarouselBlockSelect<T extends boolean = true> {
  */
 export interface InfiniteCardsBlockSelect<T extends boolean = true> {
   heading?: T;
+  description?: T;
   cards?:
     | T
     | {
         image?: T;
+        title?: T;
         link?:
           | T
           | {
@@ -1594,6 +1614,7 @@ export interface InfiniteCardsBlockSelect<T extends boolean = true> {
  */
 export interface CertificationsBlockSelect<T extends boolean = true> {
   heading?: T;
+  description?: T;
   certifications?:
     | T
     | {

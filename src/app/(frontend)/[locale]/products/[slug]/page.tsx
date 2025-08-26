@@ -7,7 +7,6 @@ import Image from 'next/image'
 import { ArrowLeft, Info, Apple, MapPin, Calendar, Clock, Package } from 'lucide-react'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import { ProductOrderForm } from '@/components/ProductOrderForm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import RichText from '@/components/RichText'
@@ -17,25 +16,18 @@ import { getImageUrl } from '@/utilities/getImageUrl'
 
 const query = cache(
   async ({ slug, locale, draft }: { slug: string; locale: TypedLocale; draft: boolean }) => {
-    try {
-      console.log('Querying product with:', { slug, locale, draft })
-      const payload = await getPayload({ config: configPromise })
-      const { docs = [] } = await payload.find({
-        collection: 'products',
-        draft,
-        overrideAccess: draft,
-        pagination: false,
-        limit: 1,
-        locale,
-        depth: 2,
-        where: { slug: { equals: slug } },
-      })
-      console.log('Query result:', { docsCount: docs.length, firstDoc: docs[0] })
-      return docs[0] || null
-    } catch (error) {
-      console.error('Error in query function:', error)
-      throw error
-    }
+    const payload = await getPayload({ config: configPromise })
+    const { docs = [] } = await payload.find({
+      collection: 'products',
+      draft,
+      overrideAccess: draft,
+      pagination: false,
+      limit: 1,
+      locale,
+      depth: 2,
+      where: { slug: { equals: slug } },
+    })
+    return docs[0] || null
   },
 )
 
@@ -58,214 +50,285 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   return generateMeta({ doc: product })
 }
 
-type Args = {
-  params: Promise<{ slug?: string; locale: TypedLocale }>
-}
+type Args = { params: Promise<{ slug?: string; locale: TypedLocale }> }
+
+const InfoRow = ({ icon, label, value }: any) =>
+  value && (
+    <div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-b-0">
+      <div className="flex items-center space-x-3">
+        <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+          {icon}
+        </div>
+        <span className="font-medium text-gray-900">{label}</span>
+      </div>
+      <span className="text-gray-600 font-medium">{value}</span>
+    </div>
+  )
+
+const InfoCard = ({ icon, title, items, sub }: any) => (
+  <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <CardHeader className="bg-gradient-to-r from-primary to-primary/90 text-white rounded-t-xl">
+      <CardTitle className="flex items-center text-xl font-semibold">
+        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3">
+          {icon}
+        </div>
+        {title}
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-6">
+      {sub && <p className="text-sm text-gray-500 mb-4 bg-gray-50 px-3 py-2 rounded-lg">{sub}</p>}
+      <div className="space-y-1">{items}</div>
+    </CardContent>
+  </Card>
+)
+
+const CutSizes = ({ cutSizes, locale }: { cutSizes: any[]; locale: string }) =>
+  cutSizes.length > 0 && (
+    <div className="space-y-3 lg:space-y-4">
+      <h3 className="text-lg font-semibold text-white lg:text-xl xl:text-2xl tracking-wide">
+        {locale === 'rs' ? 'Dostupni rezovi' : 'Cut Size'}
+      </h3>
+      <div className="flex flex-wrap gap-2 justify-center max-w-xs mx-auto lg:gap-3 lg:w-full lg:justify-start">
+        {cutSizes.map((cut: any) => (
+          <span
+            key={cut.id ?? cut.name}
+            className="px-3 py-1 text-sm lg:px-4 lg:py-2 lg:text-base font-medium uppercase tracking-wide bg-white/10 text-gray-200 rounded-md hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-default"
+          >
+            {cut.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+
+const ProductImage = ({
+  image,
+  title,
+  isMobile,
+}: {
+  image: any
+  title: string
+  isMobile: boolean
+}) => (
+  <div className="flex justify-center py-4 lg:justify-start">
+    <div className="relative">
+      <div
+        className={`${isMobile ? 'w-48 h-48 sm:w-56 sm:h-56 p-5' : 'w-80 h-80 xl:w-96 xl:h-96 2xl:w-[26rem] 2xl:h-[26rem] p-6 xl:p-8'} rounded-full overflow-hidden bg-white/15 backdrop-blur-sm border-2 border-white/30`}
+      >
+        <Image
+          src={getImageUrl(image)}
+          alt={typeof image === 'object' && image?.alt ? image.alt : title}
+          width={600}
+          height={600}
+          className="w-full h-full object-contain"
+        />
+      </div>
+      {!isMobile && (
+        <>
+          <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/30 rounded-full blur-2xl animate-pulse" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse" />
+        </>
+      )}
+    </div>
+  </div>
+)
+
+const HeroContent = ({
+  title,
+  scientificName,
+  description,
+  cutSizes,
+  image,
+  locale,
+  isMobile,
+}: any) => (
+  <div
+    className={
+      isMobile
+        ? 'text-center text-white space-y-4 max-w-sm mx-auto'
+        : 'text-left text-white space-y-6 w-full'
+    }
+  >
+    <div className={isMobile ? 'space-y-2' : 'space-y-3'}>
+      <h1
+        className={
+          isMobile
+            ? 'text-3xl sm:text-4xl font-bold leading-tight'
+            : 'text-3xl xl:text-4xl 2xl:text-5xl font-bold leading-tight tracking-tight'
+        }
+      >
+        {title}
+      </h1>
+      {scientificName && (
+        <p
+          className={`${isMobile ? 'text-lg sm:text-xl italic font-medium' : 'text-xl xl:text-2xl 2xl:text-3xl italic font-light tracking-wide'}`}
+          style={{ color: '#9BC273' }}
+        >
+          {scientificName}
+        </p>
+      )}
+    </div>
+    {isMobile && <ProductImage image={image} title={title} isMobile={true} />}
+    <div className={isMobile ? 'px-2' : 'prose prose-base xl:prose-lg prose-invert max-w-none'}>
+      <div
+        className={
+          isMobile
+            ? 'prose prose-sm prose-invert text-gray-200 max-w-none'
+            : 'text-gray-100 leading-relaxed font-light text-base xl:text-lg'
+        }
+      >
+        <RichText data={description} enableGutter={false} />
+      </div>
+    </div>
+    <CutSizes cutSizes={cutSizes} locale={locale} />
+  </div>
+)
 
 export default async function ProductPage({ params: p }: Args) {
-  try {
-    const { slug = '', locale } = await p
-    const { isEnabled: draft } = await draftMode()
-    const url = `/${locale}/products/${slug}`
+  const { slug = '', locale } = await p
+  const { isEnabled: draft } = await draftMode()
+  const product = await query({ slug, locale, draft })
 
-    const product = await query({ slug, locale, draft })
-    if (!product) return <ErrorCard locale={locale} />
+  if (!product) return <ErrorCard locale={locale} />
 
-    const {
-      title,
-      image,
-      scientificName,
-      description,
-      cutSizes = [],
-      backgroundImage,
-      productInfo,
-      nutritiveInfo,
-    } = product
-    const imageUrl = typeof backgroundImage === 'object' ? backgroundImage?.url : undefined
+  const {
+    title,
+    image,
+    scientificName,
+    description,
+    cutSizes = [],
+    backgroundImage,
+    productInfo,
+    nutritiveInfo,
+  } = product
+  const imageUrl = typeof backgroundImage === 'object' ? backgroundImage?.url : undefined
 
-    const InfoRow = ({ icon, label, value }: any) =>
-      value && (
-        <div className="flex justify-between items-center py-3 border-b text-sm">
-          <div className="flex items-center">
-            {icon}
-            <span className="font-medium">{label}</span>
+  const productInfoItems = productInfo
+    ? [
+        [
+          'origin',
+          <MapPin className="w-4 h-4 text-primary" />,
+          locale === 'rs' ? 'Poreklo' : 'Origin',
+          productInfo.origin,
+        ],
+        [
+          'season',
+          <Calendar className="w-4 h-4 text-primary" />,
+          locale === 'rs' ? 'Sezona' : 'Season',
+          productInfo.season,
+        ],
+        [
+          'shelf',
+          <Clock className="w-4 h-4 text-primary" />,
+          locale === 'rs' ? 'Trajnost' : 'Shelf Life',
+          productInfo.shelfLife,
+        ],
+        [
+          'storage',
+          <Package className="w-4 h-4 text-primary" />,
+          locale === 'rs' ? 'Čuvanje' : 'Storage',
+          productInfo.storage,
+        ],
+      ].map(([key, icon, label, value]) => (
+        <InfoRow key={key} icon={icon} label={label} value={value} />
+      ))
+    : []
+
+  const nutritiveInfoItems = nutritiveInfo
+    ? [
+        ['cal', 'C', locale === 'rs' ? 'Kalorije' : 'Calories', nutritiveInfo.calories],
+        ['prot', 'P', locale === 'rs' ? 'Proteini' : 'Protein', `${nutritiveInfo.protein}g`],
+        [
+          'carbs',
+          'C',
+          locale === 'rs' ? 'Ugljeni hidrati' : 'Carbohydrates',
+          `${nutritiveInfo.carbohydrates}g`,
+        ],
+      ].map(([key, letter, label, value]) => (
+        <InfoRow
+          key={key}
+          icon={
+            <span className="w-4 h-4 bg-primary rounded-full text-xs text-white flex items-center justify-center">
+              {letter}
+            </span>
+          }
+          label={label}
+          value={value}
+        />
+      ))
+    : []
+
+  return (
+    <div className="min-h-screen">
+      <PayloadRedirects disableNotFound url={`/${locale}/products/${slug}`} />
+      {draft && <LivePreviewListener />}
+
+      <div className="relative h-[90vh]">
+        {imageUrl && (
+          <div className="absolute inset-0">
+            <div
+              className="w-full h-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${imageUrl})` }}
+            />
+            <div className="absolute inset-0 bg-black/40" />
           </div>
-          <span>{value}</span>
-        </div>
-      )
-
-    const InfoCard = ({ icon, title, items, bg, sub }: any) => (
-      <Card>
-        <CardHeader className="text-white rounded-t-xl" style={{ backgroundColor: bg }}>
-          <CardTitle className="flex items-center text-lg">
-            {icon}
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-4">
-          {sub && <p className="text-sm text-muted-foreground">{sub}</p>}
-          {items}
-        </CardContent>
-      </Card>
-    )
-
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <PayloadRedirects disableNotFound url={url} />
-        {draft && <LivePreviewListener />}
-        <div
-          className="relative bg-cover bg-center h-[42vh]"
-          style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
-        >
-          <div className="absolute inset-0 bg-black/50" />
-        </div>
-
-        <div className="container mx-auto px-4 -mt-40 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-            <div className="flex justify-center">
-              <Image
-                src={getImageUrl(image)}
-                alt={typeof image === 'object' && image?.alt ? image.alt : title}
-                width={400}
-                height={400}
-                className="rounded-full object-cover w-40 h-40 lg:w-[26rem] lg:h-[26rem]"
+        )}
+        <div className="relative z-10 h-[90vh] flex items-center justify-center py-4 lg:py-8">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="lg:hidden flex items-center justify-center h-full">
+              <HeroContent
+                title={title}
+                scientificName={scientificName}
+                description={description}
+                cutSizes={cutSizes}
+                image={image}
+                locale={locale}
+                isMobile={true}
               />
             </div>
-            <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-2xl text-center lg:text-left space-y-4">
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">{title}</h1>
-              {scientificName && (
-                <p className="italic text-sm lg:text-xl" style={{ color: '#9BC273' }}>
-                  {scientificName}
-                </p>
-              )}
-              <div className="prose text-sm lg:text-base text-gray-700 line-clamp-3 lg:line-clamp-2">
-                <RichText data={description} enableGutter={false} />
+            <div className="hidden lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:justify-center max-w-7xl mx-auto h-full">
+              <div className="flex items-center justify-center">
+                <ProductImage image={image} title={title} isMobile={false} />
               </div>
-              {(cutSizes ?? []).length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-800">
-                    {locale === 'rs' ? 'Dostupni rezovi' : 'Cut Size'}
-                  </h3>
-                  <div className="flex flex-wrap justify-center lg:justify-start gap-2 mt-1">
-                    {(cutSizes ?? []).map((cut, i) => (
-                      <span
-                        key={cut.id ?? `${cut.name}-${i}`}
-                        className="rounded-full border px-3 py-1.5 text-sm transition-all text-white border-transparent"
-                        style={{ backgroundColor: '#9BC273' }}
-                      >
-                        {cut.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div className="flex items-center justify-center">
+                <HeroContent
+                  title={title}
+                  scientificName={scientificName}
+                  description={description}
+                  cutSizes={cutSizes}
+                  image={image}
+                  locale={locale}
+                  isMobile={false}
+                />
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="container mx-auto px-4 py-16 space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <section className="bg-gray-50 py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
             {productInfo && (
               <InfoCard
-                icon={<Info className="w-5 h-5 mr-3" />}
+                icon={<Info className="w-5 h-5" />}
                 title={locale === 'rs' ? 'Informacije o produktu' : 'Product Information'}
-                bg="#9BC273"
-                items={[
-                  <InfoRow
-                    key="origin"
-                    icon={<MapPin className="w-4 h-4 mr-2 text-muted-foreground" />}
-                    label={locale === 'rs' ? 'Poreklo: ' : 'Origin: '}
-                    value={productInfo.origin}
-                  />,
-                  <InfoRow
-                    key="season"
-                    icon={<Calendar className="w-4 h-4 mr-2 text-muted-foreground" />}
-                    label={locale === 'rs' ? 'Sezona: ' : 'Season: '}
-                    value={productInfo.season}
-                  />,
-                  <InfoRow
-                    key="shelf"
-                    icon={<Clock className="w-4 h-4 mr-2 text-muted-foreground" />}
-                    label={locale === 'rs' ? 'Trajnost: ' : 'Shelf Life: '}
-                    value={productInfo.shelfLife}
-                  />,
-                  <InfoRow
-                    key="storage"
-                    icon={<Package className="w-4 h-4 mr-2 text-muted-foreground" />}
-                    label={locale === 'rs' ? 'Čuvanje: ' : 'Storage: '}
-                    value={productInfo.storage}
-                  />,
-                ]}
+                items={productInfoItems}
               />
             )}
-
             {nutritiveInfo && (
               <InfoCard
-                icon={<Apple className="w-5 h-5 mr-3" />}
+                icon={<Apple className="w-5 h-5" />}
                 title={locale === 'rs' ? 'Nutritivne vrednosti' : 'Nutritional Values'}
-                bg="rgb(30 41 59)"
                 sub={locale === 'rs' ? 'Na 100g' : 'Per 100g'}
-                items={[
-                  <InfoRow
-                    key="cal"
-                    label={locale === 'rs' ? 'Kalorije: ' : 'Calories: '}
-                    value={nutritiveInfo.calories}
-                  />,
-                  <InfoRow
-                    key="prot"
-                    label={locale === 'rs' ? 'Proteini: ' : 'Protein: '}
-                    value={`${nutritiveInfo.protein}g`}
-                  />,
-                  <InfoRow
-                    key="carbs"
-                    label={locale === 'rs' ? 'Ugljeni hidrati: ' : 'Carbohydrates: '}
-                    value={`${nutritiveInfo.carbohydrates}g`}
-                  />,
-                ]}
+                items={nutritiveInfoItems}
               />
             )}
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                {locale === 'rs' ? 'Naruči Proizvod' : 'Order Product'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ProductOrderForm productTitle={title} locale={locale} cutSizes={cutSizes || []} />
-            </CardContent>
-          </Card>
         </div>
-      </div>
-    )
-  } catch (error) {
-    console.error('Error loading product:', error)
-    const { locale } = await p
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {locale === 'rs' ? 'Greška' : 'Error'}
-          </h1>
-          <p className="text-gray-600 mb-4">
-            {locale === 'rs'
-              ? 'Došlo je do greške pri učitavanju proizvoda'
-              : 'An error occurred while loading the product'}
-          </p>
-          <p className="text-sm text-gray-500 mb-6">
-            {error instanceof Error ? error.message : 'Unknown error'}
-          </p>
-          <Button asChild>
-            <a href={`/${locale}/products`}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {locale === 'rs' ? 'Nazad na proizvode' : 'Back to Products'}
-            </a>
-          </Button>
-        </div>
-      </div>
-    )
-  }
+      </section>
+    </div>
+  )
 }
 
 function ErrorCard({ locale }: { locale: TypedLocale }) {

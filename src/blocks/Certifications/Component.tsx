@@ -13,47 +13,69 @@ type Certification = {
 
 type Props = {
   heading: string
+  description?: string
   certifications: Certification[]
   className?: string
 }
 
-export const Certifications: React.FC<Props> = ({ heading, certifications, className }) => {
+export const Certifications: React.FC<Props> = ({
+  heading,
+  description,
+  certifications,
+  className,
+}) => {
   return (
-    <section className={cn('relative w-full bg-white py-10 sm:py-16 md:py-20', className)}>
-      <div className="container px-4 sm:px-6 md:px-8">
-        <h2 className="text-center text-2xl md:text-3xl lg:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80 mb-12">
-          {heading}
-        </h2>
+    <section className="py-16 md:py-24 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-4">
+            {heading}
+          </h2>
+          {description && <p className="text-lg text-gray-600 max-w-2xl mx-auto">{description}</p>}
+        </div>
 
-        <div className="flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-16">
-          {certifications.map(({ image, pdfFile, title }, index) => {
-            const content = (
-              <div className="group relative flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                {image?.url && (
-                  <Image
-                    src={image.url}
-                    alt={title || 'Certification'}
-                    fill
-                    className="object-contain transition-transform duration-500 group-hover:scale-105"
-                  />
-                )}
-              </div>
-            )
-
-            return pdfFile?.url ? (
-              <Button
-                key={index}
-                variant="ghost"
-                size="clear"
-                className="p-0 h-auto w-auto hover:bg-transparent focus:bg-transparent active:bg-transparent"
-                onClick={() => window.open(pdfFile.url, '_blank')}
-              >
-                {content}
-              </Button>
-            ) : (
-              <div key={index}>{content}</div>
-            )
-          })}
+        <div
+          className={cn(
+            'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 lg:gap-12 items-center justify-items-center',
+            className,
+          )}
+        >
+          {certifications.map((certification, index) => (
+            <div
+              key={index}
+              className="group relative flex items-center justify-center p-6 transition-all duration-300 hover:scale-105"
+            >
+              {certification.pdfFile?.url ? (
+                <Button
+                  variant="ghost"
+                  className="p-0 h-auto hover:bg-transparent"
+                  onClick={() => window.open(certification.pdfFile?.url!, '_blank')}
+                >
+                  {certification.image?.url && (
+                    <div className="relative w-32 h-16 md:w-40 md:h-20 lg:w-48 lg:h-24">
+                      <Image
+                        src={certification.image.url}
+                        alt={certification.title || 'Certification'}
+                        fill
+                        className="object-contain transition-all duration-300"
+                      />
+                    </div>
+                  )}
+                </Button>
+              ) : (
+                certification.image?.url && (
+                  <div className="relative w-32 h-16 md:w-40 md:h-20 lg:w-48 lg:h-24">
+                    <Image
+                      src={certification.image.url}
+                      alt={certification.title || 'Certification'}
+                      fill
+                      className="object-contain transition-all duration-300"
+                    />
+                  </div>
+                )
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>
