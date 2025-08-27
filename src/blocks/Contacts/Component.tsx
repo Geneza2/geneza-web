@@ -2,9 +2,22 @@ import React from 'react'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ContactBlock } from '@/payload-types'
-import { Info, MailIcon, PhoneIcon, ChefHat } from 'lucide-react'
+import { Info, MailIcon, PhoneIcon, ChefHat, MapPin } from 'lucide-react'
+import { TypedLocale } from 'payload'
+import { getTranslations } from 'next-intl/server'
 
-export const ContactComponent: React.FC<ContactBlock> = ({ title, companyInfo, contacts }) => {
+interface ContactComponentProps extends ContactBlock {
+  locale: TypedLocale | null
+}
+
+export const ContactComponent: React.FC<ContactComponentProps> = async ({
+  title,
+  companyInfo,
+  contacts,
+  locale,
+}) => {
+  const t = await getTranslations({ locale: locale || 'en' })
+
   return (
     <div className="container py-12">
       <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">{title}</h2>
@@ -31,6 +44,16 @@ export const ContactComponent: React.FC<ContactBlock> = ({ title, companyInfo, c
                   <div className="border-b pb-3">
                     <h3 className="font-semibold text-sm text-muted-foreground mb-1">Address:</h3>
                     <p className="text-sm">{companyInfo.address}</p>
+                    <a
+                      href="https://www.google.com/maps/place/Geneza+DOO/@46.0511194,20.0198058,15z/data=!4m10!1m2!2m1!1s24420+Kanji%C5%BEa,+Put+Narodnih+heroja+17,+Serbia!3m6!1s0x474490cdf1fca9cd:0x7ab6f3066be48fb2!8m2!3d46.0511194!4d20.0388602!15sCi4yNDQyMCBLYW5qacW-YSwgUHV0IE5hcm9kbmloIGhlcm9qYSAxNywgU2VyYmlhWi4iLDI0NDIwIGthbmppxb5hIHB1dCBuYXJvZG5paCBoZXJvamEgMTcgc2VyYmlhkgEWZm9vZF9wcm9kdWN0c19zdXBwbGllcpoBJENoZERTVWhOTUc5blMwVkpRMEZuU1VNeExYSmZXbmxSUlJBQuABAPoBBAgzEDA!16s%2Fg%2F1tdf9w_x?entry=ttu&g_ep=EgoyMDI1MDgyNC4wIKXMDSoASAFQAw%3D%3D"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 text-white text-xs rounded-md hover:opacity-80 transition-opacity"
+                      style={{ backgroundColor: '#9BC273' }}
+                    >
+                      <MapPin className="w-3 h-3" />
+                      {t('open-in-google-maps')}
+                    </a>
                   </div>
                 )}
 
