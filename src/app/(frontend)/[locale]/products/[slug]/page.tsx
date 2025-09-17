@@ -13,6 +13,8 @@ import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
 import { TypedLocale } from 'payload'
 import { getImageUrl } from '@/utilities/getImageUrl'
+import type { Product, Media } from '@/payload-types'
+import { ReactNode } from 'react'
 
 const query = cache(
   async ({ slug, locale, draft }: { slug: string; locale: TypedLocale; draft: boolean }) => {
@@ -52,7 +54,41 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
 type Args = { params: Promise<{ slug?: string; locale: TypedLocale }> }
 
-const InfoRow = ({ icon, label, value }: any) =>
+interface InfoRowProps {
+  icon: ReactNode
+  label: string
+  value: string | number | null | undefined
+}
+
+interface InfoCardProps {
+  icon: ReactNode
+  title: string
+  items: ReactNode[]
+  sub?: string
+}
+
+interface CutSize {
+  id?: string | null
+  name: string
+}
+
+interface ProductImageProps {
+  image: Media | number
+  title: string
+  isMobile: boolean
+}
+
+interface HeroContentProps {
+  title: string
+  scientificName?: string | null
+  description: Product['description']
+  cutSizes: CutSize[] | null
+  image: Media | number
+  locale: TypedLocale
+  isMobile: boolean
+}
+
+const InfoRow = ({ icon, label, value }: InfoRowProps) =>
   value && (
     <div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-b-0">
       <div className="flex items-center space-x-3">
@@ -65,7 +101,7 @@ const InfoRow = ({ icon, label, value }: any) =>
     </div>
   )
 
-const InfoCard = ({ icon, title, items, sub }: any) => (
+const InfoCard = ({ icon, title, items, sub }: InfoCardProps) => (
   <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
     <CardHeader className="bg-gradient-to-r from-primary to-primary/90 text-white rounded-t-xl">
       <CardTitle className="flex items-center text-xl font-semibold">
@@ -82,34 +118,29 @@ const InfoCard = ({ icon, title, items, sub }: any) => (
   </Card>
 )
 
-const CutSizes = ({ cutSizes, locale }: { cutSizes: any[]; locale: string }) =>
+const CutSizes = ({ cutSizes, locale }: { cutSizes: CutSize[] | null; locale: string }) =>
+  cutSizes &&
   cutSizes.length > 0 && (
     <div className="space-y-3 lg:space-y-4">
-      <h3 className="text-lg font-semibold text-white lg:text-xl xl:text-2xl tracking-wide">
-        {locale === 'rs' ? 'Dostupni rezovi' : 'Cut Size'}
-      </h3>
-      <div className="flex flex-wrap gap-2 justify-center max-w-xs mx-auto lg:gap-3 lg:w-full lg:justify-start">
-        {cutSizes.map((cut: any) => (
-          <span
-            key={cut.id ?? cut.name}
-            className="px-3 py-1 text-sm lg:px-4 lg:py-2 lg:text-base font-medium uppercase tracking-wide bg-white/10 text-gray-200 rounded-md hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-default"
-          >
-            {cut.name}
-          </span>
-        ))}
+      <div className="flex flex-col space-y-3 lg:space-y-4">
+        <h3 className="text-lg font-semibold text-white lg:text-xl xl:text-2xl tracking-wide">
+          {locale === 'rs' ? 'Dostupni rezovi' : 'Cut Size'}
+        </h3>
+        <div className="flex flex-wrap gap-2 justify-center max-w-xs mx-auto lg:gap-3 lg:w-full lg:justify-start lg:flex-nowrap">
+          {cutSizes?.map((cut: CutSize) => (
+            <span
+              key={cut.id ?? cut.name}
+              className="px-3 py-1 text-sm lg:px-4 lg:py-2 lg:text-base font-medium uppercase tracking-wide bg-white/10 text-gray-200 rounded-md hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-default"
+            >
+              {cut.name}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   )
 
-const ProductImage = ({
-  image,
-  title,
-  isMobile,
-}: {
-  image: any
-  title: string
-  isMobile: boolean
-}) => (
+const ProductImage = ({ image, title, isMobile }: ProductImageProps) => (
   <div className="flex justify-center py-4 lg:justify-start">
     <div className="relative">
       <div
@@ -141,7 +172,7 @@ const HeroContent = ({
   image,
   locale,
   isMobile,
-}: any) => (
+}: HeroContentProps) => (
   <div
     className={
       isMobile
@@ -173,14 +204,14 @@ const HeroContent = ({
       <div
         className={
           isMobile
-            ? 'prose prose-sm prose-invert text-gray-200 max-w-none'
-            : 'text-gray-100 leading-relaxed font-light text-base xl:text-lg'
+            ? 'prose prose-sm prose-invert text-gray-200 max-w-none [&_*]:text-gray-200'
+            : 'text-gray-100 leading-relaxed font-light text-base xl:text-lg [&_*]:text-gray-100'
         }
       >
         <RichText data={description} enableGutter={false} />
       </div>
     </div>
-    <CutSizes cutSizes={cutSizes} locale={locale} />
+    <CutSizes cutSizes={cutSizes || []} locale={locale} />
   </div>
 )
 
@@ -207,30 +238,35 @@ export default async function ProductPage({ params: p }: Args) {
     ? [
         [
           'origin',
-          <MapPin className="w-4 h-4 text-primary" />,
+          <MapPin key="origin-icon" className="w-4 h-4 text-primary" />,
           locale === 'rs' ? 'Poreklo' : 'Origin',
           productInfo.origin,
         ],
         [
           'season',
-          <Calendar className="w-4 h-4 text-primary" />,
+          <Calendar key="season-icon" className="w-4 h-4 text-primary" />,
           locale === 'rs' ? 'Sezona' : 'Season',
           productInfo.season,
         ],
         [
           'shelf',
-          <Clock className="w-4 h-4 text-primary" />,
+          <Clock key="shelf-icon" className="w-4 h-4 text-primary" />,
           locale === 'rs' ? 'Trajnost' : 'Shelf Life',
           productInfo.shelfLife,
         ],
         [
           'storage',
-          <Package className="w-4 h-4 text-primary" />,
+          <Package key="storage-icon" className="w-4 h-4 text-primary" />,
           locale === 'rs' ? 'Čuvanje' : 'Storage',
           productInfo.storage,
         ],
-      ].map(([key, icon, label, value]) => (
-        <InfoRow key={key} icon={icon} label={label} value={value} />
+      ].map(([key, icon, label, value], index) => (
+        <InfoRow
+          key={`${key}-${index}`}
+          icon={icon}
+          label={label as string}
+          value={value as string | number | null | undefined}
+        />
       ))
     : []
 
@@ -244,16 +280,19 @@ export default async function ProductPage({ params: p }: Args) {
           locale === 'rs' ? 'Ugljeni hidrati' : 'Carbohydrates',
           `${nutritiveInfo.carbohydrates}g`,
         ],
-      ].map(([key, letter, label, value]) => (
+      ].map(([key, letter, label, value], index) => (
         <InfoRow
-          key={key}
+          key={`${key}-${index}`}
           icon={
-            <span className="w-4 h-4 bg-primary rounded-full text-xs text-white flex items-center justify-center">
-              {letter}
+            <span
+              key={`${key}-icon-${index}`}
+              className="w-4 h-4 bg-primary rounded-full text-xs text-white flex items-center justify-center"
+            >
+              {letter as string}
             </span>
           }
-          label={label}
-          value={value}
+          label={label as string}
+          value={value as string | number | null | undefined}
         />
       ))
     : []
@@ -280,7 +319,7 @@ export default async function ProductPage({ params: p }: Args) {
                 title={title}
                 scientificName={scientificName}
                 description={description}
-                cutSizes={cutSizes}
+                cutSizes={cutSizes || []}
                 image={image}
                 locale={locale}
                 isMobile={true}
@@ -295,7 +334,7 @@ export default async function ProductPage({ params: p }: Args) {
                   title={title}
                   scientificName={scientificName}
                   description={description}
-                  cutSizes={cutSizes}
+                  cutSizes={cutSizes || []}
                   image={image}
                   locale={locale}
                   isMobile={false}

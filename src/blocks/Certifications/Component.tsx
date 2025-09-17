@@ -22,7 +22,7 @@ export const Certifications: React.FC<Props> = ({
   heading,
   description,
   certifications,
-  className,
+  className: _className,
 }) => {
   return (
     <section className="py-16 md:py-24 bg-white">
@@ -49,7 +49,9 @@ export const Certifications: React.FC<Props> = ({
                 <Button
                   variant="ghost"
                   className="p-0 h-auto hover:bg-transparent"
-                  onClick={() => window.open(certification.pdfFile?.url!, '_blank')}
+                  onClick={() =>
+                    certification.pdfFile?.url && window.open(certification.pdfFile.url, '_blank')
+                  }
                 >
                   {certification.image?.url && (
                     <div className="relative w-32 h-20 md:w-40 md:h-24 lg:w-48 lg:h-28">

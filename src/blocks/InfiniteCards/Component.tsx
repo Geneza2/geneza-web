@@ -24,7 +24,7 @@ export const InfiniteCards: React.FC<Props> = ({
   heading,
   description,
   cards,
-  className,
+  className: _className,
   locale,
 }) => {
   // Get the appropriate text based on locale
@@ -79,7 +79,7 @@ export const InfiniteCards: React.FC<Props> = ({
                         src={partner.image.url}
                         alt={partner.title || 'Partner logo'}
                         fill
-                        className="object-contain filter grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100"
+                        className="object-contain transition-all duration-300"
                       />
                     </div>
                   )}
@@ -91,7 +91,7 @@ export const InfiniteCards: React.FC<Props> = ({
                       src={partner.image.url}
                       alt={partner.title || 'Partner logo'}
                       fill
-                      className="object-contain filter grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100"
+                      className="object-contain transition-all duration-300"
                     />
                   </div>
                 )

@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getLinkHref } from '@/utilities/getLinkHref'
+import { TypedLocale } from 'payload'
 
 type Media = {
   url?: string
@@ -17,19 +19,32 @@ type Props = {
   className?: string
   background?: Media
   sectionId?: string
+  locale?: TypedLocale | null
   content: {
     image: Media
     title: string
     description?: string
     callToAction?: {
       text: string
-      link: string
-      openInNewTab?: boolean
+      linkType?: 'reference' | 'custom' | null
+      url?: string | null
+      anchor?: string | null
+      newTab?: boolean
+      reference?: {
+        relationTo?: string
+        value?: { slug?: string | null } | number
+      } | null
     }
   }
 }
 
-export const ZigZagLeftBlock: React.FC<Props> = ({ className, background, sectionId, content }) => {
+export const ZigZagLeftBlock: React.FC<Props> = ({
+  className,
+  background: _background,
+  sectionId,
+  locale,
+  content,
+}) => {
   const { image, title, description, callToAction } = content
 
   return (
@@ -69,9 +84,9 @@ export const ZigZagLeftBlock: React.FC<Props> = ({ className, background, sectio
                 <div className="w-16 h-1 bg-[#9BC273] rounded-full"></div>
               </div>
               {description && (
-                <p className="text-lg text-gray-600 leading-relaxed max-w-lg">{description}</p>
+                <p className="text-lg text-black leading-relaxed max-w-lg">{description}</p>
               )}
-              {callToAction?.text && callToAction.link && (
+              {callToAction?.text && (
                 <div className="pt-4">
                   <Button
                     asChild
@@ -79,9 +94,27 @@ export const ZigZagLeftBlock: React.FC<Props> = ({ className, background, sectio
                     className="bg-[#9BC273] hover:bg-[#8BAF66] text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 ease-out hover:scale-105 hover:shadow-lg shadow-md"
                   >
                     <Link
-                      href={callToAction.link}
-                      target={callToAction.openInNewTab ? '_blank' : '_self'}
-                      rel={callToAction.openInNewTab ? 'noopener noreferrer' : undefined}
+                      href={
+                        callToAction.linkType === 'custom' && callToAction.url
+                          ? callToAction.url
+                          : callToAction.linkType === 'reference' && callToAction.reference
+                            ? getLinkHref(
+                                {
+                                  link: {
+                                    type: 'reference',
+                                    reference: {
+                                      relationTo: callToAction.reference.relationTo,
+                                      value: callToAction.reference.value,
+                                    },
+                                    anchor: callToAction.anchor,
+                                  },
+                                },
+                                locale || 'en',
+                              )
+                            : '#'
+                      }
+                      target={callToAction.newTab ? '_blank' : '_self'}
+                      rel={callToAction.newTab ? 'noopener noreferrer' : undefined}
                     >
                       {callToAction.text}
                     </Link>

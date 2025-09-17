@@ -4,7 +4,6 @@ import configPromise from '@payload-config'
 import { cache } from 'react'
 import Link from 'next/link'
 import { Media } from '@/components/Media'
-import { generateMeta } from '@/utilities/generateMeta'
 import { TypedLocale } from 'payload'
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
@@ -42,10 +41,10 @@ export default async function ProductsPage({ params: p }: Args) {
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-gray-600 mb-4">
               {locale === 'rs' ? 'Naši Proizvodi' : 'Our Products'}
             </h1>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-500 max-w-3xl mx-auto">
               {locale === 'rs'
                 ? 'Istražite našu kolekciju kvalitetnih proizvoda'
                 : 'Explore our collection of quality products'}
@@ -69,11 +68,11 @@ export default async function ProductsPage({ params: p }: Args) {
                     </div>
                   )}
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#9BC273] transition-all duration-300 transform group-hover:scale-105">
+                    <h3 className="text-lg font-semibold text-gray-600 group-hover:text-[#9BC273] transition-all duration-300 transform group-hover:scale-105">
                       {product.title}
                     </h3>
                     {product.scientificName && (
-                      <p className="text-sm text-gray-600 italic mt-1 group-hover:text-gray-700 transition-colors duration-300">
+                      <p className="text-sm text-gray-500 italic mt-1 group-hover:text-gray-600 transition-colors duration-300">
                         {product.scientificName}
                       </p>
                     )}
@@ -83,7 +82,7 @@ export default async function ProductsPage({ params: p }: Args) {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-500 text-lg">
                 {locale === 'rs'
                   ? 'Trenutno nema dostupnih proizvoda'
                   : 'No products available at the moment'}
@@ -98,10 +97,10 @@ export default async function ProductsPage({ params: p }: Args) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl font-bold text-gray-600 mb-4">
             {locale === 'rs' ? 'Greška' : 'Error'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-500">
             {locale === 'rs'
               ? 'Došlo je do greške pri učitavanju proizvoda'
               : 'An error occurred while loading products'}

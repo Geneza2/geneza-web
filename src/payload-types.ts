@@ -230,6 +230,8 @@ export interface Page {
     | ZigZagRightBlock
     | ContactBlock
     | ProductsBlock
+    | ImageBannerBlock
+    | CardsBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1073,9 +1075,42 @@ export interface ZigZagLeftBlock {
     title: string;
     description: string;
     callToAction: {
+      /**
+       * Button text to display
+       */
       text: string;
-      link: string;
-      openInNewTab?: boolean | null;
+      linkType?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'openPositions';
+            value: number | OpenPosition;
+          } | null)
+        | ({
+            relationTo: 'goods';
+            value: number | Good;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      /**
+       * Optional: Add section ID to scroll to (e.g., "contact" for #contact)
+       */
+      anchor?: string | null;
+      url?: string | null;
     };
   };
   id?: string | null;
@@ -1097,9 +1132,42 @@ export interface ZigZagRightBlock {
     title: string;
     description: string;
     callToAction: {
+      /**
+       * Button text to display
+       */
       text: string;
-      link: string;
-      openInNewTab?: boolean | null;
+      linkType?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'openPositions';
+            value: number | OpenPosition;
+          } | null)
+        | ({
+            relationTo: 'goods';
+            value: number | Good;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      /**
+       * Optional: Add section ID to scroll to (e.g., "contact" for #contact)
+       */
+      anchor?: string | null;
+      url?: string | null;
     };
   };
   id?: string | null;
@@ -1150,6 +1218,67 @@ export interface ProductsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'products';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBannerBlock".
+ */
+export interface ImageBannerBlock {
+  /**
+   * Select the image to display as banner
+   */
+  image: number | Media;
+  /**
+   * Choose the height of the banner image
+   */
+  height?: ('small' | 'medium' | 'large' | 'full') | null;
+  /**
+   * Add a dark overlay on top of the image
+   */
+  overlay?: boolean | null;
+  /**
+   * Opacity of the overlay (0 = transparent, 1 = black)
+   */
+  overlayOpacity?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageBanner';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsBlock".
+ */
+export interface CardsBlock {
+  /**
+   * Optional title displayed above the cards section
+   */
+  title?: string | null;
+  /**
+   * Optional description displayed below the title
+   */
+  description?: string | null;
+  /**
+   * Choose how many rows of cards to display
+   */
+  rows?: ('one' | 'two') | null;
+  /**
+   * Add up to 6 cards (3 per row)
+   */
+  cards: {
+    title: string;
+    /**
+     * Optional description for the card
+     */
+    description?: string | null;
+    /**
+     * Optional image to display with the card
+     */
+    image?: (number | null) | Media;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cards';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1462,6 +1591,8 @@ export interface PagesSelect<T extends boolean = true> {
         zigZagRight?: T | ZigZagRightBlockSelect<T>;
         contactBlock?: T | ContactBlockSelect<T>;
         products?: T | ProductsBlockSelect<T>;
+        imageBanner?: T | ImageBannerBlockSelect<T>;
+        cards?: T | CardsBlockSelect<T>;
       };
   meta?:
     | T
@@ -1644,8 +1775,11 @@ export interface ZigZagLeftBlockSelect<T extends boolean = true> {
           | T
           | {
               text?: T;
-              link?: T;
-              openInNewTab?: T;
+              linkType?: T;
+              newTab?: T;
+              reference?: T;
+              anchor?: T;
+              url?: T;
             };
       };
   id?: T;
@@ -1668,8 +1802,11 @@ export interface ZigZagRightBlockSelect<T extends boolean = true> {
           | T
           | {
               text?: T;
-              link?: T;
-              openInNewTab?: T;
+              linkType?: T;
+              newTab?: T;
+              reference?: T;
+              anchor?: T;
+              url?: T;
             };
       };
   id?: T;
@@ -1717,6 +1854,37 @@ export interface ProductsBlockSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   products?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBannerBlock_select".
+ */
+export interface ImageBannerBlockSelect<T extends boolean = true> {
+  image?: T;
+  height?: T;
+  overlay?: T;
+  overlayOpacity?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsBlock_select".
+ */
+export interface CardsBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  rows?: T;
+  cards?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

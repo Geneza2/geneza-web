@@ -215,7 +215,7 @@ export const ProductOrderForm: React.FC<ProductOrderFormProps> = ({
                 <Scissors className="w-4 h-4 mr-2" />
                 {t.cutSize}
               </Label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 lg:flex-nowrap">
                 {cutSizes.map((cut: CutSize, i: number) => {
                   const cutId = cut.id || `${cut.name}-${i}`
                   const isSelected = formData.cutSize === cutId

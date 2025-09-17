@@ -104,7 +104,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         <OpenPositionsArchive openPositions={allPositions} locale={locale} />
       </div>
     )
-  } catch (error) {
+  } catch (_error) {
     return (
       <div className="pt-24 pb-24">
         <div className="container mb-16">

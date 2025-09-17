@@ -15,6 +15,8 @@ import { ZigZagLeftBlock } from '@/blocks/ZigZagLeft/Component'
 import { ZigZagRightBlock } from '@/blocks/ZigZagRight/Component'
 import { ProductsBlock } from '@/blocks/Products/Component'
 import { ContactComponent } from './Contacts/Component'
+import { ImageBannerBlock } from './ImageBanner/Component'
+import { CardsBlock } from './Cards/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -29,6 +31,8 @@ const blockComponents = {
   zigZagRight: ZigZagRightBlock,
   contactBlock: ContactComponent,
   products: ProductsBlock,
+  imageBanner: ImageBannerBlock,
+  cards: CardsBlock,
 }
 
 export const RenderBlocks: React.FC<{

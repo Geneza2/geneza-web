@@ -82,7 +82,7 @@ export default async function Page({
             productCutSizes[title] = product.cutSizes
           }
         }
-      } catch (error) {}
+      } catch (_error) {}
     }
 
     const hasProducts = goods.docs.some((doc) => doc.products && doc.products.length > 0)

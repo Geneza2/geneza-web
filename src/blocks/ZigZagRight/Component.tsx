@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getLinkHref } from '@/utilities/getLinkHref'
+import { TypedLocale } from 'payload'
 
 type Media = {
   url?: string
@@ -17,14 +19,21 @@ type Props = {
   className?: string
   background?: Media
   sectionId?: string
+  locale?: TypedLocale | null
   content: {
     image: Media
     title: string
     description?: string
     callToAction?: {
       text: string
-      link: string
-      openInNewTab?: boolean
+      linkType?: 'reference' | 'custom' | null
+      url?: string | null
+      anchor?: string | null
+      newTab?: boolean
+      reference?: {
+        relationTo?: string
+        value?: { slug?: string | null } | number
+      } | null
     }
   }
 }
@@ -33,6 +42,7 @@ export const ZigZagRightBlock: React.FC<Props> = ({
   className,
   background,
   sectionId,
+  locale,
   content,
 }) => {
   const { image, title, description, callToAction } = content
@@ -50,26 +60,44 @@ export const ZigZagRightBlock: React.FC<Props> = ({
           <CardContent className="p-0 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
             <div className="space-y-4 md:space-y-6 px-4 md:px-0 order-2 md:order-1 flex flex-col justify-center h-full">
               <div className="space-y-4">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 transition-colors duration-300 ease-in-out">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                   {title}
                 </h2>
                 <div className="w-16 h-1 bg-[#9BC273] rounded-full"></div>
               </div>
               {description && (
-                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed transition-colors duration-300 ease-in-out">
+                <p className="text-black text-sm sm:text-base leading-relaxed transition-colors duration-300 ease-in-out">
                   {description}
                 </p>
               )}
-              {callToAction?.text && callToAction.link && (
+              {callToAction?.text && (
                 <div className="pt-2">
                   <Button
                     asChild
                     className="transition-all duration-300 ease-in-out hover:scale-105"
                   >
                     <Link
-                      href={callToAction.link}
-                      target={callToAction.openInNewTab ? '_blank' : '_self'}
-                      rel={callToAction.openInNewTab ? 'noopener noreferrer' : undefined}
+                      href={
+                        callToAction.linkType === 'custom' && callToAction.url
+                          ? callToAction.url
+                          : callToAction.linkType === 'reference' && callToAction.reference
+                            ? getLinkHref(
+                                {
+                                  link: {
+                                    type: 'reference',
+                                    reference: {
+                                      relationTo: callToAction.reference.relationTo,
+                                      value: callToAction.reference.value,
+                                    },
+                                    anchor: callToAction.anchor,
+                                  },
+                                },
+                                locale || 'en',
+                              )
+                            : '#'
+                      }
+                      target={callToAction.newTab ? '_blank' : '_self'}
+                      rel={callToAction.newTab ? 'noopener noreferrer' : undefined}
                     >
                       {callToAction.text}
                     </Link>

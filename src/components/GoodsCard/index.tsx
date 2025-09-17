@@ -4,7 +4,7 @@ import React from 'react'
 import type { Good } from '@/payload-types'
 import { TypedLocale } from 'payload'
 import Image from 'next/image'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardTitle } from '@/components/ui/card'
 import { MapPin, Package } from 'lucide-react'
 import { getImageUrl } from '@/utilities/getImageUrl'
 

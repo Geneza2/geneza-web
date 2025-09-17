@@ -5,7 +5,7 @@ import type { Footer as FooterType } from '@/payload-types'
 import { getLinkHref } from '@/utilities/getLinkHref'
 import { Logo } from '@/components/Logo/Logo'
 import { TypedLocale } from 'payload'
-import { Facebook, Instagram, Linkedin, MessageCircle, Mail, Phone, MapPin } from 'lucide-react'
+import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type FooterProps = {
@@ -24,77 +24,109 @@ export async function Footer({ locale }: FooterProps) {
   const sitemapSections = footer?.sitemapSections || []
 
   return (
-    <footer className="bg-gray-100">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-3 space-y-6">
+    <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273]">
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          {/* Branding Section */}
+          <div className="lg:col-span-3 space-y-8">
             <Link href={`/${currentLocale}`} className="inline-block">
               <Logo />
             </Link>
 
-            <p className="text-sm text-muted-foreground max-w-xs">
+            <p className="text-lg text-gray-700 leading-relaxed max-w-xs font-medium">
               {branding.missionStatement ||
-                'Our vision is to provide convenience and help increase your sales business.'}
+                (currentLocale === 'rs'
+                  ? 'Naša vizija je da pružimo praktičnost i pomognemo u povećanju vašeg poslovnog prometa.'
+                  : 'Our vision is to provide convenience and help increase your sales business.')}
             </p>
 
-            <div className="flex space-x-3">
+            {/* Social Media Buttons */}
+            <div className="flex space-x-4">
               {branding.socialMedia?.facebook && (
-                <Button variant="outline" size="icon" asChild className="w-10 h-10 rounded-full">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  asChild
+                  className="w-11 h-11 rounded-full border-gray-300 text-gray-600 hover:bg-[#9BC273] hover:text-white hover:border-[#9BC273] transition-all duration-300 hover:scale-110"
+                >
                   <a
                     href={branding.socialMedia.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Facebook"
                   >
-                    <Facebook className="w-5 h-5" />
+                    <Facebook className="w-6 h-6" />
                   </a>
                 </Button>
               )}
               {branding.socialMedia?.instagram && (
-                <Button variant="outline" size="icon" asChild className="w-10 h-10 rounded-full">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  asChild
+                  className="w-11 h-11 rounded-full border-gray-300 text-gray-600 hover:bg-[#9BC273] hover:text-white hover:border-[#9BC273] transition-all duration-300 hover:scale-110"
+                >
                   <a
                     href={branding.socialMedia.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"
                   >
-                    <Instagram className="w-5 h-5" />
+                    <Instagram className="w-6 h-6" />
                   </a>
                 </Button>
               )}
               {branding.socialMedia?.linkedin && (
-                <Button variant="outline" size="icon" asChild className="w-10 h-10 rounded-full">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  asChild
+                  className="w-11 h-11 rounded-full border-gray-300 text-gray-600 hover:bg-[#9BC273] hover:text-white hover:border-[#9BC273] transition-all duration-300 hover:scale-110"
+                >
                   <a
                     href={branding.socialMedia.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="LinkedIn"
                   >
-                    <Linkedin className="w-5 h-5" />
+                    <Linkedin className="w-6 h-6" />
                   </a>
                 </Button>
               )}
               {branding.socialMedia?.tiktok && (
-                <Button variant="outline" size="icon" asChild className="w-10 h-10 rounded-full">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  asChild
+                  className="w-11 h-11 rounded-full border-gray-300 text-gray-600 hover:bg-[#9BC273] hover:text-white hover:border-[#9BC273] transition-all duration-300 hover:scale-110"
+                >
                   <a
                     href={branding.socialMedia.tiktok}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="TikTok"
                   >
-                    <MessageCircle className="w-5 h-5" />
+                    <svg
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.35V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-.88-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                    </svg>
                   </a>
                 </Button>
               )}
             </div>
           </div>
 
+          {/* Sitemap Sections */}
           <div className="lg:col-span-9">
             {sitemapSections && sitemapSections.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {sitemapSections.map((section: any, index: number) => (
                   <div key={index} className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">{section.title}</h3>
+                    <h3 className="font-bold text-xl text-green-800 pb-3">{section.title}</h3>
                     <ul className="space-y-3">
                       {section.links?.map((linkItem: any, linkIndex: number) => {
                         const href = getLinkHref({ link: linkItem.link }, currentLocale)
@@ -102,7 +134,7 @@ export async function Footer({ locale }: FooterProps) {
                           <li key={linkIndex}>
                             <Link
                               href={href}
-                              className="text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
+                              className="text-gray-600 hover:text-green-700 transition-all duration-300 hover:translate-x-1 inline-block"
                             >
                               {linkItem.link.label}
                             </Link>
@@ -115,67 +147,78 @@ export async function Footer({ locale }: FooterProps) {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-gray-600">
                   {sitemapSections === undefined
-                    ? 'Loading sitemap sections...'
-                    : 'Please configure sitemap sections in the admin panel.'}
+                    ? currentLocale === 'rs'
+                      ? 'Učitavanje sekcija...'
+                      : 'Loading sitemap sections...'
+                    : currentLocale === 'rs'
+                      ? 'Molimo konfigurišite sekcije u admin panelu.'
+                      : 'Please configure sitemap sections in the admin panel.'}
                 </p>
               </div>
             )}
           </div>
         </div>
 
-        <div className="border-t border-gray-300 my-8" />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <Mail className="w-5 h-5 text-muted-foreground" />
+        {/* Contact Information */}
+        <div className="border-t border-gray-200 my-8" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div className="flex items-center space-x-4 group">
+            <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+              <Mail className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-medium">Email</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-semibold text-gray-800 text-lg">
+                {currentLocale === 'rs' ? 'E-mail' : 'Email'}
+              </p>
+              <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium">
                 {contactInfo.email || 'geneza@geneza.com'}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <Phone className="w-5 h-5 text-muted-foreground" />
+          <div className="flex items-center space-x-4 group">
+            <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+              <Phone className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-medium">Phone</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-semibold text-gray-800 text-lg">
+                {currentLocale === 'rs' ? 'Telefon' : 'Phone'}
+              </p>
+              <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium">
                 {contactInfo.phone || '+381 24 4874 987'}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-muted-foreground" />
+          <div className="flex items-center space-x-4 group">
+            <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+              <MapPin className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-medium">Address</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-semibold text-gray-800 text-lg">
+                {currentLocale === 'rs' ? 'Adresa' : 'Address'}
+              </p>
+              <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium">
                 {contactInfo.address || '24420 Kanjiža, Srbija Put Narodnih heroja 17'}
               </p>
             </div>
           </div>
         </div>
 
+        {/* Navigation Items */}
         {navItems && navItems.length > 0 && (
           <>
-            <div className="border-t border-gray-300 mb-6" />
-            <div className="flex flex-wrap justify-center gap-6 mb-6">
+            <div className="border-t border-gray-200 mb-6" />
+            <div className="flex flex-wrap justify-center gap-8 mb-6">
               {navItems.map((navItem: any, index: number) => {
                 const href = getLinkHref({ link: navItem.link }, currentLocale)
                 return (
                   <Link
                     key={index}
                     href={href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors hover:underline"
+                    className="text-gray-600 hover:text-green-700 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-lg hover:bg-green-200/50"
                   >
                     {navItem.link?.label || 'Unnamed link'}
                   </Link>
@@ -185,9 +228,10 @@ export async function Footer({ locale }: FooterProps) {
           </>
         )}
 
-        <div className="border-t border-gray-300 mb-6" />
+        {/* Copyright */}
+        <div className="border-t border-gray-200 mb-6" />
         <div className="text-center">
-          <p className="text-sm text-muted-foreground">{copyright}</p>
+          <p className="text-gray-600 text-lg">{copyright}</p>
         </div>
       </div>
     </footer>

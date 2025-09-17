@@ -4,7 +4,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
-import type { Good } from '@/payload-types'
+import type { Good, Category as PayloadCategory } from '@/payload-types'
 import { Input } from '@/components/ui/input'
 import { Search, Package, ArrowRight, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -17,11 +17,16 @@ type Category = {
   title: string
 }
 
+interface ProductCutSize {
+  id?: string | null
+  name: string
+}
+
 export type Props = {
   goods: Good[]
   locale: TypedLocale
-  availableCategories?: any[]
-  productCutSizes?: Record<string, any[]>
+  availableCategories?: PayloadCategory[]
+  productCutSizes?: Record<string, ProductCutSize[]>
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
@@ -29,7 +34,6 @@ export const GoodsArchive: React.FC<Props> = ({
   goods,
   locale,
   availableCategories = [],
-  productCutSizes = {},
   searchParams,
 }) => {
   const router = useRouter()
@@ -117,7 +121,7 @@ export const GoodsArchive: React.FC<Props> = ({
       if (selectedCategory !== 'all') {
         if (availableCategories.length > 0) {
           matchesCategory =
-            good.categories?.some((cat: any) => {
+            good.categories?.some((cat: number | PayloadCategory) => {
               const categorySlug = typeof cat === 'object' && cat?.slug ? cat.slug : null
               return categorySlug === selectedCategory
             }) || false

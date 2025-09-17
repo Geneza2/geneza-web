@@ -39,10 +39,20 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { hero, layout } = page
 
   return (
-    <article className="pb-24">
+    <article className="pb-8">
       <PayloadRedirects disableNotFound url={url} />
-      <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} locale={locale} />
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#9BC273]/10 via-[#17323E]/5 to-[#9BC273]/10"></div>
+        <div className="relative z-10">
+          <RenderHero {...hero} />
+        </div>
+      </div>
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#17323E]/5 via-[#9BC273]/10 to-[#17323E]/5"></div>
+        <div className="relative z-10">
+          <RenderBlocks blocks={layout} locale={locale} />
+        </div>
+      </div>
     </article>
   )
 }
