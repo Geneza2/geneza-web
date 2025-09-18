@@ -46,7 +46,7 @@ export const getLinkHref = (item: { link: LinkData } | LinkData, locale?: TypedL
   // Handle reference links
   if (link.type === 'reference' && link.reference) {
     const { relationTo, value } = link.reference
-
+    
     // Handle populated objects (with depth=2, references should be populated)
     const slug = typeof value === 'object' && value && 'slug' in value ? value.slug || '' : ''
 

@@ -16,6 +16,9 @@ import { getImageUrl } from '@/utilities/getImageUrl'
 import type { Product, Media } from '@/payload-types'
 import { ReactNode } from 'react'
 
+export const dynamic = 'force-static'
+export const revalidate = 600
+
 const query = cache(
   async ({ slug, locale, draft }: { slug: string; locale: TypedLocale; draft: boolean }) => {
     const payload = await getPayload({ config: configPromise })
@@ -43,7 +46,17 @@ export async function generateStaticParams() {
     pagination: false,
     select: { slug: true },
   })
-  return docs.map(({ slug }) => ({ slug }))
+
+  // Generate params for both locales
+  const params = []
+  for (const doc of docs) {
+    if (doc.slug) {
+      params.push({ slug: doc.slug, locale: 'en' })
+      params.push({ slug: doc.slug, locale: 'rs' })
+    }
+  }
+
+  return params
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
