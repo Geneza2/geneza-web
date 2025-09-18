@@ -1,4 +1,6 @@
 import type { Block } from 'payload'
+import { link } from '@/fields/link'
+
 export const Carousel: Block = {
   slug: 'carousel',
   interfaceName: 'CarouselBlock',
@@ -36,11 +38,9 @@ export const Carousel: Block = {
               type: 'text',
               required: true,
             },
-            {
-              name: 'link',
-              type: 'text',
-              required: true,
-            },
+            link({
+              appearances: false,
+            }),
             {
               name: 'openInNewTab',
               type: 'checkbox',

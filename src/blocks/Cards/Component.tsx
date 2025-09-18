@@ -36,11 +36,9 @@ export const CardsBlock: React.FC<CardsBlockProps> = ({
   // Render section header
   const renderHeader = () => (
     <div className="text-center mb-8">
-      {title && <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{title}</h2>}
+      {title && <h2 className="text-3xl font-bold text-white mb-4">{title}</h2>}
       {description && (
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-          {description}
-        </p>
+        <p className="text-lg text-white/90 max-w-3xl mx-auto leading-relaxed">{description}</p>
       )}
     </div>
   )
@@ -76,7 +74,7 @@ export const CardsBlock: React.FC<CardsBlockProps> = ({
   )
 
   return (
-    <section className="py-8 bg-white dark:bg-gray-900">
+    <section className="py-8 bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050]">
       <div className="container mx-auto px-4 max-w-7xl">
         {renderHeader()}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -36,7 +36,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   const { hero, layout } = page
 
   return (
-    <article className="pb-24">
+    <article>
       <PayloadRedirects disableNotFound url={url} />
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} locale={locale} />

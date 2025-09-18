@@ -7,6 +7,8 @@ import 'swiper/scss/parallax'
 import { Autoplay, Pagination, Parallax } from 'swiper/modules'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getLinkHref } from '@/utilities/getLinkHref'
+import { TypedLocale } from 'payload'
 
 type Slide = {
   image?: {
@@ -16,7 +18,16 @@ type Slide = {
   description?: string
   callToAction?: {
     text: string
-    link: string
+    link: {
+      type?: 'reference' | 'custom' | null
+      url?: string | null
+      label?: string | null
+      anchor?: string | null
+      reference?: {
+        relationTo?: string
+        value?: { slug?: string | null } | number
+      } | null
+    }
     openInNewTab?: boolean
   }
 }
@@ -24,9 +35,10 @@ type Slide = {
 type Props = {
   className?: string
   slides: Slide[]
+  locale?: TypedLocale
 }
 
-export const CarouselBlock: React.FC<Props> = ({ className, slides }) => {
+export const CarouselBlock: React.FC<Props> = ({ className, slides, locale = 'en' }) => {
   return (
     <div className={cn('mx-auto w-full carousel-block', className)}>
       <Swiper
@@ -78,7 +90,7 @@ export const CarouselBlock: React.FC<Props> = ({ className, slides }) => {
                   )}
                   {slide.callToAction?.text && slide.callToAction.link && (
                     <Link
-                      href={slide.callToAction.link}
+                      href={getLinkHref({ link: slide.callToAction.link }, locale)}
                       target={slide.callToAction.openInNewTab ? '_blank' : '_self'}
                       rel={slide.callToAction.openInNewTab ? 'noopener noreferrer' : undefined}
                       className="block md:inline-block text-gray-900 rounded bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium text-center text-sm px-5 py-2.5 dark:bg-[#9BC273] dark:text-white dark:border-gray-600 dark:hover:bg-[#9ab97b] dark:hover:border-gray-600 dark:focus:ring-gray-700"

@@ -83,7 +83,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     )
 
     return (
-      <div className="pt-24 pb-24">
+      <div className="pt-24 pb-24 bg-gradient-to-br from-gray-50 via-white to-green-50/30">
         <div className="container mb-16">
           <div className="prose max-w-none">
             <h1>{t.title}</h1>
@@ -106,7 +106,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     )
   } catch (_error) {
     return (
-      <div className="pt-24 pb-24">
+      <div className="pt-24 pb-24 bg-gradient-to-br from-gray-50 via-white to-green-50/30">
         <div className="container mb-16">
           <div className="prose max-w-none">
             <h1>{t.title}</h1>

@@ -90,36 +90,38 @@ export const PositionCard: React.FC<Props> = ({ className, doc, locale }) => {
             )}
           </CardHeader>
 
-          {previewRequirements.length > 0 && (
-            <CardContent className="p-0 space-y-4">
-              <h4 className="flex items-center font-semibold text-gray-900">
-                <span className="mr-3 h-5 w-1 rounded-full bg-[#9BC273]" />
-                {t.requirements}
-              </h4>
+          <CardContent className="p-0 space-y-4 flex-grow">
+            {previewRequirements.length > 0 && (
+              <>
+                <h4 className="flex items-center font-semibold text-gray-900">
+                  <span className="mr-3 h-5 w-1 rounded-full bg-[#9BC273]" />
+                  {t.requirements}
+                </h4>
 
-              <ul className="ml-4 space-y-2 text-sm text-gray-700">
-                {previewRequirements.map((req, i) => (
-                  <li key={i} className="flex items-start">
-                    <span className="mt-2 mr-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#9BC273]" />
-                    {req.item}
-                  </li>
-                ))}
-              </ul>
+                <ul className="ml-4 space-y-2 text-sm text-gray-700">
+                  {previewRequirements.map((req, i) => (
+                    <li key={i} className="flex items-start">
+                      <span className="mt-2 mr-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#9BC273]" />
+                      {req.item}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
 
-              <div className="flex justify-end pt-4">
-                <Button
-                  asChild
-                  size="sm"
-                  className="bg-[#9BC273] text-white hover:bg-[#8AB562] font-medium shadow-sm"
-                >
-                  <Link href={href} className="inline-flex items-center">
-                    {t.viewDetails}
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          )}
+            <div className="flex justify-end pt-4 mt-auto">
+              <Button
+                asChild
+                size="sm"
+                className="bg-[#9BC273] text-white hover:bg-[#8AB562] font-medium shadow-sm"
+              >
+                <Link href={href} className="inline-flex items-center">
+                  {t.viewDetails}
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
         </div>
       </div>
     </Card>

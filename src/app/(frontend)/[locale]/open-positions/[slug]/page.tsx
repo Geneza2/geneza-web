@@ -175,15 +175,15 @@ export default async function Position({ params: paramsPromise }: Args) {
                       </div>
                       <p className="mb-6 opacity-90">{t.applyMessage}</p>
                       <Button asChild variant="secondary" size="lg" className="font-semibold">
-                        <Link
-                          href={job.callToAction.link}
-                          target={job.callToAction.openInNewTab ? '_blank' : '_self'}
-                          rel={job.callToAction.openInNewTab ? 'noopener noreferrer' : undefined}
+                        <a
+                          href="mailto:geneza@geneza.com?subject=Job Application"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="flex items-center gap-2"
                         >
                           {job.callToAction.text}
-                          {job.callToAction.openInNewTab && <ExternalLink className="w-4 h-4" />}
-                        </Link>
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
                       </Button>
                     </CardContent>
                   </Card>

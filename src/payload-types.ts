@@ -992,7 +992,41 @@ export interface CarouselBlock {
     description?: string | null;
     callToAction: {
       text: string;
-      link: string;
+      link: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null)
+          | ({
+              relationTo: 'products';
+              value: number | Product;
+            } | null)
+          | ({
+              relationTo: 'openPositions';
+              value: number | OpenPosition;
+            } | null)
+          | ({
+              relationTo: 'goods';
+              value: number | Good;
+            } | null)
+          | ({
+              relationTo: 'categories';
+              value: number | Category;
+            } | null);
+        /**
+         * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+         */
+        anchor?: string | null;
+        url?: string | null;
+        label: string;
+      };
       openInNewTab?: boolean | null;
     };
     id?: string | null;
@@ -1709,7 +1743,16 @@ export interface CarouselBlockSelect<T extends boolean = true> {
           | T
           | {
               text?: T;
-              link?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    anchor?: T;
+                    url?: T;
+                    label?: T;
+                  };
               openInNewTab?: T;
             };
         id?: T;

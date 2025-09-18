@@ -20,10 +20,19 @@ type LinkData = {
   } | null
 }
 
-export const getLinkHref = (item: { link: LinkData }, locale?: TypedLocale): string => {
-  const link = item.link
+export const getLinkHref = (item: { link: LinkData } | LinkData, locale?: TypedLocale): string => {
+  const link = 'link' in item ? item.link : item
 
   if (!link) {
+    return locale ? `/${locale}` : '/'
+  }
+
+  // If link exists but has no type or invalid data, return home page
+  if (
+    !link.type ||
+    (link.type === 'reference' && !link.reference) ||
+    (link.type === 'custom' && !link.url)
+  ) {
     return locale ? `/${locale}` : '/'
   }
 
@@ -37,7 +46,14 @@ export const getLinkHref = (item: { link: LinkData }, locale?: TypedLocale): str
   // Handle reference links
   if (link.type === 'reference' && link.reference) {
     const { relationTo, value } = link.reference
-    const slug = typeof value === 'object' && value && 'slug' in value ? value.slug : ''
+
+    // Handle populated objects (with depth=2, references should be populated)
+    const slug = typeof value === 'object' && value && 'slug' in value ? value.slug || '' : ''
+
+    // If no relationTo, return home page
+    if (!relationTo) {
+      return locale ? `/${locale}` : '/'
+    }
 
     // Special handling for goods
     if (relationTo === 'goods') {
@@ -54,7 +70,7 @@ export const getLinkHref = (item: { link: LinkData }, locale?: TypedLocale): str
     }
 
     // Handle other collections with slug-based routing
-    if (relationTo && relationTo !== 'pages') {
+    if (relationTo !== 'pages') {
       const collectionPath = collectionPathMap[relationTo] || relationTo
       const url = locale ? `/${locale}/${collectionPath}/${slug}` : `/${collectionPath}/${slug}`
       return link.anchor ? `${url}#${link.anchor}` : url
