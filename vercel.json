@@ -6,15 +6,22 @@
     }
   ],
   "functions": {
-    "src/app/(frontend)/[locale]/open-positions/[slug]/page.tsx": {
+    "app/(frontend)/[locale]/open-positions/[slug]/page.tsx": {
       "maxDuration": 30
     },
-    "src/app/(frontend)/[locale]/posts/[slug]/page.tsx": {
+    "app/(frontend)/[locale]/posts/[slug]/page.tsx": {
       "maxDuration": 30
     },
-    "src/app/(frontend)/[locale]/products/[slug]/page.tsx": {
+    "app/(frontend)/[locale]/products/[slug]/page.tsx": {
+      "maxDuration": 30
+    },
+    "app/(frontend)/[locale]/layout.tsx": {
+      "maxDuration": 30
+    },
+    "app/api/**": {
       "maxDuration": 30
     }
   },
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "framework": "nextjs"
 }
