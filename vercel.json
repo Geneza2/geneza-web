@@ -4,5 +4,17 @@
       "path": "/api/payload-jobs/run",
       "schedule": "0 0 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "src/app/(frontend)/[locale]/open-positions/[slug]/page.tsx": {
+      "maxDuration": 30
+    },
+    "src/app/(frontend)/[locale]/posts/[slug]/page.tsx": {
+      "maxDuration": 30
+    },
+    "src/app/(frontend)/[locale]/products/[slug]/page.tsx": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["iad1"]
 }

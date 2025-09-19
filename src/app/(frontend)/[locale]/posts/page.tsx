@@ -7,8 +7,9 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = 600
+export const runtime = 'nodejs'
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })

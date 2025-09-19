@@ -24,6 +24,17 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   localization,
+  onInit: async (payload) => {
+    // Test database connection on initialization
+    try {
+      if (payload?.db?.connect) {
+        await payload.db.connect()
+        console.log('✅ Database connection successful')
+      }
+    } catch (error) {
+      console.error('❌ Database connection failed:', error)
+    }
+  },
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -65,6 +76,12 @@ export default buildConfig({
   db: vercelPostgresAdapter({
     pool: {
       connectionString: process.env.POSTGRES_URL || '',
+      max: 10,
+      min: 2,
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 5000,
+      statement_timeout: 30000,
+      query_timeout: 30000,
     },
   }),
   collections: [Pages, Posts, Media, Categories, Users, OpenPositions, Products, Goods],

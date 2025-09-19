@@ -11,23 +11,29 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { generatePositionSlug } from '@/utilities/generatePositionSlug'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { openPositionsTranslations } from '@/i18n/translations/open-positions'
+import { retryOperation } from '@/utilities/retryOperation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, CheckCircle, ExternalLink, ArrowLeft } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function generateStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })
-    const openPositions = await payload.find({
-      collection: 'openPositions',
-      draft: false,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      locale: 'en',
-      select: { slug: true, jobOffers: true },
-    })
+    const openPositions = await retryOperation(() =>
+      payload.find({
+        collection: 'openPositions',
+        draft: false,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        locale: 'en',
+        select: { slug: true, jobOffers: true },
+      }),
+    )
 
     const params: { slug: string }[] = []
 
@@ -54,12 +60,12 @@ type Args = {
 }
 
 export default async function Position({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
-  const { slug = '', locale } = await paramsPromise
-  const url = `/${locale}/open-positions/${slug}`
-  const t = openPositionsTranslations[locale] || openPositionsTranslations.en
-
   try {
+    const { isEnabled: draft } = await draftMode()
+    const { slug = '', locale } = await paramsPromise
+    const url = `/${locale}/open-positions/${slug}`
+    const t = openPositionsTranslations[locale] || openPositionsTranslations.en
+
     const position = await queryPositionBySlug({ slug, locale })
 
     if (!position) {
@@ -196,11 +202,17 @@ export default async function Position({ params: paramsPromise }: Args) {
     )
   } catch (error) {
     console.error('Error loading position:', error)
+    const { locale } = await paramsPromise
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center space-y-4">
             <h1 className="text-2xl font-semibold">{locale === 'rs' ? 'Greška' : 'Error'}</h1>
+            <p className="text-muted-foreground">
+              {locale === 'rs'
+                ? 'Došlo je do greške pri učitavanju pozicije.'
+                : 'An error occurred while loading the position.'}
+            </p>
             <Button asChild className="w-full">
               <Link href={`/${locale}/open-positions`} className="flex items-center gap-2">
                 <ArrowLeft className="w-4 h-4" />
@@ -222,19 +234,21 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
 const queryPositionBySlug = cache(
   async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
-    const { isEnabled: draft } = await draftMode()
-    const payload = await getPayload({ config: configPromise })
-
     try {
-      const englishResult = await payload.find({
-        collection: 'openPositions',
-        draft,
-        limit: 100,
-        overrideAccess: draft,
-        pagination: false,
-        depth: 2,
-        locale: 'en',
-      })
+      const { isEnabled: draft } = await draftMode()
+      const payload = await getPayload({ config: configPromise })
+
+      const englishResult = await retryOperation(() =>
+        payload.find({
+          collection: 'openPositions',
+          draft,
+          limit: 100,
+          overrideAccess: draft,
+          pagination: false,
+          depth: 2,
+          locale: 'en',
+        }),
+      )
 
       let foundDocId = null
       let foundJobOfferIndex = null
@@ -258,16 +272,18 @@ const queryPositionBySlug = cache(
 
       if (foundDocId === null || foundJobOfferIndex === null) return null
 
-      const result = await payload.find({
-        collection: 'openPositions',
-        draft,
-        limit: 1,
-        overrideAccess: draft,
-        pagination: false,
-        depth: 2,
-        locale: locale,
-        where: { id: { equals: foundDocId } },
-      })
+      const result = await retryOperation(() =>
+        payload.find({
+          collection: 'openPositions',
+          draft,
+          limit: 1,
+          overrideAccess: draft,
+          pagination: false,
+          depth: 2,
+          locale: locale,
+          where: { id: { equals: foundDocId } },
+        }),
+      )
 
       const doc = result.docs[0]
       if (!doc?.jobOffers || !Array.isArray(doc.jobOffers)) return null

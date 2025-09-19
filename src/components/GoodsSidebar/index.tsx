@@ -82,7 +82,7 @@ export const GoodsSidebar: React.FC<Props> = ({
             />
           </Button>
 
-          {categories.map((category, index) => (
+          {categories.map((category, _index) => (
             <Button
               key={category.slug}
               onClick={() => handleCategoryClick(category.slug)}

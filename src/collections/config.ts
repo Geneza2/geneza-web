@@ -16,7 +16,7 @@ export const defaultVersionsConfig = {
   maxPerDoc: 50,
 }
 
-export const createAdminConfig = (collection: string) => ({
+export const createAdminConfig = (_collection: string) => ({
   useAsTitle: 'title',
   defaultColumns: ['title', 'slug', 'updatedAt'],
 })

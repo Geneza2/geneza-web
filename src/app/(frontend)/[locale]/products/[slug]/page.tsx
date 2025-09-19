@@ -15,48 +15,59 @@ import { TypedLocale } from 'payload'
 import { getImageUrl } from '@/utilities/getImageUrl'
 import type { Product, Media } from '@/payload-types'
 import { ReactNode } from 'react'
+import { retryOperation } from '@/utilities/retryOperation'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = 600
+export const runtime = 'nodejs'
 
 const query = cache(
   async ({ slug, locale, draft }: { slug: string; locale: TypedLocale; draft: boolean }) => {
     const payload = await getPayload({ config: configPromise })
-    const { docs = [] } = await payload.find({
-      collection: 'products',
-      draft,
-      overrideAccess: draft,
-      pagination: false,
-      limit: 1,
-      locale,
-      depth: 2,
-      where: { slug: { equals: slug } },
-    })
+    const { docs = [] } = await retryOperation(() =>
+      payload.find({
+        collection: 'products',
+        draft,
+        overrideAccess: draft,
+        pagination: false,
+        limit: 1,
+        locale,
+        depth: 2,
+        where: { slug: { equals: slug } },
+      }),
+    )
     return docs[0] || null
   },
 )
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const { docs = [] } = await payload.find({
-    collection: 'products',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: { slug: true },
-  })
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const { docs = [] } = await retryOperation(() =>
+      payload.find({
+        collection: 'products',
+        draft: false,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        select: { slug: true },
+      }),
+    )
 
-  // Generate params for both locales
-  const params = []
-  for (const doc of docs) {
-    if (doc.slug) {
-      params.push({ slug: doc.slug, locale: 'en' })
-      params.push({ slug: doc.slug, locale: 'rs' })
+    // Generate params for both locales
+    const params = []
+    for (const doc of docs) {
+      if (doc.slug) {
+        params.push({ slug: doc.slug, locale: 'en' })
+        params.push({ slug: doc.slug, locale: 'rs' })
+      }
     }
-  }
 
-  return params
+    return params
+  } catch (error) {
+    console.error('Error generating static params for products:', error)
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {

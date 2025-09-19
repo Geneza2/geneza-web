@@ -28,7 +28,7 @@ export const revalidateGoods: CollectionAfterChangeHook = ({
   return doc
 }
 
-export const revalidateDelete: CollectionAfterDeleteHook = ({ doc, req: { context } }) => {
+export const revalidateDelete: CollectionAfterDeleteHook = ({ doc: _doc, req: { context } }) => {
   if (!context.disableRevalidate) {
     revalidatePath('/goods')
     revalidateTag('goods-sitemap')

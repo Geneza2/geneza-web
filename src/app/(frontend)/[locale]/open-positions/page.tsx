@@ -7,8 +7,9 @@ import { OpenPositionsArchive } from '@/components/OpenPositionsArchive'
 import { openPositionsTranslations } from '@/i18n/translations/open-positions'
 import { Badge } from '@/components/ui/badge'
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const revalidate = 600
+export const runtime = 'nodejs'
 
 type Args = {
   params: Promise<{
@@ -31,6 +32,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         overrideAccess: false,
         locale: locale,
         select: {
+          id: true,
           title: true,
           slug: true,
           jobOffers: true,
