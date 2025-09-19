@@ -31,8 +31,20 @@ export default buildConfig({
         await payload.db.connect()
         console.log('✅ Database connection successful')
       }
+
+      // Log connection info for debugging
+      console.log('🔧 Database config:', {
+        hasConnectionString: !!process.env.POSTGRES_URL,
+        connectionStringPrefix: process.env.POSTGRES_URL?.substring(0, 20) + '...',
+        environment: process.env.NODE_ENV,
+      })
     } catch (error) {
-      console.error('❌ Database connection failed:', error)
+      const err = error as Error
+      console.error('❌ Database connection failed:', {
+        message: err.message,
+        name: err.name,
+        hasConnectionString: !!process.env.POSTGRES_URL,
+      })
     }
   },
   admin: {

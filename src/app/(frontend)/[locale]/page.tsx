@@ -26,10 +26,30 @@ export default async function Page({ params: paramsPromise }: Args) {
     let page: PageType | null
 
     try {
+      // Try to find home page first, then fallback to any page
       page = await queryPage({
         slug: 'production',
         locale,
       })
+
+      // If no home page, try to get any published page
+      if (!page) {
+        const payload = await getPayload({ config: configPromise })
+        const result = await retryOperation(() =>
+          payload.find({
+            collection: 'pages',
+            limit: 1,
+            overrideAccess: false,
+            locale: locale,
+            where: {
+              _status: {
+                equals: 'published',
+              },
+            },
+          }),
+        )
+        page = result.docs?.[0] || null
+      }
     } catch (error) {
       console.error('Error querying page:', error)
       page = null
@@ -78,10 +98,29 @@ export default async function Page({ params: paramsPromise }: Args) {
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   try {
     const { locale } = await params
-    const page = await queryPage({
+    let page = await queryPage({
       locale,
       slug: 'production',
     })
+
+    // If no home page, try to get any published page
+    if (!page) {
+      const payload = await getPayload({ config: configPromise })
+      const result = await retryOperation(() =>
+        payload.find({
+          collection: 'pages',
+          limit: 1,
+          overrideAccess: false,
+          locale: locale,
+          where: {
+            _status: {
+              equals: 'published',
+            },
+          },
+        }),
+      )
+      page = result.docs?.[0] || null
+    }
 
     return generateMeta({ doc: page })
   } catch (error) {
