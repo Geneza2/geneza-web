@@ -3,7 +3,6 @@
 import { cn } from '@/utilities/ui'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import Image from 'next/image'
 import Link from 'next/link'
 import { getLinkHref } from '@/utilities/getLinkHref'
 import { TypedLocale } from 'payload'
@@ -47,91 +46,85 @@ export const ZigZagRightBlock: React.FC<Props> = ({
 }) => {
   const { image, title, description, callToAction } = content
 
+  // Use the image as background, fallback to a default gradient
+  const backgroundImage = image?.url || background?.url
+  const backgroundStyle = backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : {}
+
   return (
     <section
       id={sectionId}
-      className={cn('w-full transition-all duration-300 ease-in-out', className)}
-      style={{
-        background: background?.url ? `url(${background.url}) center / cover no-repeat` : '#fff',
-      }}
+      className={cn('w-full relative min-h-[70vh] bg-cover bg-center bg-no-repeat', className)}
+      style={backgroundStyle}
     >
-      <div className="container py-16">
-        <Card className="border-0 bg-transparent shadow-none">
-          <CardContent className="p-0 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-            <div className="space-y-4 md:space-y-6 px-4 md:px-0 order-2 md:order-1 flex flex-col justify-center h-full">
-              <div className="space-y-4">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-                  {title}
-                </h2>
-                <div className="w-16 h-1 bg-[#9BC273] rounded-full"></div>
-              </div>
-              {description && (
-                <p className="text-black text-sm sm:text-base leading-relaxed transition-colors duration-300 ease-in-out">
-                  {description}
-                </p>
-              )}
-              {callToAction?.text && (
-                <div className="pt-2">
-                  <Button
-                    asChild
-                    className="transition-all duration-300 ease-in-out hover:scale-105"
-                  >
-                    <Link
-                      href={
-                        callToAction.linkType === 'custom' && callToAction.url
-                          ? callToAction.url
-                          : callToAction.linkType === 'reference' && callToAction.reference
-                            ? getLinkHref(
-                                {
-                                  link: {
-                                    type: 'reference',
-                                    reference: {
-                                      relationTo: callToAction.reference.relationTo,
-                                      value: callToAction.reference.value,
-                                    },
-                                    anchor: callToAction.anchor,
-                                  },
-                                },
-                                locale || 'en',
-                              )
-                            : '#'
-                      }
-                      target={callToAction.newTab ? '_blank' : '_self'}
-                      rel={callToAction.newTab ? 'noopener noreferrer' : undefined}
-                    >
-                      {callToAction.text}
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </div>
+      {/* Background overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/40 to-black/60"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50"></div>
 
-            <div className="flex justify-center order-1 md:order-2 h-full">
-              {image?.url && (
-                <div className="relative w-full max-w-2xl aspect-[4/3] group">
-                  <div className="w-full h-full">
-                    <Image
-                      src="/bg-bubble.svg"
-                      alt=""
-                      width={540}
-                      height={535}
-                      className="w-full h-full"
-                    />
+      <div className="relative z-10 container py-20 lg:py-28">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[50vh]">
+          {/* Left side - Empty space for balance */}
+          <div className="order-1 lg:order-1"></div>
+
+          {/* Right side - Blur container with content */}
+          <div className="order-2 lg:order-2">
+            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+              <CardContent className="p-8 lg:p-12">
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight drop-shadow-lg">
+                      {title}
+                    </h2>
+                    <div className="w-16 h-1 bg-[#9BC273] rounded-full shadow-lg"></div>
                   </div>
-                  <div className="absolute top-6 left-6 right-6 bottom-6 md:top-12 md:left-12 md:right-12 md:bottom-12">
-                    <Image
-                      src={image.url}
-                      alt={image.alt || title}
-                      fill
-                      className="rounded-2xl shadow-lg object-cover transition-all duration-500 ease-out hover:scale-110 hover:shadow-2xl hover:-rotate-1"
-                    />
-                  </div>
+                  {description && (
+                    <p className="text-lg text-white/90 leading-relaxed drop-shadow-md">
+                      {description}
+                    </p>
+                  )}
+                  {callToAction?.text && (
+                    <div className="pt-4">
+                      <Button
+                        asChild
+                        size="lg"
+                        className="bg-[#9BC273] hover:bg-[#8BAF66] text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl shadow-lg backdrop-blur-sm"
+                      >
+                        <Link
+                          href={
+                            callToAction.linkType === 'custom' && callToAction.url
+                              ? callToAction.url
+                              : callToAction.linkType === 'reference' && callToAction.reference
+                                ? getLinkHref(
+                                    {
+                                      link: {
+                                        type: 'reference',
+                                        reference: {
+                                          relationTo: callToAction.reference.relationTo,
+                                          value: callToAction.reference.value,
+                                        },
+                                        anchor: callToAction.anchor,
+                                      },
+                                    },
+                                    locale || 'en',
+                                  )
+                                : '#'
+                          }
+                          target={callToAction.newTab ? '_blank' : '_self'}
+                          rel={callToAction.newTab ? 'noopener noreferrer' : undefined}
+                        >
+                          {callToAction.text}
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
+
+      {/* Fallback background if no image */}
+      {!backgroundImage && <div className="absolute inset-0 bg-[#D9D9D9] -z-10"></div>}
     </section>
   )
 }

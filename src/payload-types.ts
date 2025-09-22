@@ -395,9 +395,24 @@ export interface Category {
   id: number;
   title: string;
   description?: string | null;
+  /**
+   * Category banner image that will replace the green gradient banner
+   */
+  bannerImage?: (number | null) | Media;
+  /**
+   * Select a parent category to make this a subcategory
+   */
+  parent?: (number | null) | Category;
+  /**
+   * Order of display (lower numbers appear first)
+   */
+  order?: number | null;
+  /**
+   * Featured categories appear prominently
+   */
+  featured?: boolean | null;
   slug?: string | null;
   slugLock?: boolean | null;
-  parent?: (number | null) | Category;
   breadcrumbs?:
     | {
         doc?: (number | null) | Category;
@@ -2062,9 +2077,12 @@ export interface MediaSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   description?: T;
+  bannerImage?: T;
+  parent?: T;
+  order?: T;
+  featured?: T;
   slug?: T;
   slugLock?: T;
-  parent?: T;
   breadcrumbs?:
     | T
     | {

@@ -44,12 +44,22 @@ export default async function Page({
       }),
       payload.find({
         collection: 'categories',
-        depth: 1,
+        depth: 2, // Increased depth to get parent categories and their relationships
         limit: 100,
         overrideAccess: true,
         locale: locale,
+        sort: 'order', // Sort by order field
       }),
     ])
+
+    // Get the selected category to determine banner image
+    const selectedCategorySlug = Array.isArray(searchParams.category)
+      ? searchParams.category[0]
+      : searchParams.category
+
+    const selectedCategory = selectedCategorySlug
+      ? categories.docs.find((cat) => cat.slug === selectedCategorySlug)
+      : null
 
     const productTitles = new Set<string>()
     goods.docs.forEach((good) => {
@@ -87,30 +97,75 @@ export default async function Page({
 
     const hasProducts = goods.docs.some((doc) => doc.products && doc.products.length > 0)
 
+    // Determine banner image and content
+    const bannerImage =
+      selectedCategory?.bannerImage && typeof selectedCategory.bannerImage === 'object'
+        ? selectedCategory.bannerImage.url
+        : null
+
+    const bannerTitle = selectedCategory?.title || t.title
+    const bannerDescription =
+      selectedCategory?.description ||
+      (locale === 'rs'
+        ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
+        : 'Discover our wide range of quality products directly from the source')
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
-        <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden">
-          <div className="absolute inset-0 bg-black/5"></div>
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative overflow-hidden">
+          {bannerImage ? (
+            // Custom image banner
+            <>
+              <div
+                className="relative h-[60vh] min-h-[400px] bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${bannerImage})` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30"></div>
 
-          <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
-                <Package className="w-10 h-10 text-white" />
+                <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 h-full flex items-center">
+                  <div className="text-center max-w-4xl mx-auto">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                      <Package className="w-10 h-10 text-white" />
+                    </div>
+
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
+                      {bannerTitle}
+                    </h1>
+
+                    <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+                      {bannerDescription}
+                    </p>
+                  </div>
+                </div>
               </div>
+            </>
+          ) : (
+            // Default gradient banner
+            <>
+              <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden">
+                <div className="absolute inset-0 bg-black/5"></div>
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
-                {t.title}
-              </h1>
+                <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+                  <div className="text-center max-w-4xl mx-auto">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                      <Package className="w-10 h-10 text-white" />
+                    </div>
 
-              <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
-                {locale === 'rs'
-                  ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
-                  : 'Discover our wide range of quality products directly from the source'}
-              </p>
-            </div>
-          </div>
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+                      {bannerTitle}
+                    </h1>
+
+                    <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+                      {bannerDescription}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="relative -mt-16 pb-16">

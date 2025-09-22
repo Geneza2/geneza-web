@@ -20,17 +20,59 @@ const nextConfig = {
           protocol: url.protocol.replace(':', ''),
         }
       }),
+      // Add Vercel Blob Storage domains
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.vercel-storage.com',
+      },
     ],
     unoptimized: process.env.NODE_ENV === 'development',
   },
-  webpack: (webpackConfig) => {
+  webpack: (webpackConfig, { isServer }) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.mjs': ['.mts', '.mjs'],
     }
 
+    // Fix Jest worker issues
+    if (!isServer) {
+      webpackConfig.resolve.fallback = {
+        ...webpackConfig.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      }
+    }
+
+    // Optimize build performance
+    webpackConfig.optimization = {
+      ...webpackConfig.optimization,
+      splitChunks: {
+        ...webpackConfig.optimization.splitChunks,
+        maxAsyncRequests: 6,
+        maxInitialRequests: 4,
+      },
+    }
+
     return webpackConfig
+  },
+  // Add experimental features to improve build stability
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+  // Turbopack configuration (moved from experimental.turbo)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
   reactStrictMode: true,
   redirects,

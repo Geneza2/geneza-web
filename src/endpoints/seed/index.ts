@@ -9,6 +9,7 @@ import { imageHero1 } from './image-hero-1'
 import { post1 } from './post-1'
 import { post2 } from './post-2'
 import { post3 } from './post-3'
+import { seedCategories } from './categories-seed'
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -125,80 +126,10 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
-
-    // Create categories for goods
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Fresh Produce',
-        description: 'Fresh fruits and vegetables',
-      },
-      locale: 'en',
-    }),
-
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Fresh Produce',
-        description: 'Sveže voće i povrće',
-      },
-      locale: 'rs',
-    }),
-
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Dairy Products',
-        description: 'Milk, cheese, and dairy items',
-      },
-      locale: 'en',
-    }),
-
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Dairy Products',
-        description: 'Mlečni proizvodi',
-      },
-      locale: 'rs',
-    }),
-
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Meat & Poultry',
-        description: 'Fresh meat and poultry products',
-      },
-      locale: 'en',
-    }),
-
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Meat & Poultry',
-        description: 'Meso i živina',
-      },
-      locale: 'rs',
-    }),
-
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Bakery',
-        description: 'Fresh bread and baked goods',
-      },
-      locale: 'en',
-    }),
-
-    payload.create({
-      collection: 'categories',
-      data: {
-        title: 'Bakery',
-        description: 'Pekara',
-      },
-      locale: 'rs',
-    }),
   ])
+
+  payload.logger.info(`— Seeding categories...`)
+  await seedCategories(payload)
 
   payload.logger.info(`— Seeding products...`)
 

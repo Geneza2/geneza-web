@@ -101,6 +101,14 @@ export const GoodsArchive: React.FC<Props> = ({
           .map((category) => ({
             slug: category.slug || '',
             title: category.title || '',
+            parent:
+              typeof category.parent === 'object' && category.parent
+                ? {
+                    slug: category.parent.slug || '',
+                    title: category.parent.title || '',
+                  }
+                : null,
+            order: typeof category.order === 'number' ? category.order : 0,
           }))
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesAlphabetical)
@@ -108,6 +116,8 @@ export const GoodsArchive: React.FC<Props> = ({
           .map((good) => ({
             slug: good.slug || '',
             title: good.title || '',
+            parent: null,
+            order: 0,
           }))
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesAlphabetical)

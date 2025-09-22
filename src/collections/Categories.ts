@@ -14,7 +14,7 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'parent', 'updatedAt'],
   },
   fields: [
     {
@@ -27,6 +27,39 @@ export const Categories: CollectionConfig = {
       name: 'description',
       type: 'textarea',
       localized: true,
+    },
+    {
+      name: 'bannerImage',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Category banner image that will replace the green gradient banner',
+      },
+    },
+    {
+      name: 'parent',
+      type: 'relationship',
+      relationTo: 'categories',
+      admin: {
+        description: 'Select a parent category to make this a subcategory',
+      },
+    },
+    {
+      name: 'order',
+      type: 'number',
+      admin: {
+        description: 'Order of display (lower numbers appear first)',
+        step: 1,
+      },
+      defaultValue: 0,
+    },
+    {
+      name: 'featured',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Featured categories appear prominently',
+      },
     },
     ...slugField(),
   ],
