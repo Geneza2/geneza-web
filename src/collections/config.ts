@@ -10,7 +10,7 @@ export const defaultAccessConfig = {
 
 export const defaultVersionsConfig = {
   drafts: {
-    autosave: { interval: 100 },
+    autosave: false,
     schedulePublish: true,
   },
   maxPerDoc: 50,

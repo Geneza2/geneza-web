@@ -150,7 +150,7 @@ const CutSizes = ({ cutSizes, locale }: { cutSizes: CutSize[] | null; locale: st
         <h3 className="text-lg font-semibold text-white lg:text-xl xl:text-2xl tracking-wide">
           {locale === 'rs' ? 'Dostupni rezovi' : 'Cut Size'}
         </h3>
-        <div className="flex flex-wrap gap-2 justify-center max-w-xs mx-auto lg:gap-3 lg:w-full lg:justify-start lg:flex-nowrap">
+        <div className="flex flex-wrap gap-2 justify-start lg:gap-3 lg:w-full lg:justify-start lg:flex-nowrap">
           {cutSizes?.map((cut: CutSize) => (
             <span
               key={cut.id ?? cut.name}
@@ -170,13 +170,18 @@ const ProductImage = ({ image, title, isMobile }: ProductImageProps) => (
       <div
         className={`${isMobile ? 'w-48 h-48 sm:w-56 sm:h-56 p-5' : 'w-80 h-80 xl:w-96 xl:h-96 2xl:w-[26rem] 2xl:h-[26rem] p-6 xl:p-8'} rounded-full overflow-hidden bg-white/15 backdrop-blur-sm border-2 border-white/30`}
       >
-        <Image
-          src={getImageUrl(image)}
-          alt={typeof image === 'object' && image?.alt ? image.alt : title}
-          width={600}
-          height={600}
-          className="w-full h-full object-contain"
-        />
+        {(() => {
+          const imageUrl = getImageUrl(image)
+          return imageUrl && imageUrl !== '/noimg.svg' ? (
+            <Image
+              src={imageUrl}
+              alt={typeof image === 'object' && image?.alt ? image.alt : title}
+              width={600}
+              height={600}
+              className="w-full h-full object-contain"
+            />
+          ) : null
+        })()}
       </div>
       {!isMobile && (
         <>
@@ -215,12 +220,14 @@ const HeroContent = ({
         {title}
       </h1>
       {scientificName && (
-        <p
-          className={`${isMobile ? 'text-lg sm:text-xl italic font-medium' : 'text-xl xl:text-2xl 2xl:text-3xl italic font-light tracking-wide'}`}
-          style={{ color: '#9BC273' }}
-        >
-          {scientificName}
-        </p>
+        <div className="relative">
+          <p
+            className={`${isMobile ? 'text-lg sm:text-xl italic font-bold' : 'text-xl xl:text-2xl 2xl:text-3xl italic font-bold tracking-wide'} relative z-10 px-3 py-1 rounded-md bg-[#9BC273]/20 border border-[#9BC273]/30`}
+            style={{ color: '#9BC273' }}
+          >
+            {scientificName}
+          </p>
+        </div>
       )}
     </div>
     {isMobile && <ProductImage image={image} title={title} isMobile={true} />}
@@ -284,14 +291,17 @@ export default async function ProductPage({ params: p }: Args) {
           locale === 'rs' ? 'Čuvanje' : 'Storage',
           productInfo.storage,
         ],
-      ].map(([key, icon, label, value], index) => (
-        <InfoRow
-          key={`${key}-${index}`}
-          icon={icon}
-          label={label as string}
-          value={value as string | number | null | undefined}
-        />
-      ))
+      ].map(
+        ([key, icon, label, value], index) =>
+          value != null && (
+            <InfoRow
+              key={`${key as string}-${index}`}
+              icon={icon}
+              label={label as string}
+              value={value as string | number | null | undefined}
+            />
+          ),
+      )
     : []
 
   const nutritiveInfoItems = nutritiveInfo
@@ -304,21 +314,24 @@ export default async function ProductPage({ params: p }: Args) {
           locale === 'rs' ? 'Ugljeni hidrati' : 'Carbohydrates',
           `${nutritiveInfo.carbohydrates}g`,
         ],
-      ].map(([key, letter, label, value], index) => (
-        <InfoRow
-          key={`${key}-${index}`}
-          icon={
-            <span
-              key={`${key}-icon-${index}`}
-              className="w-4 h-4 bg-primary rounded-full text-xs text-white flex items-center justify-center"
-            >
-              {letter as string}
-            </span>
-          }
-          label={label as string}
-          value={value as string | number | null | undefined}
-        />
-      ))
+      ].map(
+        ([key, letter, label, value], index) =>
+          value != null && (
+            <InfoRow
+              key={`${key as string}-${index}`}
+              icon={
+                <span
+                  key={`${key as string}-icon-${index}`}
+                  className="w-4 h-4 bg-primary rounded-full text-xs text-white flex items-center justify-center"
+                >
+                  {letter as string}
+                </span>
+              }
+              label={label as string}
+              value={value as string | number | null | undefined}
+            />
+          ),
+      )
     : []
 
   return (

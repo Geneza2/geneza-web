@@ -5,9 +5,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/utilities/ui'
 import { TypedLocale } from 'payload'
+import { getImageUrl } from '@/utilities/getImageUrl'
+import type { Media } from '@/payload-types'
 
 type Partner = {
-  image?: { url: string }
+  image?: Media | null
   link?: { url: string }
   title?: string
 }
@@ -58,46 +60,51 @@ export const InfiniteCards: React.FC<Props> = ({
         </div>
 
         <div className="flex flex-col items-center justify-center space-y-6 sm:flex-row sm:flex-wrap sm:justify-center sm:space-y-0 sm:gap-1 md:gap-2">
-          {cards.slice(0, 5).map((partner, index) => (
-            <div
-              key={index}
-              className={cn(
-                'group relative flex items-center justify-center p-4 transition-all duration-300 hover:scale-105',
-                'max-w-xs w-auto text-center mx-auto sm:w-auto',
-              )}
-            >
-              {partner.link?.url ? (
-                <Link
-                  href={partner.link.url}
-                  className="block w-full h-full"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {partner.image?.url && (
+          {cards.slice(0, 5).map((partner, index) => {
+            const imageUrl = getImageUrl(partner.image)
+            const imageAlt = partner.image?.alt || partner.title || 'Partner logo'
+            return (
+              <div
+                key={index}
+                className={cn(
+                  'group relative flex items-center justify-center p-4 transition-all duration-300 hover:scale-105',
+                  'max-w-xs w-auto text-center mx-auto sm:w-auto',
+                )}
+              >
+                {partner.link?.url ? (
+                  <Link
+                    href={partner.link.url}
+                    className="block w-full h-full"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {imageUrl && imageUrl !== '/noimg.svg' && (
+                      <div className="relative w-32 h-20 md:w-40 md:h-24 lg:w-48 lg:h-28 mx-auto">
+                        <Image
+                          src={imageUrl}
+                          alt={imageAlt}
+                          fill
+                          className="object-contain transition-all duration-300"
+                        />
+                      </div>
+                    )}
+                  </Link>
+                ) : (
+                  imageUrl &&
+                  imageUrl !== '/noimg.svg' && (
                     <div className="relative w-32 h-20 md:w-40 md:h-24 lg:w-48 lg:h-28 mx-auto">
                       <Image
-                        src={partner.image.url}
-                        alt={partner.title || 'Partner logo'}
+                        src={imageUrl}
+                        alt={imageAlt}
                         fill
                         className="object-contain transition-all duration-300"
                       />
                     </div>
-                  )}
-                </Link>
-              ) : (
-                partner.image?.url && (
-                  <div className="relative w-32 h-20 md:w-40 md:h-24 lg:w-48 lg:h-28 mx-auto">
-                    <Image
-                      src={partner.image.url}
-                      alt={partner.title || 'Partner logo'}
-                      fill
-                      className="object-contain transition-all duration-300"
-                    />
-                  </div>
-                )
-              )}
-            </div>
-          ))}
+                  )
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>

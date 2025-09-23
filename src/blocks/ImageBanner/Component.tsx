@@ -1,11 +1,10 @@
 import React from 'react'
 import Image from 'next/image'
+import { getImageUrl } from '@/utilities/getImageUrl'
+import type { Media } from '@/payload-types' // Import Media type
 
 type ImageBannerProps = {
-  image: {
-    url: string
-    alt?: string
-  }
+  image: Media // Use Media type for image
   height?: 'small' | 'medium' | 'large' | 'full'
   overlay?: boolean
   overlayOpacity?: number
@@ -24,15 +23,18 @@ export const ImageBannerBlock: React.FC<ImageBannerProps> = ({
   overlay = false,
   overlayOpacity = 0.3,
 }) => {
-  if (!image?.url) {
+  const imageUrl = getImageUrl(image)
+  const imageAlt = image?.alt || 'Banner image'
+
+  if (!imageUrl || imageUrl === '/noimg.svg') {
     return null
   }
 
   return (
     <section className={`relative w-full ${HEIGHT_CLASSES[height]} overflow-hidden`}>
       <Image
-        src={image.url}
-        alt={image.alt || 'Banner image'}
+        src={imageUrl}
+        alt={imageAlt}
         fill
         className="object-cover"
         priority

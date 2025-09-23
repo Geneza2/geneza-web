@@ -574,14 +574,32 @@ export interface OpenPosition {
 export interface Good {
   id: number;
   title: string;
+  /**
+   * Shown as the header image on Goods page when this category is selected (fallback when global Categories are not used). Use a wide image, e.g. 1920×800.
+   */
+  bannerImage?: (number | null) | Media;
   products: {
     image?: (number | null) | Media;
+    /**
+     * Optional PDF to download with details/specification
+     */
+    specPdf?: (number | null) | Media;
     title: string;
     description: string;
     /**
      * Country of origin
      */
     country: string;
+    /**
+     * Optional subcategories for this product (e.g., sizes, cuts)
+     */
+    subcategories?:
+      | {
+          name: string;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
     id?: string | null;
   }[];
   content: {
@@ -2217,13 +2235,22 @@ export interface ProductsSelect<T extends boolean = true> {
  */
 export interface GoodsSelect<T extends boolean = true> {
   title?: T;
+  bannerImage?: T;
   products?:
     | T
     | {
         image?: T;
+        specPdf?: T;
         title?: T;
         description?: T;
         country?: T;
+        subcategories?:
+          | T
+          | {
+              name?: T;
+              description?: T;
+              id?: T;
+            };
         id?: T;
       };
   content?: T;

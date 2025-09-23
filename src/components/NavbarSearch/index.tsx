@@ -41,27 +41,18 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
 
     const performSearch = async () => {
       setIsLoading(true)
-      console.log(`[NavbarSearch] Searching for: "${debouncedQuery}" in locale: ${locale}`)
 
       try {
         const searchUrl = `/api/search?q=${encodeURIComponent(debouncedQuery)}&locale=${locale}`
-        console.log(`[NavbarSearch] Fetching: ${searchUrl}`)
-
         const response = await fetch(searchUrl)
-        console.log(`[NavbarSearch] Response status: ${response.status}`)
 
         if (response.ok) {
           const data = await response.json()
-          console.log(`[NavbarSearch] Search results:`, data)
           setResults(data.results || [])
         } else {
-          console.error(`[NavbarSearch] Search failed with status: ${response.status}`)
-          const errorData = await response.json()
-          console.error(`[NavbarSearch] Error details:`, errorData)
           setResults([])
         }
       } catch (error) {
-        console.error('[NavbarSearch] Search error:', error)
         setResults([])
       } finally {
         setIsLoading(false)
@@ -98,10 +89,10 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
   const shouldShowResults = isFocused && (query.length >= 3 || results.length > 0)
 
   return (
-    <div className="relative">
+    <div className="relative w-full max-w-[260px]">
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 z-10" />
         <Input
           type="text"
           placeholder={locale === 'rs' ? 'Pretraži...' : 'Search...'}
@@ -112,7 +103,7 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
             // Delay hiding results to allow clicking on them
             setTimeout(() => setIsFocused(false), 200)
           }}
-          className="pl-10 pr-10 py-2 w-48 border-2 border-gray-200/50 bg-white/80 backdrop-blur-sm rounded-xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20 focus:w-64 focus:bg-white"
+          className="pl-12 pr-10 py-2 w-full border border-gray-200 bg-white/80 backdrop-blur-sm rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
         />
         {query && (
           <Button

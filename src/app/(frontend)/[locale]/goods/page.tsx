@@ -98,10 +98,19 @@ export default async function Page({
     const hasProducts = goods.docs.some((doc) => doc.products && doc.products.length > 0)
 
     // Determine banner image and content
-    const bannerImage =
-      selectedCategory?.bannerImage && typeof selectedCategory.bannerImage === 'object'
-        ? selectedCategory.bannerImage.url
-        : null
+    // Prefer category.bannerImage from Categories collection; else fall back to Goods-level bannerImage
+    let bannerImage: string | null = null
+    if (selectedCategory?.bannerImage && typeof selectedCategory.bannerImage === 'object') {
+      bannerImage = selectedCategory.bannerImage.url || null
+    }
+
+    if (!bannerImage) {
+      const matchedGood = goods.docs.find((g) => g.slug === selectedCategorySlug)
+      const goodBanner = matchedGood?.bannerImage
+      if (goodBanner && typeof goodBanner === 'object' && 'url' in goodBanner) {
+        bannerImage = goodBanner.url as string
+      }
+    }
 
     const bannerTitle = selectedCategory?.title || t.title
     const bannerDescription =

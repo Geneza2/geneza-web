@@ -9,12 +9,20 @@ import { getClientSideURL } from '@/utilities/getURL'
 export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | null): string => {
   if (!url) return ''
 
-  // Check if URL already has http/https protocol
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return cacheTag ? `${url}?${cacheTag}` : url
+  // Clean up the URL first
+  const cleanUrl = url.trim()
+
+  // Handle Vercel Blob Storage URLs - return as is
+  if (cleanUrl.includes('vercel-storage.com')) {
+    return cacheTag ? `${cleanUrl}?${cacheTag}` : cleanUrl
   }
 
-  // Otherwise prepend client-side URL
+  // Check if URL already has http/https protocol
+  if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+    return cacheTag ? `${cleanUrl}?${cacheTag}` : cleanUrl
+  }
+
+  // For relative URLs, prepend client-side URL
   const baseUrl = getClientSideURL()
-  return cacheTag ? `${baseUrl}${url}?${cacheTag}` : `${baseUrl}${url}`
+  return cacheTag ? `${baseUrl}${cleanUrl}?${cacheTag}` : `${baseUrl}${cleanUrl}`
 }

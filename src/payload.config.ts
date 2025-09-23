@@ -25,22 +25,13 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   localization,
   onInit: async (payload) => {
-    // Test database connection on initialization
     try {
       if (payload?.db?.connect) {
         await payload.db.connect()
-        console.log('✅ Database connection successful')
       }
-
-      // Log connection info for debugging
-      console.log('🔧 Database config:', {
-        hasConnectionString: !!process.env.POSTGRES_URL,
-        connectionStringPrefix: process.env.POSTGRES_URL?.substring(0, 20) + '...',
-        environment: process.env.NODE_ENV,
-      })
     } catch (error) {
       const err = error as Error
-      console.error('❌ Database connection failed:', {
+      console.error('Database connection failed:', {
         message: err.message,
         name: err.name,
         hasConnectionString: !!process.env.POSTGRES_URL,
@@ -88,10 +79,10 @@ export default buildConfig({
   db: vercelPostgresAdapter({
     pool: {
       connectionString: process.env.POSTGRES_URL || '',
-      max: 10,
-      min: 2,
-      idleTimeoutMillis: 10000,
-      connectionTimeoutMillis: 5000,
+      max: 5,
+      min: 1,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
       statement_timeout: 30000,
       query_timeout: 30000,
     },
@@ -106,6 +97,7 @@ export default buildConfig({
         media: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
+      enabled: !!process.env.BLOB_READ_WRITE_TOKEN,
     }),
   ],
   secret: process.env.PAYLOAD_SECRET,

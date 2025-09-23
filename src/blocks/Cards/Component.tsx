@@ -1,14 +1,13 @@
 import React from 'react'
 import Image from 'next/image'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { getImageUrl } from '@/utilities/getImageUrl'
+import type { Media } from '@/payload-types' // Import Media type
 
 type CardItem = {
   title: string
   description?: string
-  image?: {
-    url: string
-    alt?: string
-  }
+  image?: Media | null // Use Media type for image
 }
 
 type CardsBlockProps = {
@@ -44,34 +43,39 @@ export const CardsBlock: React.FC<CardsBlockProps> = ({
   )
 
   // Render individual card
-  const renderCard = (card: CardItem, index: number) => (
-    <Card
-      key={`${card.title}-${index}`}
-      className="h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
-    >
-      {card.image && (
-        <div className="relative h-48 overflow-hidden rounded-t-lg">
-          <Image
-            src={card.image.url}
-            alt={card.image.alt || card.title}
-            fill
-            className="object-cover transition-transform duration-300 hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        </div>
-      )}
-      <CardHeader className="p-6">
-        <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
-          {card.title}
-        </CardTitle>
-        {card.description && (
-          <CardDescription className="text-base text-gray-600 dark:text-gray-300 leading-relaxed mt-2">
-            {card.description}
-          </CardDescription>
+  const renderCard = (card: CardItem, index: number) => {
+    const imageUrl = card.image ? getImageUrl(card.image) : undefined
+    const imageAlt = card.image?.alt || card.title
+
+    return (
+      <Card
+        key={`${card.title}-${index}`}
+        className="h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+      >
+        {imageUrl && imageUrl !== '/noimg.svg' && (
+          <div className="relative h-48 overflow-hidden rounded-t-lg">
+            <Image
+              src={imageUrl}
+              alt={imageAlt}
+              fill
+              className="object-cover transition-transform duration-300 hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
         )}
-      </CardHeader>
-    </Card>
-  )
+        <CardHeader className="p-6">
+          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+            {card.title}
+          </CardTitle>
+          {card.description && (
+            <CardDescription className="text-base text-gray-600 dark:text-gray-300 leading-relaxed mt-2">
+              {card.description}
+            </CardDescription>
+          )}
+        </CardHeader>
+      </Card>
+    )
+  }
 
   return (
     <section className="py-8 bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050]">

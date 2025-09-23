@@ -34,8 +34,8 @@ export async function Footer({ locale }: FooterProps) {
     const sitemapSections = footer?.sitemapSections || []
 
     return (
-      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273]">
-        <div className="container mx-auto px-6 py-12">
+      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full">
+        <div className="w-full max-w-none pl-12 pr-6 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Branding Section */}
             <div className="lg:col-span-3 space-y-8">
@@ -182,8 +182,8 @@ export async function Footer({ locale }: FooterProps) {
 
           {/* Contact Information */}
           <div className="border-t border-gray-200 my-8" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div className="flex items-center space-x-4 group">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 justify-items-center">
+            <div className="flex items-center space-x-4 group justify-center md:justify-start">
               <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
                 <Mail className="w-6 h-6 text-white" />
               </div>
@@ -197,7 +197,7 @@ export async function Footer({ locale }: FooterProps) {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4 group">
+            <div className="flex items-center space-x-4 group justify-center md:justify-start">
               <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
                 <Phone className="w-6 h-6 text-white" />
               </div>
@@ -211,7 +211,7 @@ export async function Footer({ locale }: FooterProps) {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4 group">
+            <div className="flex items-center space-x-4 group justify-center md:justify-start">
               <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
                 <MapPin className="w-6 h-6 text-white" />
               </div>
@@ -260,8 +260,8 @@ export async function Footer({ locale }: FooterProps) {
 
     // Fallback footer with default content
     return (
-      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273]">
-        <div className="container mx-auto px-6 py-12">
+      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full">
+        <div className="w-full max-w-none pl-12 pr-6 py-12">
           <div className="text-center">
             <p className="text-gray-600">
               {currentLocale === 'rs' ? 'Footer se učitava...' : 'Loading footer...'}

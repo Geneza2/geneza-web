@@ -11,7 +11,7 @@ import { generatePositionSlug } from '@/utilities/generatePositionSlug'
 import { getImageUrl } from '@/utilities/getImageUrl'
 import { openPositionsTranslations } from '@/i18n/translations/open-positions'
 
-import type { OpenPosition } from '@/payload-types'
+import type { OpenPosition, Media } from '@/payload-types'
 import { TypedLocale } from 'payload'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -50,6 +50,8 @@ export const PositionCard: React.FC<Props> = ({ className, doc, locale }) => {
   const href = `/${locale}/open-positions/${positionSlug}`
 
   const imageUrl = getImageUrl(image || metaImage)
+  const imageAlt =
+    (image as Media)?.alt || (metaImage as Media)?.alt || position || 'Position image'
 
   return (
     <Card
@@ -60,11 +62,11 @@ export const PositionCard: React.FC<Props> = ({ className, doc, locale }) => {
       )}
     >
       <div className="flex flex-col md:flex-row min-h-[320px]">
-        {imageUrl && (
+        {imageUrl && imageUrl !== '/noimg.svg' && (
           <div className="relative h-48 md:h-auto md:w-80 flex-shrink-0 bg-gray-100">
             <Image
               src={imageUrl}
-              alt={position || 'Position image'}
+              alt={imageAlt}
               fill
               className="object-cover w-full h-full"
               sizes="(max-width: 768px) 100vw, 320px"

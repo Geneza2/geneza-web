@@ -17,7 +17,7 @@ import {
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { Header as HeaderType } from '@/payload-types'
+import type { Header as HeaderType, Media } from '@/payload-types'
 import { Logo } from '@/components/Logo/Logo'
 import { getImageUrl } from '@/utilities/getImageUrl'
 import { getLinkHref } from '@/utilities/getLinkHref'
@@ -121,12 +121,17 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ data, locale }) => {
               className="relative w-full h-24 flex items-center justify-center font-bold text-2xl"
               onClick={() => setIsOpen(false)}
             >
-              <Image
-                src={getImageUrl(item.image)}
-                alt={item.link.label}
-                fill
-                className="rounded object-cover"
-              />
+              {(() => {
+                const imageUrl = getImageUrl(item.image)
+                return imageUrl && imageUrl !== '/noimg.svg' ? (
+                  <Image
+                    src={imageUrl}
+                    alt={(item.image as Media)?.alt || item.link.label}
+                    fill
+                    className="rounded object-cover"
+                  />
+                ) : null
+              })()}
               <div className="w-full h-full bg-black/25 z-10"></div>
               <span className="absolute text-white tracking-widest z-20">{item.link.label}</span>
             </Link>

@@ -8,6 +8,7 @@ import type { Header as HeaderType } from '@/payload-types'
 import Link from 'next/link'
 import { TypedLocale } from 'payload'
 import { LanguageSwitcher } from './Navbar/LocaleSwitcher'
+import { NavbarSearch } from '@/components/NavbarSearch'
 
 type HeaderProps = {
   locale: TypedLocale
@@ -24,15 +25,16 @@ export async function Header({ locale }: HeaderProps) {
       <div className="absolute inset-0 bg-gradient-to-r from-[#9BC273]/5 via-[#17323E]/3 to-[#9BC273]/5"></div>
       <div className="relative z-10">
         <div className="hidden md:flex items-center justify-between w-full">
-          <div className="flex items-center w-[120px] min-w-[120px]">
+          <div className="flex items-center w-[260px] min-w-[240px]">
             <Link className="flex items-center" href={`/${locale || 'en'}`}>
               <Logo />
             </Link>
           </div>
-          <div className="flex flex-1 justify-center">
+          <div className="flex flex-1 justify-center items-center">
             <HeaderNav data={headerData} locale={locale} />
           </div>
-          <div className="flex items-center justify-end w-[120px] min-w-[120px]">
+          <div className="flex items-center justify-end gap-4 w-[260px] min-w-[240px]">
+            <NavbarSearch locale={locale} />
             <LanguageSwitcher />
           </div>
         </div>

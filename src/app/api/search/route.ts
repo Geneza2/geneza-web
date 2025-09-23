@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get('q')
   const locale = (searchParams.get('locale') || 'en') as TypedLocale
 
-  console.log(`[Search API] Query: "${query}", Locale: ${locale}`)
+  // quiet logs in production
 
   if (!query || query.length < 3) {
     return NextResponse.json({ results: [], message: 'Query too short' })
@@ -66,21 +66,21 @@ export async function GET(request: NextRequest) {
   const cacheKey = getCacheKey(query, locale)
   const cachedResult = getFromCache(cacheKey)
   if (cachedResult) {
-    console.log(`[Search API] Cache hit for: "${query}"`)
+    // cache hit
     return NextResponse.json(cachedResult)
   }
 
-  console.log(`[Search API] Cache miss, querying database for: "${query}"`)
+  // cache miss
 
   try {
     const payload = await getPayload({ config: configPromise })
     const results: SearchResult[] = []
 
-    console.log('[Search API] Payload initialized successfully')
+    // payload ready
 
     // Optimized search function - search most relevant collections first
     const performSearch = async (searchLocale: TypedLocale) => {
-      console.log(`[Search API] Searching in locale: ${searchLocale}`)
+      // searching locale
 
       // Batch search promises for better performance
       const searchPromises = []
@@ -96,8 +96,7 @@ export async function GET(request: NextRequest) {
             limit: 4,
             locale: searchLocale,
           })
-          .catch((error) => {
-            console.error('[Search API] Products search failed:', error)
+          .catch(() => {
             return { docs: [] }
           }),
       )
@@ -112,8 +111,7 @@ export async function GET(request: NextRequest) {
             limit: 4,
             locale: searchLocale,
           })
-          .catch((error) => {
-            console.error('[Search API] Goods search failed:', error)
+          .catch(() => {
             return { docs: [] }
           }),
       )
@@ -128,8 +126,7 @@ export async function GET(request: NextRequest) {
             limit: 3,
             locale: searchLocale,
           })
-          .catch((error) => {
-            console.error('[Search API] Pages search failed:', error)
+          .catch(() => {
             return { docs: [] }
           }),
       )
@@ -146,8 +143,7 @@ export async function GET(request: NextRequest) {
               limit: 2,
               locale: searchLocale,
             })
-            .catch((error) => {
-              console.error('[Search API] Posts search failed:', error)
+            .catch(() => {
               return { docs: [] }
             }),
         )
@@ -162,8 +158,7 @@ export async function GET(request: NextRequest) {
               limit: 2,
               locale: searchLocale,
             })
-            .catch((error) => {
-              console.error('[Search API] Categories search failed:', error)
+            .catch(() => {
               return { docs: [] }
             }),
         )
@@ -187,7 +182,7 @@ export async function GET(request: NextRequest) {
             })
           }
         })
-        console.log(`[Search API] Found ${productsResult.docs.length} products`)
+        // counts suppressed
       }
 
       // Process goods
@@ -204,7 +199,6 @@ export async function GET(request: NextRequest) {
             })
           }
         })
-        console.log(`[Search API] Found ${goodsResult.docs.length} goods`)
       }
 
       // Process pages
@@ -221,7 +215,6 @@ export async function GET(request: NextRequest) {
             })
           }
         })
-        console.log(`[Search API] Found ${pagesResult.docs.length} pages`)
       }
 
       // Process posts (if searched)
@@ -238,7 +231,6 @@ export async function GET(request: NextRequest) {
             })
           }
         })
-        console.log(`[Search API] Found ${postsResult.docs.length} posts`)
       }
 
       // Process categories (if searched)
@@ -255,7 +247,6 @@ export async function GET(request: NextRequest) {
             })
           }
         })
-        console.log(`[Search API] Found ${categoriesResult.docs.length} categories`)
       }
     }
 
@@ -279,8 +270,6 @@ export async function GET(request: NextRequest) {
       return a.title.localeCompare(b.title)
     })
 
-    console.log(`[Search API] Total results found: ${results.length}`)
-
     const finalResults = results.slice(0, 15)
 
     const response = {
@@ -296,7 +285,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('[Search API] Critical error:', error)
     return NextResponse.json(
       {
         error: 'Search failed',

@@ -50,12 +50,10 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   let href: string | null = null
 
-  // Handle custom URL type
   if (type === 'custom' && url) {
     href = url
   }
 
-  // Handle reference type - simplified approach
   if (type === 'reference' && reference?.value) {
     const refValue = reference.value
     if (typeof refValue === 'object' && refValue && 'slug' in refValue && refValue.slug) {

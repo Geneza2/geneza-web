@@ -245,7 +245,7 @@ export const GoodsArchive: React.FC<Props> = ({
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4">
               {filteredGoods.flatMap((good, goodIndex) =>
                 good.products.map((product, productIndex) => {
                   const productId = `${good.slug}-${productIndex}`

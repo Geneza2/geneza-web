@@ -27,7 +27,6 @@ export const getLinkHref = (item: { link: LinkData } | LinkData, locale?: TypedL
     return locale ? `/${locale}` : '/'
   }
 
-  // If link exists but has no type or invalid data, return home page
   if (
     !link.type ||
     (link.type === 'reference' && !link.reference) ||
@@ -36,17 +35,15 @@ export const getLinkHref = (item: { link: LinkData } | LinkData, locale?: TypedL
     return locale ? `/${locale}` : '/'
   }
 
-  // Handle custom URLs
   if (link.type === 'custom' && link.url) {
     const url = link.url
     const fullUrl = locale ? `/${locale}${url.startsWith('/') ? url : `/${url}`}` : url
     return link.anchor ? `${fullUrl}#${link.anchor}` : fullUrl
   }
 
-  // Handle reference links
   if (link.type === 'reference' && link.reference) {
     const { relationTo, value } = link.reference
-    
+
     // Handle populated objects (with depth=2, references should be populated)
     const slug = typeof value === 'object' && value && 'slug' in value ? value.slug || '' : ''
 

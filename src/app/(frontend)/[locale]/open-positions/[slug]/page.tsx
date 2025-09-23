@@ -14,8 +14,10 @@ import { openPositionsTranslations } from '@/i18n/translations/open-positions'
 import { retryOperation } from '@/utilities/retryOperation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { getImageUrl } from '@/utilities/getImageUrl'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, CheckCircle, ExternalLink, ArrowLeft } from 'lucide-react'
+import type { Media, OpenPosition } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -99,16 +101,17 @@ export default async function Position({ params: paramsPromise }: Args) {
         {draft && <LivePreviewListener />}
 
         <div className="container mx-auto px-4 py-8">
-          {position.jobOffers?.map((job, index) => (
-            <div key={job.id || index} className="space-y-8">
-              {job.image &&
-                typeof job.image === 'object' &&
-                'url' in job.image &&
-                job.image.url && (
+          {position.jobOffers?.map((job, index) => {
+            const imageUrl = getImageUrl(job.image as Media)
+            const imageAlt = (job.image as Media)?.alt || job.position || 'Job image'
+
+            return (
+              <div key={job.id || index} className="space-y-8">
+                {imageUrl && imageUrl !== '/noimg.svg' && (
                   <div className="relative w-full h-[400px] md:h-[500px] rounded-lg overflow-hidden">
                     <Image
-                      src={job.image.url}
-                      alt={job.position}
+                      src={imageUrl}
+                      alt={imageAlt}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
@@ -129,74 +132,75 @@ export default async function Position({ params: paramsPromise }: Args) {
                   </div>
                 )}
 
-              <div className="space-y-6">
-                {job.requirements && job.requirements.length > 0 && (
-                  <Card className="bg-white">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-3">
-                        <div className="w-1 h-6 bg-primary rounded-full" />
-                        {job.requirementsTitle || t.requirements}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-3">
-                        {job.requirements.map((req, reqIndex) => (
-                          <li key={req.id || reqIndex} className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                            <span className="text-muted-foreground">{req.item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                )}
+                <div className="space-y-6">
+                  {job.requirements && job.requirements.length > 0 && (
+                    <Card className="bg-white">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-3">
+                          <div className="w-1 h-6 bg-primary rounded-full" />
+                          {job.requirementsTitle || t.requirements}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-3">
+                          {job.requirements.map((req, reqIndex) => (
+                            <li key={req.id || reqIndex} className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                              <span className="text-muted-foreground">{req.item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
 
-                {job.responsibilities && job.responsibilities.length > 0 && (
-                  <Card className="bg-white">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-3">
-                        <div className="w-1 h-6 bg-primary rounded-full" />
-                        {job.responsibilitiesTitle || t.responsibilities}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-3">
-                        {job.responsibilities.map((resp, respIndex) => (
-                          <li key={resp.id || respIndex} className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                            <span className="text-muted-foreground">{resp.item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                )}
+                  {job.responsibilities && job.responsibilities.length > 0 && (
+                    <Card className="bg-white">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-3">
+                          <div className="w-1 h-6 bg-primary rounded-full" />
+                          {job.responsibilitiesTitle || t.responsibilities}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-3">
+                          {job.responsibilities.map((resp, respIndex) => (
+                            <li key={resp.id || respIndex} className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                              <span className="text-muted-foreground">{resp.item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
 
-                {job.callToAction && (
-                  <Card className="bg-primary text-primary-foreground">
-                    <CardContent className="p-8">
-                      <div className="flex items-center gap-3 mb-4">
-                        <CheckCircle className="w-6 h-6" />
-                        <h3 className="text-xl font-semibold">{t.readyToApply}</h3>
-                      </div>
-                      <p className="mb-6 opacity-90">{t.applyMessage}</p>
-                      <Button asChild variant="secondary" size="lg" className="font-semibold">
-                        <a
-                          href="mailto:geneza@geneza.com?subject=Job Application"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2"
-                        >
-                          {job.callToAction.text}
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
+                  {job.callToAction && (
+                    <Card className="bg-primary text-primary-foreground">
+                      <CardContent className="p-8">
+                        <div className="flex items-center gap-3 mb-4">
+                          <CheckCircle className="w-6 h-6" />
+                          <h3 className="text-xl font-semibold">{t.readyToApply}</h3>
+                        </div>
+                        <p className="mb-6 opacity-90">{t.applyMessage}</p>
+                        <Button asChild variant="secondary" size="lg" className="font-semibold">
+                          <a
+                            href="mailto:geneza@geneza.com?subject=Job Application"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2"
+                          >
+                            {job.callToAction.text}
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     )

@@ -40,6 +40,16 @@ export const Goods: CollectionConfig = {
       localized: true,
     },
     {
+      name: 'bannerImage',
+      label: 'Banner image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description:
+          'Shown as the header image on Goods page when this category is selected (fallback when global Categories are not used). Use a wide image, e.g. 1920×800.',
+      },
+    },
+    {
       name: 'products',
       type: 'array',
       required: true,
@@ -53,6 +63,16 @@ export const Goods: CollectionConfig = {
           localized: false,
         },
         {
+          name: 'specPdf',
+          label: 'Specification PDF',
+          type: 'upload',
+          relationTo: 'media',
+          localized: false,
+          admin: {
+            description: 'Optional PDF to download with details/specification',
+          },
+        },
+        {
           name: 'title',
           type: 'text',
           required: true,
@@ -60,6 +80,7 @@ export const Goods: CollectionConfig = {
         },
         {
           name: 'description',
+          label: 'Packaging',
           type: 'textarea',
           required: true,
           localized: true,
@@ -72,6 +93,26 @@ export const Goods: CollectionConfig = {
           admin: {
             description: 'Country of origin',
           },
+        },
+        {
+          name: 'subcategories',
+          label: 'Subcategories',
+          type: 'array',
+          localized: true,
+          admin: {
+            description: 'Optional subcategories for this product (e.g., sizes, cuts)',
+          },
+          fields: [
+            {
+              name: 'name',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'description',
+              type: 'text',
+            },
+          ],
         },
       ],
     },
@@ -136,7 +177,7 @@ export const Goods: CollectionConfig = {
   ],
   versions: {
     drafts: {
-      autosave: { interval: 100 },
+      autosave: false,
       schedulePublish: true,
     },
     maxPerDoc: 50,

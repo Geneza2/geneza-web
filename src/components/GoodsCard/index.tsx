@@ -1,12 +1,13 @@
 'use client'
 import { cn } from '@/utilities/ui'
 import React from 'react'
-import type { Good } from '@/payload-types'
+import type { Good, Media } from '@/payload-types'
 import { TypedLocale } from 'payload'
 import Image from 'next/image'
 import { Card, CardTitle } from '@/components/ui/card'
-import { MapPin, Package } from 'lucide-react'
+import { MapPin, Package, FileCheck2 } from 'lucide-react'
 import { getImageUrl } from '@/utilities/getImageUrl'
+import Link from 'next/link'
 
 export const GoodsCard: React.FC<{
   className?: string
@@ -22,7 +23,7 @@ export const GoodsCard: React.FC<{
   const firstProduct = products?.[0]
   if (!firstProduct) return null
 
-  const { image, title, description, country } = firstProduct
+  const { image, description, country, specPdf, title } = firstProduct as any
 
   return (
     <Card
@@ -32,17 +33,21 @@ export const GoodsCard: React.FC<{
       )}
     >
       <div className="flex h-32 sm:h-36 lg:h-40">
-        {(image || metaImage) && (
-          <div className="w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 flex-shrink-0 relative overflow-hidden rounded-l-3xl">
-            <Image
-              src={getImageUrl(image || metaImage)}
-              alt={getImageUrl(image || metaImage, 'Product image')}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="(max-width: 640px) 128px, (max-width: 1024px) 144px, 160px"
-            />
-          </div>
-        )}
+        {(image || metaImage) &&
+          (() => {
+            const imageUrl = getImageUrl(image || metaImage)
+            return imageUrl && imageUrl !== '/noimg.svg' ? (
+              <div className="w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 flex-shrink-0 relative overflow-hidden rounded-l-3xl">
+                <Image
+                  src={imageUrl}
+                  alt={(image as Media)?.alt || (metaImage as Media)?.alt || 'Product image'}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 640px) 128px, (max-width: 1024px) 144px, 160px"
+                />
+              </div>
+            ) : null
+          })()}
 
         <div className="flex-1 p-4 sm:p-6 flex flex-col justify-between min-h-0">
           <div className="flex items-start justify-between mb-3">
@@ -57,14 +62,30 @@ export const GoodsCard: React.FC<{
                 </div>
               )}
             </div>
-            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:from-[#9BC273]/20 group-hover:to-[#9BC273]/10 group-hover:scale-110">
-              <Package className="w-6 h-6 text-[#9BC273]" />
+            <div className="flex items-center gap-2">
+              {specPdf && typeof specPdf === 'object' && 'url' in specPdf && specPdf.url && (
+                <Link
+                  href={(specPdf as any).url as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 hover:from-[#9BC273]/20 hover:to-[#9BC273]/10 hover:scale-110"
+                  aria-label="Open product PDF"
+                >
+                  <FileCheck2 className="w-6 h-6 text-[#9BC273]" />
+                </Link>
+              )}
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:from-[#9BC273]/20 group-hover:to-[#9BC273]/10 group-hover:scale-110">
+                <Package className="w-6 h-6 text-[#9BC273]" />
+              </div>
             </div>
           </div>
 
           <div className="space-y-2">
             {description && (
-              <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{description}</p>
+              <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed flex items-center gap-2">
+                <Package className="w-4 h-4 text-[#9BC273]" />
+                <span>{description}</span>
+              </p>
             )}
 
             <div className="flex items-center pt-2">
