@@ -2,11 +2,13 @@ import type { Metadata } from 'next/types'
 import { TypedLocale } from 'payload'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
+import { draftMode } from 'next/headers'
 import React from 'react'
 import { GoodsArchive } from '@/components/GoodsArchive'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { Product } from '@/payload-types'
 
 type CutSize = {
@@ -29,42 +31,31 @@ export default async function Page({
 }: Args) {
   const { locale } = await paramsPromise
   const searchParams = await searchParamsPromise
-  const t = goodsTranslations[locale] || goodsTranslations.en
+  const safeLocale = locale || 'en'
+  const t = goodsTranslations[safeLocale] || goodsTranslations.en
 
   try {
     const payload = await getPayload({ config: configPromise })
-
-    // Add timeout and retry logic for database queries
-    const queryWithTimeout = async (
-      queryPromise: Promise<any>,
-      timeoutMs = 45000,
-    ): Promise<any> => {
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Query timeout')), timeoutMs)
-      })
-      return Promise.race([queryPromise, timeoutPromise])
-    }
+    const { isEnabled: draft } = await draftMode()
 
     const [goods, categories] = await Promise.all([
-      queryWithTimeout(
-        payload.find({
-          collection: 'goods',
-          depth: 2, // Reduced depth to improve performance
-          limit: 100,
-          overrideAccess: true,
-          locale: locale,
-        }),
-      ),
-      queryWithTimeout(
-        payload.find({
-          collection: 'categories',
-          depth: 2,
-          limit: 100,
-          overrideAccess: true,
-          locale: locale,
-          sort: 'order',
-        }),
-      ),
+      payload.find({
+        collection: 'goods',
+        depth: 2, // Reduced depth to improve performance
+        limit: 100,
+        overrideAccess: draft,
+        draft: draft,
+        locale: safeLocale,
+      }),
+      payload.find({
+        collection: 'categories',
+        depth: 2,
+        limit: 100,
+        overrideAccess: draft,
+        draft: draft,
+        locale: safeLocale,
+        sort: 'order',
+      }),
     ])
 
     // Get the selected category to determine banner image
@@ -80,27 +71,30 @@ export default async function Page({
     const productCutSizes: Record<string, CutSize[]> = {}
 
     try {
-      const productsResponse = await queryWithTimeout(
-        payload.find({
-          collection: 'products',
-          limit: 1000, // Get all products
-          depth: 1,
-          locale: locale,
-        }),
-      )
+      const productsResponse = await payload.find({
+        collection: 'products',
+        limit: 1000, // Get all products
+        depth: 1,
+        overrideAccess: draft,
+        draft: draft,
+        locale: safeLocale,
+      })
 
       // Build the cut sizes mapping
-      productsResponse.docs.forEach((product: any) => {
-        if (product.title && product.cutSizes && product.cutSizes.length > 0) {
-          productCutSizes[product.title] = product.cutSizes
-        }
-      })
+      if (productsResponse?.docs) {
+        productsResponse.docs.forEach((product: any) => {
+          if (product?.title && product?.cutSizes && product.cutSizes.length > 0) {
+            productCutSizes[product.title] = product.cutSizes
+          }
+        })
+      }
     } catch (error) {
       console.error('Error loading products for cut sizes:', error)
       // Continue without cut sizes if there's an error
     }
 
-    const hasProducts = goods.docs.some((doc: any) => doc.products && doc.products.length > 0)
+    const hasProducts =
+      goods?.docs?.some((doc: any) => doc?.products && doc.products.length > 0) || false
 
     // Determine banner image and content
     // Prefer category.bannerImage from Categories collection; else fall back to Goods-level bannerImage
@@ -110,7 +104,7 @@ export default async function Page({
     }
 
     if (!bannerImage) {
-      const matchedGood = goods.docs.find((g: any) => g.slug === selectedCategorySlug)
+      const matchedGood = goods?.docs?.find((g: any) => g?.slug === selectedCategorySlug)
       const goodBanner = matchedGood?.bannerImage
       if (goodBanner && typeof goodBanner === 'object' && 'url' in goodBanner) {
         bannerImage = goodBanner.url as string
@@ -120,12 +114,13 @@ export default async function Page({
     const bannerTitle = selectedCategory?.title || t.title
     const bannerDescription =
       selectedCategory?.description ||
-      (locale === 'rs'
+      (safeLocale === 'rs'
         ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
         : 'Discover our wide range of quality products directly from the source')
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
+        {draft && <LivePreviewListener />}
         <div className="relative overflow-hidden">
           {bannerImage ? (
             // Custom image banner
@@ -203,9 +198,9 @@ export default async function Page({
             </div>
           ) : (
             <GoodsArchive
-              goods={goods.docs}
-              locale={locale}
-              availableCategories={categories.docs}
+              goods={goods?.docs || []}
+              locale={safeLocale}
+              availableCategories={categories?.docs || []}
               productCutSizes={productCutSizes}
               searchParams={searchParams}
             />
@@ -221,6 +216,8 @@ export default async function Page({
       console.error('Error message:', error.message)
       console.error('Error stack:', error.stack)
     }
+
+    // Return a fallback page with empty data
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
         <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden h-64 sm:h-80 lg:h-96">

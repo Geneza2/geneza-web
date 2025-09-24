@@ -5,6 +5,7 @@ const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
   pages: '',
   openPositions: '/open-positions',
   products: '/products',
+  goods: '/goods',
 }
 
 type Props = {
@@ -14,10 +15,13 @@ type Props = {
 }
 
 export const generatePreviewPath = ({ collection, slug }: Props) => {
+  const collectionPath = collectionPrefixMap[collection] || ''
+  const fullPath = collectionPath ? `${collectionPath}/${slug}` : `/${slug}`
+
   const encodedParams = new URLSearchParams({
     slug,
     collection,
-    path: `${collectionPrefixMap[collection]}/${slug}`,
+    path: fullPath,
     previewSecret: process.env.PREVIEW_SECRET || '',
   })
 

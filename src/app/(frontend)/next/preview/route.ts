@@ -5,6 +5,7 @@ import { draftMode } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import configPromise from '@payload-config'
+import { getServerSideURL } from '@/utilities/getURL'
 
 export async function GET(
   req: {
@@ -25,11 +26,18 @@ export async function GET(
     const slug = searchParams.get('slug')
     const previewSecret = searchParams.get('previewSecret')
 
+    if (!process.env.PREVIEW_SECRET) {
+      console.error('Preview route: PREVIEW_SECRET environment variable is not set')
+      return new Response('Preview not configured', { status: 500 })
+    }
+
     if (previewSecret !== process.env.PREVIEW_SECRET) {
+      console.error('Preview route: Invalid preview secret')
       return new Response('You are not allowed to preview this page', { status: 403 })
     }
 
     if (!path || !collection || !slug) {
+      console.error('Preview route: Missing required parameters', { path, collection, slug })
       return new Response('Insufficient search params', { status: 404 })
     }
 
@@ -60,7 +68,15 @@ export async function GET(
 
     draft.enable()
 
-    redirect(path)
+    // Ensure the path is properly formatted
+    const cleanPath = path.startsWith('/') ? path : `/${path}`
+
+    try {
+      redirect(cleanPath)
+    } catch (_error) {
+      // If redirect fails, return a response with the redirect URL
+      return Response.redirect(new URL(cleanPath, getServerSideURL()), 307)
+    }
   } catch (error) {
     console.error('Error in preview route:', error)
     return new Response('Internal server error', { status: 500 })

@@ -19,6 +19,7 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { revalidateGoods, revalidateDelete } from './hooks/revalidateGoods'
+import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 
 export const Goods: CollectionConfig = {
   slug: 'goods',
@@ -31,6 +32,23 @@ export const Goods: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    livePreview: {
+      url: ({ data, req }) => {
+        const path = generatePreviewPath({
+          slug: typeof data?.slug === 'string' ? data.slug : '',
+          collection: 'goods',
+          req,
+        })
+
+        return path
+      },
+    },
+    preview: (data, { req }) =>
+      generatePreviewPath({
+        slug: typeof data?.slug === 'string' ? data.slug : '',
+        collection: 'goods',
+        req,
+      }),
   },
   fields: [
     {
