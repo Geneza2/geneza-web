@@ -52,16 +52,25 @@ export default async function RootLayout({ children, params }: Args) {
   } catch (error) {
     console.error('Critical error in layout:', error)
     return (
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <head>
           <title>Geneza - Error</title>
           <link href="/favicon.ico" rel="icon" sizes="32x32" />
+          <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
         </head>
         <body>
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="text-center max-w-md p-4">
               <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
-              <p className="text-gray-600">Please try refreshing the page.</p>
+              <p className="text-muted-foreground mb-6">
+                We encountered an unexpected error. Please try refreshing the page.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+              >
+                Refresh Page
+              </button>
             </div>
           </div>
         </body>

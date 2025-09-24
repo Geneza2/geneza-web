@@ -75,31 +75,34 @@ export default async function Page({ params: paramsPromise }: Args) {
     }
 
     return (
-      <ErrorBoundary>
-        <article className="pb-8">
-          <PayloadRedirects disableNotFound url={url} />
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#9BC273]/10 via-[#17323E]/5 to-[#9BC273]/10"></div>
-            <div className="relative z-10">
-              <RenderHero {...hero} />
-            </div>
+      <article className="pb-8">
+        <PayloadRedirects disableNotFound url={url} />
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#9BC273]/10 via-[#17323E]/5 to-[#9BC273]/10"></div>
+          <div className="relative z-10">
+            <RenderHero {...hero} />
           </div>
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#17323E]/5 via-[#9BC273]/10 to-[#17323E]/5"></div>
-            <div className="relative z-10">
-              {await RenderBlocks({ blocks: layout || [], locale })}
-            </div>
+        </div>
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#17323E]/5 via-[#9BC273]/10 to-[#17323E]/5"></div>
+          <div className="relative z-10">
+            <RenderBlocks blocks={layout || []} locale={locale} />
           </div>
-        </article>
-      </ErrorBoundary>
+        </div>
+      </article>
     )
   } catch (error) {
     console.error('Critical error in home page:', error)
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center">
+        <div className="text-center max-w-md">
           <h1 className="text-2xl font-bold mb-4">Welcome to Geneza</h1>
-          <p className="text-muted-foreground">Loading content...</p>
+          <p className="text-muted-foreground mb-6">
+            We&apos;re setting up the site. Please check back in a few minutes.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            If this issue persists, please contact support.
+          </p>
         </div>
       </div>
     )
@@ -144,24 +147,35 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 }
 
 const queryPage = cache(async ({ locale, slug }: { locale: TypedLocale; slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
+  try {
+    const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayload({ config: configPromise })
+    const payload = await getPayload({ config: configPromise })
 
-  const result = await retryOperation(() =>
-    payload.find({
-      collection: 'pages',
-      draft,
-      limit: 1,
-      overrideAccess: draft,
-      locale: locale,
-      where: {
-        slug: {
-          equals: slug,
+    const result = await retryOperation(() =>
+      payload.find({
+        collection: 'pages',
+        draft,
+        limit: 1,
+        overrideAccess: draft,
+        locale: locale,
+        where: {
+          slug: {
+            equals: slug,
+          },
         },
-      },
-    }),
-  )
+      }),
+    )
 
-  return result.docs?.[0] || null
+    return result.docs?.[0] || null
+  } catch (error) {
+    console.error('Error in queryPage:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      slug,
+      locale,
+      hasPayload: !!process.env.PAYLOAD_SECRET,
+      hasDatabase: !!process.env.POSTGRES_URL,
+    })
+    return null
+  }
 })

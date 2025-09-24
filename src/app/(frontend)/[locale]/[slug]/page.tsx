@@ -81,16 +81,13 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     }
 
     return (
-      <ErrorBoundary>
-        <article>
-          <PayloadRedirects disableNotFound url={url} />
-          {hero && <RenderHero {...hero} />}
-          {layout &&
-            Array.isArray(layout) &&
-            layout.length > 0 &&
-            (await RenderBlocks({ blocks: layout, locale }))}
-        </article>
-      </ErrorBoundary>
+      <article>
+        <PayloadRedirects disableNotFound url={url} />
+        {hero && <RenderHero {...hero} />}
+        {layout && Array.isArray(layout) && layout.length > 0 && (
+          <RenderBlocks blocks={layout} locale={locale} />
+        )}
+      </article>
     )
   } catch (error) {
     console.error('Error in page component:', {
@@ -103,14 +100,46 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       nodeEnv: process.env.NODE_ENV,
       vercelEnv: process.env.VERCEL_ENV,
     })
+
+    // If we're in a deployment environment, show a simple fallback page
+    if (process.env.VERCEL_ENV) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="text-center max-w-md">
+            <h1 className="text-2xl font-bold mb-4">Welcome to Geneza</h1>
+            <p className="text-muted-foreground mb-6">
+              We&apos;re setting up the site. Please check back in a few minutes.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              If this issue persists, please contact support.
+            </p>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center">
+        <div className="text-center max-w-md">
           <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-6">
             We encountered an unexpected error. Please try refreshing the page or return to the
             homepage.
           </p>
+          <div className="flex gap-2 justify-center">
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+            >
+              Refresh Page
+            </button>
+            <a
+              href="/"
+              className="px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/90 transition-colors"
+            >
+              Go Home
+            </a>
+          </div>
         </div>
       </div>
     )
@@ -118,11 +147,19 @@ export default async function Page({ params }: { params: Promise<Params> }) {
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const { slug = 'home', locale } = (await params) as Params
+  try {
+    const { slug = 'home', locale } = (await params) as Params
 
-  const page = await queryPage({ slug, locale })
+    const page = await queryPage({ slug, locale })
 
-  return generateMeta({ doc: page })
+    return generateMeta({ doc: page })
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: 'Geneza',
+      description: 'Welcome to Geneza',
+    }
+  }
 }
 
 const queryPage = cache(async ({ slug, locale }: { slug: string; locale: TypedLocale }) => {
