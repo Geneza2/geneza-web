@@ -12,11 +12,6 @@ interface ErrorProps {
 }
 
 export default function Error({ error, reset }: ErrorProps) {
-  React.useEffect(() => {
-    // Log the error to an error reporting service
-    console.error('Application error:', error)
-  }, [error])
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="max-w-md w-full">
