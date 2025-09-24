@@ -111,14 +111,6 @@ export default async function Page({ params }: { params: Promise<Params> }) {
             We encountered an unexpected error. Please try refreshing the page or return to the
             homepage.
           </p>
-          {process.env.NODE_ENV === 'development' && (
-            <details className="mt-4 text-left">
-              <summary className="cursor-pointer">Error Details</summary>
-              <pre className="mt-2 text-sm bg-muted p-2 rounded overflow-auto">
-                {error instanceof Error ? error.message : 'Unknown error'}
-              </pre>
-            </details>
-          )}
         </div>
       </div>
     )
