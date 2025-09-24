@@ -9,6 +9,7 @@ declare global {
       BLOB_READ_WRITE_TOKEN: string
       NEXT_PUBLIC_SERVER_URL: string
       VERCEL_PROJECT_PRODUCTION_URL: string
+      VERCEL_URL: string
     }
   }
 }

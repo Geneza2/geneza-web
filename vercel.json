@@ -6,6 +6,9 @@
     }
   ],
   "functions": {
+    "app/(frontend)/[locale]/goods/page.tsx": {
+      "maxDuration": 30
+    },
     "app/(frontend)/[locale]/open-positions/[slug]/page.tsx": {
       "maxDuration": 30
     },
@@ -18,10 +21,15 @@
     "app/(frontend)/[locale]/layout.tsx": {
       "maxDuration": 30
     },
+    "app/sitemap.ts": {
+      "maxDuration": 30
+    },
     "app/api/**": {
       "maxDuration": 30
     }
   },
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
   "regions": ["iad1"],
   "framework": "nextjs"
 }
