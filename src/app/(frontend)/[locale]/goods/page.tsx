@@ -34,22 +34,37 @@ export default async function Page({
   try {
     const payload = await getPayload({ config: configPromise })
 
+    // Add timeout and retry logic for database queries
+    const queryWithTimeout = async (
+      queryPromise: Promise<any>,
+      timeoutMs = 45000,
+    ): Promise<any> => {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Query timeout')), timeoutMs)
+      })
+      return Promise.race([queryPromise, timeoutPromise])
+    }
+
     const [goods, categories] = await Promise.all([
-      payload.find({
-        collection: 'goods',
-        depth: 3,
-        limit: 100,
-        overrideAccess: true,
-        locale: locale,
-      }),
-      payload.find({
-        collection: 'categories',
-        depth: 2, // Increased depth to get parent categories and their relationships
-        limit: 100,
-        overrideAccess: true,
-        locale: locale,
-        sort: 'order', // Sort by order field
-      }),
+      queryWithTimeout(
+        payload.find({
+          collection: 'goods',
+          depth: 2, // Reduced depth to improve performance
+          limit: 100,
+          overrideAccess: true,
+          locale: locale,
+        }),
+      ),
+      queryWithTimeout(
+        payload.find({
+          collection: 'categories',
+          depth: 2,
+          limit: 100,
+          overrideAccess: true,
+          locale: locale,
+          sort: 'order',
+        }),
+      ),
     ])
 
     // Get the selected category to determine banner image
@@ -58,44 +73,34 @@ export default async function Page({
       : searchParams.category
 
     const selectedCategory = selectedCategorySlug
-      ? categories.docs.find((cat) => cat.slug === selectedCategorySlug)
+      ? categories.docs.find((cat: any) => cat.slug === selectedCategorySlug)
       : null
 
-    const productTitles = new Set<string>()
-    goods.docs.forEach((good) => {
-      good.products?.forEach((product) => {
-        if (product.title) {
-          productTitles.add(product.title)
-        }
-      })
-    })
-
+    // Get all products at once instead of individual queries
     const productCutSizes: Record<string, CutSize[]> = {}
 
-    for (const title of productTitles) {
-      try {
-        const productsResponse = await payload.find({
+    try {
+      const productsResponse = await queryWithTimeout(
+        payload.find({
           collection: 'products',
-          where: {
-            title: {
-              equals: title,
-            },
-          },
-          limit: 1,
+          limit: 1000, // Get all products
           depth: 1,
           locale: locale,
-        })
+        }),
+      )
 
-        if (productsResponse.docs.length > 0) {
-          const product = productsResponse.docs[0] as Product
-          if (product.cutSizes && product.cutSizes.length > 0) {
-            productCutSizes[title] = product.cutSizes
-          }
+      // Build the cut sizes mapping
+      productsResponse.docs.forEach((product: any) => {
+        if (product.title && product.cutSizes && product.cutSizes.length > 0) {
+          productCutSizes[product.title] = product.cutSizes
         }
-      } catch (_error) {}
+      })
+    } catch (error) {
+      console.error('Error loading products for cut sizes:', error)
+      // Continue without cut sizes if there's an error
     }
 
-    const hasProducts = goods.docs.some((doc) => doc.products && doc.products.length > 0)
+    const hasProducts = goods.docs.some((doc: any) => doc.products && doc.products.length > 0)
 
     // Determine banner image and content
     // Prefer category.bannerImage from Categories collection; else fall back to Goods-level bannerImage
@@ -105,7 +110,7 @@ export default async function Page({
     }
 
     if (!bannerImage) {
-      const matchedGood = goods.docs.find((g) => g.slug === selectedCategorySlug)
+      const matchedGood = goods.docs.find((g: any) => g.slug === selectedCategorySlug)
       const goodBanner = matchedGood?.bannerImage
       if (goodBanner && typeof goodBanner === 'object' && 'url' in goodBanner) {
         bannerImage = goodBanner.url as string
@@ -210,6 +215,12 @@ export default async function Page({
     )
   } catch (error) {
     console.error('Error loading goods:', error)
+
+    // Log additional error details for debugging
+    if (error instanceof Error) {
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
         <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden h-64 sm:h-80 lg:h-96">

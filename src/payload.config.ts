@@ -84,12 +84,12 @@ export default buildConfig({
   db: vercelPostgresAdapter({
     pool: {
       connectionString: process.env.POSTGRES_URL || '',
-      max: 5,
-      min: 1,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
-      statement_timeout: 30000,
-      query_timeout: 30000,
+      max: 10,
+      min: 2,
+      idleTimeoutMillis: 60000,
+      connectionTimeoutMillis: 20000,
+      statement_timeout: 60000,
+      query_timeout: 60000,
     },
   }),
   collections: [Pages, Posts, Media, Categories, Users, OpenPositions, Products, Goods],
