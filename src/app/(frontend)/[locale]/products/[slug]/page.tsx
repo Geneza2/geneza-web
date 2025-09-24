@@ -108,6 +108,7 @@ interface HeroContentProps {
   description: Product['description']
   cutSizes: CutSize[] | null
   image: Media | number
+  highlightImage?: Media | number | null
   locale: TypedLocale
   isMobile: boolean
 }
@@ -199,52 +200,58 @@ const HeroContent = ({
   description,
   cutSizes,
   image,
+  highlightImage,
   locale,
   isMobile,
-}: HeroContentProps) => (
-  <div
-    className={
-      isMobile
-        ? 'text-center text-white space-y-4 max-w-sm mx-auto'
-        : 'text-left text-white space-y-6 w-full'
-    }
-  >
-    <div className={isMobile ? 'space-y-2' : 'space-y-3'}>
-      <h1
-        className={
-          isMobile
-            ? 'text-3xl sm:text-4xl font-bold leading-tight'
-            : 'text-3xl xl:text-4xl 2xl:text-5xl font-bold leading-tight tracking-tight'
-        }
-      >
-        {title}
-      </h1>
-      {scientificName && (
-        <div className="relative">
-          <p
-            className={`${isMobile ? 'text-lg sm:text-xl italic font-bold' : 'text-xl xl:text-2xl 2xl:text-3xl italic font-bold tracking-wide'} relative z-10 px-3 py-1 rounded-md bg-[#9BC273]/20 border border-[#9BC273]/30`}
-            style={{ color: '#9BC273' }}
-          >
-            {scientificName}
-          </p>
-        </div>
-      )}
-    </div>
-    {isMobile && <ProductImage image={image} title={title} isMobile={true} />}
-    <div className={isMobile ? 'px-2' : 'prose prose-base xl:prose-lg prose-invert max-w-none'}>
-      <div
-        className={
-          isMobile
-            ? 'prose prose-sm prose-invert text-gray-200 max-w-none [&_*]:text-gray-200'
-            : 'text-gray-100 leading-relaxed font-light text-base xl:text-lg [&_*]:text-gray-100'
-        }
-      >
-        <RichText data={description} enableGutter={false} />
+}: HeroContentProps) => {
+  // Use highlightImage if available, otherwise fall back to regular image
+  const displayImage = highlightImage || image
+
+  return (
+    <div
+      className={
+        isMobile
+          ? 'text-center text-white space-y-4 max-w-sm mx-auto'
+          : 'text-left text-white space-y-6 w-full'
+      }
+    >
+      <div className={isMobile ? 'space-y-2' : 'space-y-3'}>
+        <h1
+          className={
+            isMobile
+              ? 'text-3xl sm:text-4xl font-bold leading-tight'
+              : 'text-3xl xl:text-4xl 2xl:text-5xl font-bold leading-tight tracking-tight'
+          }
+        >
+          {title}
+        </h1>
+        {scientificName && (
+          <div className="relative">
+            <p
+              className={`${isMobile ? 'text-lg sm:text-xl italic font-bold' : 'text-xl xl:text-2xl 2xl:text-3xl italic font-bold tracking-wide'} relative z-10 px-3 py-1 rounded-md bg-[#9BC273]/20 border border-[#9BC273]/30`}
+              style={{ color: '#9BC273' }}
+            >
+              {scientificName}
+            </p>
+          </div>
+        )}
       </div>
+      {isMobile && <ProductImage image={displayImage} title={title} isMobile={true} />}
+      <div className={isMobile ? 'px-2' : 'prose prose-base xl:prose-lg prose-invert max-w-none'}>
+        <div
+          className={
+            isMobile
+              ? 'prose prose-sm prose-invert text-gray-200 max-w-none [&_*]:text-gray-200'
+              : 'text-gray-100 leading-relaxed font-light text-base xl:text-lg [&_*]:text-gray-100'
+          }
+        >
+          <RichText data={description} enableGutter={false} />
+        </div>
+      </div>
+      <CutSizes cutSizes={cutSizes || []} locale={locale} />
     </div>
-    <CutSizes cutSizes={cutSizes || []} locale={locale} />
-  </div>
-)
+  )
+}
 
 export default async function ProductPage({ params: p }: Args) {
   const { slug = '', locale } = await p
@@ -256,6 +263,7 @@ export default async function ProductPage({ params: p }: Args) {
   const {
     title,
     image,
+    highlightImage,
     scientificName,
     description,
     cutSizes = [],
@@ -358,13 +366,14 @@ export default async function ProductPage({ params: p }: Args) {
                 description={description}
                 cutSizes={cutSizes || []}
                 image={image}
+                highlightImage={highlightImage}
                 locale={locale}
                 isMobile={true}
               />
             </div>
             <div className="hidden lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:justify-center max-w-7xl mx-auto h-full">
               <div className="flex items-center justify-center">
-                <ProductImage image={image} title={title} isMobile={false} />
+                <ProductImage image={highlightImage || image} title={title} isMobile={false} />
               </div>
               <div className="flex items-center justify-center">
                 <HeroContent
@@ -373,6 +382,7 @@ export default async function ProductPage({ params: p }: Args) {
                   description={description}
                   cutSizes={cutSizes || []}
                   image={image}
+                  highlightImage={highlightImage}
                   locale={locale}
                   isMobile={false}
                 />

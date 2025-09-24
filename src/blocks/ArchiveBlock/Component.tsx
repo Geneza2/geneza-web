@@ -13,63 +13,77 @@ export const ArchiveBlock: React.FC<
     locale: TypedLocale
   }
 > = async (props) => {
-  const {
-    id,
-    categories,
-    introContent,
-    limit: limitFromProps,
-    populateBy,
-    selectedDocs,
-    locale,
-  } = props
-
-  const limit = limitFromProps || 3
-
-  let posts: Post[] = []
-
-  if (populateBy === 'collection') {
-    const payload = await getPayload({ config: configPromise })
-
-    const flattenedCategories = categories?.map((category) => {
-      if (typeof category === 'object') return category.id
-      else return category
-    })
-
-    const fetchedPosts = await payload.find({
-      collection: 'posts',
-      depth: 1,
+  try {
+    const {
+      id,
+      categories,
+      introContent,
+      limit: limitFromProps,
+      populateBy,
+      selectedDocs,
       locale,
-      limit,
-      ...(flattenedCategories && flattenedCategories.length > 0
-        ? {
-            where: {
-              categories: {
-                in: flattenedCategories,
-              },
-            },
-          }
-        : {}),
-    })
+    } = props
 
-    posts = fetchedPosts.docs
-  } else {
-    if (selectedDocs?.length) {
-      const filteredSelectedPosts = selectedDocs.map((post) => {
-        if (typeof post.value === 'object') return post.value
-      }) as Post[]
+    const limit = limitFromProps || 3
 
-      posts = filteredSelectedPosts
+    let posts: Post[] = []
+
+    if (populateBy === 'collection') {
+      try {
+        const payload = await getPayload({ config: configPromise })
+
+        const flattenedCategories = categories?.map((category) => {
+          if (typeof category === 'object') return category.id
+          else return category
+        })
+
+        const fetchedPosts = await payload.find({
+          collection: 'posts',
+          depth: 1,
+          locale,
+          limit,
+          ...(flattenedCategories && flattenedCategories.length > 0
+            ? {
+                where: {
+                  categories: {
+                    in: flattenedCategories,
+                  },
+                },
+              }
+            : {}),
+        })
+
+        posts = fetchedPosts.docs
+      } catch (error) {
+        console.error('Error fetching posts in ArchiveBlock:', error)
+        posts = []
+      }
+    } else {
+      if (selectedDocs?.length) {
+        const filteredSelectedPosts = selectedDocs.map((post) => {
+          if (typeof post.value === 'object') return post.value
+        }) as Post[]
+
+        posts = filteredSelectedPosts
+      }
     }
-  }
 
-  return (
-    <div className="my-16" id={`block-${id}`}>
-      {introContent && (
-        <div className="container mb-16">
-          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
-        </div>
-      )}
-      <CollectionArchive posts={posts} />
-    </div>
-  )
+    return (
+      <div className="my-16" id={`block-${id}`}>
+        {introContent && (
+          <div className="container mb-16">
+            <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
+          </div>
+        )}
+        <CollectionArchive posts={posts} />
+      </div>
+    )
+  } catch (error) {
+    console.error('Error in ArchiveBlock:', error)
+    return (
+      <div className="my-16 p-4 bg-red-100 border border-red-300 rounded">
+        <p className="text-red-600">Error loading archive content</p>
+      </div>
+    )
+  }
 }

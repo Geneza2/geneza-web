@@ -38,19 +38,19 @@ const blockComponents = {
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
   locale: TypedLocale | null
-}> = (props) => {
+}> = async (props) => {
   const { blocks, locale } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
   if (hasBlocks) {
-    return (
-      <Fragment>
-        {blocks.map((block, index) => {
+    const renderedBlocks = await Promise.all(
+      blocks.map(async (block, index) => {
+        try {
           const { blockType } = block
 
           if (blockType && blockType in blockComponents) {
-            const Block = blockComponents[blockType]
+            const Block = blockComponents[blockType as keyof typeof blockComponents]
 
             if (Block) {
               return (
@@ -59,12 +59,36 @@ export const RenderBlocks: React.FC<{
                   <Block {...block} locale={locale} />
                 </div>
               )
+            } else {
+              console.error(`Block component not found for type: ${blockType}`)
+              return (
+                <div key={index} className="p-4 bg-yellow-100 border border-yellow-300 rounded">
+                  <p className="text-yellow-600">Block component not found: {blockType}</p>
+                </div>
+              )
             }
+          } else {
+            console.error(`Unknown block type: ${blockType}`)
+            return (
+              <div key={index} className="p-4 bg-yellow-100 border border-yellow-300 rounded">
+                <p className="text-yellow-600">Unknown block type: {blockType}</p>
+              </div>
+            )
           }
-          return null
-        })}
-      </Fragment>
+        } catch (error) {
+          console.error(`Error rendering block ${index}:`, error)
+          return (
+            <div key={index} className="p-4 bg-red-100 border border-red-300 rounded">
+              <p className="text-red-600">
+                Error rendering block: {error instanceof Error ? error.message : 'Unknown error'}
+              </p>
+            </div>
+          )
+        }
+      }),
     )
+
+    return <Fragment>{renderedBlocks}</Fragment>
   }
 
   return null

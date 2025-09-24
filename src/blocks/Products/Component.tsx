@@ -8,7 +8,7 @@ import type { Media as MediaType } from '@/payload-types'
 import { useState } from 'react'
 
 type Product = {
-  id: string
+  id: number
   title: string
   slug: string
   image?: MediaType
@@ -84,7 +84,7 @@ export const ProductsBlock: React.FC<Props> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((product, index) => (
             <div
-              key={product.id}
+              key={product.id ? `product-${product.id}` : `product-${index}`}
               className={cn(
                 'transition-all duration-300',
                 index >= 3 && !showAll && 'hidden sm:block',

@@ -467,6 +467,10 @@ export interface Product {
   };
   image: number | Media;
   backgroundImage?: (number | null) | Media;
+  /**
+   * Image displayed in the hero section of the product page
+   */
+  highlightImage?: (number | null) | Media;
   nutritiveInfo?: {
     calories?: number | null;
     protein?: number | null;
@@ -2188,6 +2192,7 @@ export interface ProductsSelect<T extends boolean = true> {
   description?: T;
   image?: T;
   backgroundImage?: T;
+  highlightImage?: T;
   nutritiveInfo?:
     | T
     | {

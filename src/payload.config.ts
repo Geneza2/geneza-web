@@ -35,7 +35,12 @@ export default buildConfig({
         message: err.message,
         name: err.name,
         hasConnectionString: !!process.env.POSTGRES_URL,
+        nodeEnv: process.env.NODE_ENV,
       })
+      // Don't throw the error in production to prevent build failures
+      if (process.env.NODE_ENV === 'development') {
+        throw error
+      }
     }
   },
   admin: {

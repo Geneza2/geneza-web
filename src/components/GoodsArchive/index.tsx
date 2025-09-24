@@ -42,6 +42,10 @@ export const GoodsArchive: React.FC<Props> = ({
     ? searchParams.category[0] || 'all'
     : searchParams.category || 'all'
 
+  const selectedSubcategory: string = Array.isArray(searchParams.subcategory)
+    ? searchParams.subcategory[0] || ''
+    : searchParams.subcategory || ''
+
   const searchQuery: string = Array.isArray(searchParams.search)
     ? searchParams.search[0] || ''
     : searchParams.search || ''
@@ -59,6 +63,32 @@ export const GoodsArchive: React.FC<Props> = ({
       currentParams.set('category', category)
     }
 
+    // Clear subcategory when changing category
+    if (selectedSubcategory) {
+      currentParams.delete('subcategory')
+    }
+
+    const queryString = currentParams.toString()
+    router.push(`${window.location.pathname}${queryString ? `?${queryString}` : ''}`, {
+      scroll: false,
+    })
+  }
+
+  const setSelectedSubcategory = (subcategory: string) => {
+    const currentParams = new URLSearchParams()
+
+    if (searchQuery) {
+      currentParams.set('search', searchQuery)
+    }
+
+    if (selectedCategory && selectedCategory !== 'all') {
+      currentParams.set('category', selectedCategory)
+    }
+
+    if (subcategory) {
+      currentParams.set('subcategory', subcategory)
+    }
+
     const queryString = currentParams.toString()
     router.push(`${window.location.pathname}${queryString ? `?${queryString}` : ''}`, {
       scroll: false,
@@ -70,6 +100,10 @@ export const GoodsArchive: React.FC<Props> = ({
 
     if (selectedCategory && selectedCategory !== 'all') {
       currentParams.set('category', selectedCategory)
+    }
+
+    if (selectedSubcategory) {
+      currentParams.set('subcategory', selectedSubcategory)
     }
 
     if (query.trim()) {
@@ -122,6 +156,28 @@ export const GoodsArchive: React.FC<Props> = ({
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesAlphabetical)
 
+  // Extract all unique subcategories from goods
+  const allSubcategories = React.useMemo(() => {
+    const subcategoryMap = new Map<string, { name: string; count: number }>()
+
+    goods.forEach((good) => {
+      good.products?.forEach((product) => {
+        product.subcategories?.forEach((subcategory) => {
+          if (subcategory.name) {
+            const existing = subcategoryMap.get(subcategory.name)
+            if (existing) {
+              existing.count += 1
+            } else {
+              subcategoryMap.set(subcategory.name, { name: subcategory.name, count: 1 })
+            }
+          }
+        })
+      })
+    })
+
+    return Array.from(subcategoryMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+  }, [goods])
+
   const filteredGoods = goods
     .map((good) => {
       if (!good.products?.length) return null
@@ -145,6 +201,15 @@ export const GoodsArchive: React.FC<Props> = ({
       const matchingProducts = good.products.filter((product) => {
         if (!product) return false
 
+        // Filter by subcategory if selected
+        if (selectedSubcategory) {
+          const hasMatchingSubcategory = product.subcategories?.some(
+            (subcategory) => subcategory.name === selectedSubcategory,
+          )
+          if (!hasMatchingSubcategory) return false
+        }
+
+        // Filter by search query if provided
         if (!searchQuery || !searchQuery.trim()) return true
 
         const searchLower = searchQuery.toLowerCase().trim()
@@ -153,7 +218,14 @@ export const GoodsArchive: React.FC<Props> = ({
         const descriptionMatch = product.description?.toLowerCase().includes(searchLower)
         const countryMatch = product.country?.toLowerCase().includes(searchLower)
 
-        return titleMatch || descriptionMatch || countryMatch
+        // Also search in subcategories
+        const subcategoryMatch = product.subcategories?.some(
+          (subcategory) =>
+            subcategory.name?.toLowerCase().includes(searchLower) ||
+            subcategory.description?.toLowerCase().includes(searchLower),
+        )
+
+        return titleMatch || descriptionMatch || countryMatch || subcategoryMatch
       })
 
       if (matchingProducts.length === 0) return null
@@ -174,6 +246,9 @@ export const GoodsArchive: React.FC<Props> = ({
               categories={categories}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
+              subcategories={allSubcategories}
+              selectedSubcategory={selectedSubcategory}
+              setSelectedSubcategory={setSelectedSubcategory}
               locale={locale}
             />
           </div>
@@ -245,7 +320,7 @@ export const GoodsArchive: React.FC<Props> = ({
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {filteredGoods.flatMap((good, goodIndex) =>
                 good.products.map((product, productIndex) => {
                   const productId = `${good.slug}-${productIndex}`

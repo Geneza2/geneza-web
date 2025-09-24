@@ -11,6 +11,7 @@ import type { Page as PageType } from '@/payload-types'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { retryOperation } from '@/utilities/retryOperation'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 type Args = {
   params: Promise<{
@@ -65,22 +66,32 @@ export default async function Page({ params: paramsPromise }: Args) {
 
     const { hero, layout } = page
 
+    // Ensure we have valid data
+    if (!hero) {
+      console.warn('No hero data found for home page')
+    }
+    if (!layout || !Array.isArray(layout)) {
+      console.warn('No layout data found or invalid format for home page')
+    }
+
     return (
-      <article className="pb-8">
-        <PayloadRedirects disableNotFound url={url} />
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#9BC273]/10 via-[#17323E]/5 to-[#9BC273]/10"></div>
-          <div className="relative z-10">
-            <RenderHero {...hero} />
+      <ErrorBoundary>
+        <article className="pb-8">
+          <PayloadRedirects disableNotFound url={url} />
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#9BC273]/10 via-[#17323E]/5 to-[#9BC273]/10"></div>
+            <div className="relative z-10">
+              <RenderHero {...hero} />
+            </div>
           </div>
-        </div>
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#17323E]/5 via-[#9BC273]/10 to-[#17323E]/5"></div>
-          <div className="relative z-10">
-            <RenderBlocks blocks={layout} locale={locale} />
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#17323E]/5 via-[#9BC273]/10 to-[#17323E]/5"></div>
+            <div className="relative z-10">
+              {await RenderBlocks({ blocks: layout || [], locale })}
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
+      </ErrorBoundary>
     )
   } catch (error) {
     console.error('Critical error in home page:', error)

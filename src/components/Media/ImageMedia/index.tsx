@@ -43,6 +43,11 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     const cacheTag = resource.updatedAt
 
     src = getMediaUrl(url, cacheTag)
+
+    // If we still don't have a valid src, use a fallback
+    if (!src || src === '/noimg.svg') {
+      src = '/noimg.svg'
+    }
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
@@ -67,6 +72,10 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         sizes={sizes}
         src={src}
         width={!fill ? width : undefined}
+        onError={(e) => {
+          console.error('Image failed to load:', src)
+          e.currentTarget.style.display = 'none'
+        }}
       />
     </picture>
   )

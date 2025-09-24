@@ -31,6 +31,7 @@ export const Products: CollectionConfig = {
     slug: true,
     image: true,
     backgroundImage: true,
+    highlightImage: true,
     description: true,
     meta: {
       image: true,
@@ -92,6 +93,15 @@ export const Products: CollectionConfig = {
       name: 'backgroundImage',
       type: 'upload',
       relationTo: 'media',
+    },
+    {
+      name: 'highlightImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Highlight Image',
+      admin: {
+        description: 'Image displayed in the hero section of the product page',
+      },
     },
     {
       name: 'nutritiveInfo',

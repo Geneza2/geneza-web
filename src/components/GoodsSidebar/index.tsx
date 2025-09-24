@@ -18,10 +18,19 @@ type Category = {
   subcategories?: Category[]
 }
 
+type Subcategory = {
+  name: string
+  count: number
+}
+
+// Props interface for GoodsSidebar component
 type Props = {
   categories: Category[]
   selectedCategory: string
   setSelectedCategory: (category: string) => void
+  subcategories: Subcategory[]
+  selectedSubcategory: string
+  setSelectedSubcategory: (subcategory: string) => void
   locale: TypedLocale
 }
 
@@ -29,6 +38,9 @@ export const GoodsSidebar: React.FC<Props> = ({
   categories,
   selectedCategory,
   setSelectedCategory,
+  subcategories,
+  selectedSubcategory,
+  setSelectedSubcategory,
   locale,
 }) => {
   const t = goodsTranslations[locale] || goodsTranslations.en
@@ -40,12 +52,31 @@ export const GoodsSidebar: React.FC<Props> = ({
       setSelectedCategory(categorySlug)
       const params = new URLSearchParams(searchParams.toString())
       params.delete('category')
+      params.delete('subcategory') // Clear subcategory when selecting all
       const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`
       router.push(newUrl, { scroll: false })
     } else {
       setSelectedCategory(categorySlug)
       const params = new URLSearchParams(searchParams.toString())
       params.set('category', categorySlug)
+      params.delete('subcategory') // Clear subcategory when changing category
+      const newUrl = `${window.location.pathname}?${params.toString()}`
+      router.push(newUrl, { scroll: false })
+    }
+  }
+
+  const handleSubcategoryClick = (subcategoryName: string) => {
+    if (subcategoryName === selectedSubcategory) {
+      // If clicking the same subcategory, clear it
+      setSelectedSubcategory('')
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('subcategory')
+      const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`
+      router.push(newUrl, { scroll: false })
+    } else {
+      setSelectedSubcategory(subcategoryName)
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('subcategory', subcategoryName)
       const newUrl = `${window.location.pathname}?${params.toString()}`
       router.push(newUrl, { scroll: false })
     }
@@ -177,6 +208,51 @@ export const GoodsSidebar: React.FC<Props> = ({
             </div>
           ))}
         </div>
+
+        {/* Subcategories Section */}
+        {subcategories.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-xl flex items-center justify-center">
+                <ChevronRight className="w-4 h-4 text-[#9BC273]" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-base text-gray-900">
+                  {locale === 'rs' ? 'Podkategorije' : 'Subcategories'}
+                </h4>
+                <p className="text-xs text-gray-500">
+                  {locale === 'rs' ? 'Filtrirajte po tipu' : 'Filter by type'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {subcategories.map((subcategory) => (
+                <Button
+                  key={subcategory.name}
+                  onClick={() => handleSubcategoryClick(subcategory.name)}
+                  variant="ghost"
+                  className={`w-full justify-between group h-auto p-3 rounded-xl transition-all duration-300 text-sm ${
+                    selectedSubcategory === subcategory.name
+                      ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg'
+                      : 'hover:bg-gray-50 text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <span className="font-normal">{subcategory.name}</span>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${
+                      selectedSubcategory === subcategory.name
+                        ? 'bg-white/20 text-white'
+                        : 'bg-gray-100 text-gray-500 group-hover:bg-[#9BC273]/10 group-hover:text-[#9BC273]'
+                    }`}
+                  >
+                    {subcategory.count}
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="flex items-center text-sm text-gray-500">
