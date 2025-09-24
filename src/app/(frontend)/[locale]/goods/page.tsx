@@ -9,6 +9,7 @@ import { goodsTranslations } from '@/i18n/translations/goods'
 import { Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { GoodsErrorBoundary } from '@/components/ErrorBoundary/GoodsErrorBoundary'
 import type { Product } from '@/payload-types'
 
 type CutSize = {
@@ -38,24 +39,41 @@ export default async function Page({
     const payload = await getPayload({ config: configPromise })
     const { isEnabled: draft } = await draftMode()
 
+    // Early return if payload is not available
+    if (!payload) {
+      console.error('Payload not available')
+      throw new Error('Database connection failed')
+    }
+
+    // Add timeout and better error handling for production
+    const queryOptions = {
+      depth: 1, // Further reduced depth for production stability
+      limit: 50, // Reduced limit for production
+      overrideAccess: draft,
+      draft: draft,
+      locale: safeLocale,
+    }
+
     const [goods, categories] = await Promise.all([
-      payload.find({
-        collection: 'goods',
-        depth: 2, // Reduced depth to improve performance
-        limit: 100,
-        overrideAccess: draft,
-        draft: draft,
-        locale: safeLocale,
-      }),
-      payload.find({
-        collection: 'categories',
-        depth: 2,
-        limit: 100,
-        overrideAccess: draft,
-        draft: draft,
-        locale: safeLocale,
-        sort: 'order',
-      }),
+      payload
+        .find({
+          collection: 'goods',
+          ...queryOptions,
+        })
+        .catch((error) => {
+          console.error('Error fetching goods:', error)
+          return { docs: [] }
+        }),
+      payload
+        .find({
+          collection: 'categories',
+          ...queryOptions,
+          sort: 'order',
+        })
+        .catch((error) => {
+          console.error('Error fetching categories:', error)
+          return { docs: [] }
+        }),
     ])
 
     // Get the selected category to determine banner image
@@ -71,14 +89,19 @@ export default async function Page({
     const productCutSizes: Record<string, CutSize[]> = {}
 
     try {
-      const productsResponse = await payload.find({
-        collection: 'products',
-        limit: 1000, // Get all products
-        depth: 1,
-        overrideAccess: draft,
-        draft: draft,
-        locale: safeLocale,
-      })
+      const productsResponse = await payload
+        .find({
+          collection: 'products',
+          limit: 100, // Reduced limit for production
+          depth: 1,
+          overrideAccess: draft,
+          draft: draft,
+          locale: safeLocale,
+        })
+        .catch((error) => {
+          console.error('Error loading products for cut sizes:', error)
+          return { docs: [] }
+        })
 
       // Build the cut sizes mapping
       if (productsResponse?.docs) {
@@ -119,94 +142,96 @@ export default async function Page({
         : 'Discover our wide range of quality products directly from the source')
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
-        {draft && <LivePreviewListener />}
-        <div className="relative overflow-hidden">
-          {bannerImage ? (
-            // Custom image banner
-            <>
-              <div
-                className="relative h-[60vh] min-h-[400px] bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${bannerImage})` }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30"></div>
+      <GoodsErrorBoundary locale={safeLocale}>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
+          {draft && <LivePreviewListener />}
+          <div className="relative overflow-hidden">
+            {bannerImage ? (
+              // Custom image banner
+              <>
+                <div
+                  className="relative h-[60vh] min-h-[400px] bg-cover bg-center bg-no-repeat"
+                  style={{ backgroundImage: `url(${bannerImage})` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30"></div>
 
-                <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 h-full flex items-center">
-                  <div className="text-center max-w-4xl mx-auto">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
-                      <Package className="w-10 h-10 text-white" />
+                  <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 h-full flex items-center">
+                    <div className="text-center max-w-4xl mx-auto">
+                      <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                        <Package className="w-10 h-10 text-white" />
+                      </div>
+
+                      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
+                        {bannerTitle}
+                      </h1>
+
+                      <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+                        {bannerDescription}
+                      </p>
                     </div>
-
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
-                      {bannerTitle}
-                    </h1>
-
-                    <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto drop-shadow-md">
-                      {bannerDescription}
-                    </p>
                   </div>
                 </div>
-              </div>
-            </>
-          ) : (
-            // Default gradient banner
-            <>
-              <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden">
-                <div className="absolute inset-0 bg-black/5"></div>
-                <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+              </>
+            ) : (
+              // Default gradient banner
+              <>
+                <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden">
+                  <div className="absolute inset-0 bg-black/5"></div>
+                  <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                  <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
 
-                <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-                  <div className="text-center max-w-4xl mx-auto">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
-                      <Package className="w-10 h-10 text-white" />
+                  <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+                    <div className="text-center max-w-4xl mx-auto">
+                      <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                        <Package className="w-10 h-10 text-white" />
+                      </div>
+
+                      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+                        {bannerTitle}
+                      </h1>
+
+                      <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+                        {bannerDescription}
+                      </p>
                     </div>
-
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
-                      {bannerTitle}
-                    </h1>
-
-                    <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
-                      {bannerDescription}
-                    </p>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </div>
 
-        <div className="relative -mt-16 pb-16">
-          {!hasProducts ? (
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <Card className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
-                <CardContent className="pt-8 pb-6 px-6">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-50 rounded-3xl flex items-center justify-center">
-                    <Package className="w-12 h-12 text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
-                  </h3>
-                  <p className="text-gray-600">
-                    {locale === 'rs'
-                      ? 'Proverite kasnije za nove proizvode'
-                      : 'Check back later for new products'}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            <GoodsArchive
-              goods={goods?.docs || []}
-              locale={safeLocale}
-              availableCategories={categories?.docs || []}
-              productCutSizes={productCutSizes}
-              searchParams={searchParams}
-            />
-          )}
+          <div className="relative -mt-16 pb-16">
+            {!hasProducts ? (
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <Card className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
+                  <CardContent className="pt-8 pb-6 px-6">
+                    <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-50 rounded-3xl flex items-center justify-center">
+                      <Package className="w-12 h-12 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
+                    </h3>
+                    <p className="text-gray-600">
+                      {locale === 'rs'
+                        ? 'Proverite kasnije za nove proizvode'
+                        : 'Check back later for new products'}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <GoodsArchive
+                goods={goods?.docs || []}
+                locale={safeLocale}
+                availableCategories={categories?.docs || []}
+                productCutSizes={productCutSizes}
+                searchParams={searchParams}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      </GoodsErrorBoundary>
     )
   } catch (error) {
     console.error('Error loading goods:', error)
@@ -219,51 +244,53 @@ export default async function Page({
 
     // Return a fallback page with empty data
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
-        <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden h-64 sm:h-80 lg:h-96">
-          <div className="absolute inset-0 bg-black/5"></div>
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+      <GoodsErrorBoundary locale={safeLocale}>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
+          <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden h-64 sm:h-80 lg:h-96">
+            <div className="absolute inset-0 bg-black/5"></div>
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
 
-          <div className="absolute inset-0 z-20 flex items-center justify-center">
-            <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-              <div className="text-center max-w-4xl mx-auto">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
-                  <Package className="w-10 h-10 text-white" />
+            <div className="absolute inset-0 z-20 flex items-center justify-center">
+              <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+                <div className="text-center max-w-4xl mx-auto">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                    <Package className="w-10 h-10 text-white" />
+                  </div>
+
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+                    {safeLocale === 'rs' ? 'Proizvodi' : 'Goods'}
+                  </h1>
+
+                  <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+                    {safeLocale === 'rs'
+                      ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
+                      : 'Discover our wide range of quality products directly from the source'}
+                  </p>
                 </div>
-
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
-                  {t.title}
-                </h1>
-
-                <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
-                  {locale === 'rs'
-                    ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
-                    : 'Discover our wide range of quality products directly from the source'}
-                </p>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="relative -mt-16 pb-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
-              <CardContent className="pt-8 pb-6 px-6">
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-red-100 to-red-50 rounded-3xl flex items-center justify-center">
-                  <Package className="w-12 h-12 text-red-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  {locale === 'rs' ? 'Greška pri učitavanju' : 'Error loading goods'}
-                </h3>
-                <p className="text-gray-600">
-                  {locale === 'rs' ? 'Pokušajte ponovo kasnije' : 'Please try again later'}
-                </p>
-              </CardContent>
-            </Card>
+          <div className="relative -mt-16 pb-16">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <Card className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
+                <CardContent className="pt-8 pb-6 px-6">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-red-100 to-red-50 rounded-3xl flex items-center justify-center">
+                    <Package className="w-12 h-12 text-red-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {safeLocale === 'rs' ? 'Greška pri učitavanju' : 'Error loading goods'}
+                  </h3>
+                  <p className="text-gray-600">
+                    {safeLocale === 'rs' ? 'Pokušajte ponovo kasnije' : 'Please try again later'}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
+      </GoodsErrorBoundary>
     )
   }
 }
@@ -276,3 +303,17 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     title: t.title,
   }
 }
+
+export async function generateStaticParams() {
+  return [
+    {
+      locale: 'en',
+    },
+    {
+      locale: 'rs',
+    },
+  ]
+}
+
+// Add revalidation to handle dynamic content
+export const revalidate = 60 // Revalidate every 60 seconds
