@@ -316,4 +316,4 @@ export async function generateStaticParams() {
 }
 
 // Add revalidation to handle dynamic content
-export const revalidate = 60 // Revalidate every 60 seconds
+export const revalidate = 30 // Revalidate every 30 seconds for faster updates

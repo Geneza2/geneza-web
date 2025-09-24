@@ -17,6 +17,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -228,5 +229,42 @@ export const Products: CollectionConfig = {
       schedulePublish: true,
     },
     maxPerDoc: 50,
+  },
+  hooks: {
+    afterChange: [
+      ({ doc, req: { payload, context } }) => {
+        if (!context.disableRevalidate) {
+          // Revalidate goods pages when products are updated
+          const paths = ['/goods', '/en/goods', '/rs/goods']
+
+          payload.logger.info(`Revalidating goods pages due to product update: ${paths.join(', ')}`)
+
+          paths.forEach((path) => {
+            revalidatePath(path)
+          })
+          revalidateTag('goods')
+          revalidateTag('products')
+        }
+        return doc
+      },
+    ],
+    afterDelete: [
+      ({ doc: _doc, req: { payload, context } }) => {
+        if (!context.disableRevalidate) {
+          // Revalidate goods pages when products are deleted
+          const paths = ['/goods', '/en/goods', '/rs/goods']
+
+          payload.logger.info(
+            `Revalidating goods pages due to product deletion: ${paths.join(', ')}`,
+          )
+
+          paths.forEach((path) => {
+            revalidatePath(path)
+          })
+          revalidateTag('goods')
+          revalidateTag('products')
+        }
+      },
+    ],
   },
 }

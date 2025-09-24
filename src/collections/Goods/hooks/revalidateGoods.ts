@@ -7,22 +7,32 @@ export const revalidateGoods: CollectionAfterChangeHook = ({
   req: { payload, context },
 }) => {
   if (!context.disableRevalidate) {
-    if (doc._status === 'published') {
-      const path = `/goods`
+    const paths = ['/goods', '/en/goods', '/rs/goods']
 
-      payload.logger.info(`Revalidating goods at path: ${path}`)
+    // Always revalidate when content changes, regardless of status
+    if (doc._status === 'published' || previousDoc?._status === 'published') {
+      payload.logger.info(
+        `Revalidating goods at paths: ${paths.join(', ')} (status: ${doc._status})`,
+      )
 
-      revalidatePath(path)
+      paths.forEach((path) => {
+        revalidatePath(path)
+      })
       revalidateTag('goods-sitemap')
+      revalidateTag('goods')
     }
 
-    if (previousDoc?._status === 'published' && doc._status !== 'published') {
-      const oldPath = `/goods`
+    // Also revalidate when switching between draft and published
+    if (previousDoc?._status !== doc._status) {
+      payload.logger.info(
+        `Revalidating goods due to status change: ${previousDoc?._status} -> ${doc._status}`,
+      )
 
-      payload.logger.info(`Revalidating old goods at path: ${oldPath}`)
-
-      revalidatePath(oldPath)
+      paths.forEach((path) => {
+        revalidatePath(path)
+      })
       revalidateTag('goods-sitemap')
+      revalidateTag('goods')
     }
   }
   return doc
@@ -30,7 +40,13 @@ export const revalidateGoods: CollectionAfterChangeHook = ({
 
 export const revalidateDelete: CollectionAfterDeleteHook = ({ doc: _doc, req: { context } }) => {
   if (!context.disableRevalidate) {
-    revalidatePath('/goods')
+    // Revalidate all locale-specific paths
+    const paths = ['/goods', '/en/goods', '/rs/goods']
+
+    paths.forEach((path) => {
+      revalidatePath(path)
+    })
     revalidateTag('goods-sitemap')
+    revalidateTag('goods')
   }
 }
