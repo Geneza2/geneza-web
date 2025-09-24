@@ -14,7 +14,12 @@ const heroes = {
 
 export const RenderHero: React.FC<Page['hero']> = (props) => {
   try {
-    const { type } = props || {}
+    if (!props) {
+      console.warn('RenderHero: No props provided')
+      return null
+    }
+
+    const { type } = props
 
     if (!type || type === 'none') {
       return null

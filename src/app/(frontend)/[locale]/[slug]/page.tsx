@@ -48,15 +48,14 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     if (!page) {
       console.log('No page found for:', { slug, locale, url })
 
-      // If we're in a deployment environment and can't connect to the database,
-      // show a maintenance page instead of redirecting
-      if (process.env.VERCEL_ENV && !process.env.POSTGRES_URL) {
+      // If we're in a deployment environment, show a simple fallback page
+      if (process.env.VERCEL_ENV) {
         return (
           <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="text-center max-w-md">
-              <h1 className="text-2xl font-bold mb-4">Site Maintenance</h1>
+              <h1 className="text-2xl font-bold mb-4">Welcome to Geneza</h1>
               <p className="text-muted-foreground mb-6">
-                We&apos;re currently setting up the site. Please check back in a few minutes.
+                We&apos;re setting up the site. Please check back in a few minutes.
               </p>
               <p className="text-sm text-muted-foreground">
                 If this issue persists, please contact support.
@@ -85,8 +84,11 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       <ErrorBoundary>
         <article>
           <PayloadRedirects disableNotFound url={url} />
-          <RenderHero {...hero} />
-          {await RenderBlocks({ blocks: layout || [], locale })}
+          {hero && <RenderHero {...hero} />}
+          {layout &&
+            Array.isArray(layout) &&
+            layout.length > 0 &&
+            (await RenderBlocks({ blocks: layout, locale }))}
         </article>
       </ErrorBoundary>
     )

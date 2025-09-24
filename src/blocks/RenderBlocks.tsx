@@ -41,15 +41,35 @@ export const RenderBlocks: React.FC<{
 }> = async (props) => {
   const { blocks, locale } = props
 
-  const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
+  if (!blocks) {
+    console.warn('RenderBlocks: No blocks provided')
+    return null
+  }
+
+  if (!Array.isArray(blocks)) {
+    console.warn('RenderBlocks: Blocks is not an array:', typeof blocks)
+    return null
+  }
+
+  const hasBlocks = blocks.length > 0
 
   if (hasBlocks) {
     const renderedBlocks = await Promise.all(
       blocks.map(async (block, index) => {
         try {
+          if (!block) {
+            console.warn(`Block at index ${index} is null or undefined`)
+            return null
+          }
+
           const { blockType } = block
 
-          if (blockType && blockType in blockComponents) {
+          if (!blockType) {
+            console.warn(`Block at index ${index} has no blockType`)
+            return null
+          }
+
+          if (blockType in blockComponents) {
             const Block = blockComponents[blockType as keyof typeof blockComponents]
 
             if (Block) {
