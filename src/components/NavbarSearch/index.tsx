@@ -52,7 +52,7 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
         } else {
           setResults([])
         }
-      } catch (error) {
+      } catch (_error) {
         setResults([])
       } finally {
         setIsLoading(false)

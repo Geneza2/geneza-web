@@ -9,7 +9,7 @@ import { TypedLocale } from 'payload'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
+import Link from 'next/link'
 import { retryOperation } from '@/utilities/retryOperation'
 
 type Params = {
@@ -133,12 +133,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
             >
               Refresh Page
             </button>
-            <a
+            <Link
               href="/"
               className="px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/90 transition-colors"
             >
               Go Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>

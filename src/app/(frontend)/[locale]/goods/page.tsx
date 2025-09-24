@@ -10,7 +10,6 @@ import { Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { GoodsErrorBoundary } from '@/components/ErrorBoundary/GoodsErrorBoundary'
-import type { Product } from '@/payload-types'
 
 type CutSize = {
   id?: string | null
@@ -42,6 +41,58 @@ export default async function Page({
     // Early return if payload is not available
     if (!payload) {
       console.error('Payload not available')
+      // In production, return a fallback instead of throwing
+      if (process.env.NODE_ENV === 'production') {
+        return (
+          <GoodsErrorBoundary locale={safeLocale}>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
+              <div className="relative bg-gradient-to-br from-[#9BC273] via-[#8AB162] to-[#7BA050] overflow-hidden h-64 sm:h-80 lg:h-96">
+                <div className="absolute inset-0 bg-black/5"></div>
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+                <div className="absolute inset-0 z-20 flex items-center justify-center">
+                  <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+                    <div className="text-center max-w-4xl mx-auto">
+                      <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                        <Package className="w-10 h-10 text-white" />
+                      </div>
+
+                      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+                        {safeLocale === 'rs' ? 'Proizvodi' : 'Goods'}
+                      </h1>
+
+                      <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+                        {safeLocale === 'rs'
+                          ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
+                          : 'Discover our wide range of quality products directly from the source'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative -mt-16 pb-16">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                  <Card className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
+                    <CardContent className="pt-8 pb-6 px-6">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-3xl flex items-center justify-center">
+                        <Package className="w-12 h-12 text-yellow-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                        {safeLocale === 'rs' ? 'Učitavanje...' : 'Loading...'}
+                      </h3>
+                      <p className="text-gray-600">
+                        {safeLocale === 'rs' ? 'Molimo sačekajte' : 'Please wait'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </GoodsErrorBoundary>
+        )
+      }
       throw new Error('Database connection failed')
     }
 
@@ -82,7 +133,7 @@ export default async function Page({
       : searchParams.category
 
     const selectedCategory = selectedCategorySlug
-      ? categories.docs.find((cat: any) => cat.slug === selectedCategorySlug)
+      ? categories.docs.find((cat: { slug?: string | null }) => cat.slug === selectedCategorySlug)
       : null
 
     // Get all products at once instead of individual queries
@@ -105,11 +156,13 @@ export default async function Page({
 
       // Build the cut sizes mapping
       if (productsResponse?.docs) {
-        productsResponse.docs.forEach((product: any) => {
-          if (product?.title && product?.cutSizes && product.cutSizes.length > 0) {
-            productCutSizes[product.title] = product.cutSizes
-          }
-        })
+        productsResponse.docs.forEach(
+          (product: { title?: string; cutSizes?: CutSize[] | null }) => {
+            if (product?.title && product?.cutSizes && product.cutSizes.length > 0) {
+              productCutSizes[product.title] = product.cutSizes
+            }
+          },
+        )
       }
     } catch (error) {
       console.error('Error loading products for cut sizes:', error)
@@ -117,7 +170,9 @@ export default async function Page({
     }
 
     const hasProducts =
-      goods?.docs?.some((doc: any) => doc?.products && doc.products.length > 0) || false
+      goods?.docs?.some(
+        (doc: { products?: unknown[] }) => doc?.products && doc.products.length > 0,
+      ) || false
 
     // Determine banner image and content
     // Prefer category.bannerImage from Categories collection; else fall back to Goods-level bannerImage
@@ -127,7 +182,9 @@ export default async function Page({
     }
 
     if (!bannerImage) {
-      const matchedGood = goods?.docs?.find((g: any) => g?.slug === selectedCategorySlug)
+      const matchedGood = goods?.docs?.find(
+        (g: { slug?: string | null }) => g?.slug === selectedCategorySlug,
+      )
       const goodBanner = matchedGood?.bannerImage
       if (goodBanner && typeof goodBanner === 'object' && 'url' in goodBanner) {
         bannerImage = goodBanner.url as string

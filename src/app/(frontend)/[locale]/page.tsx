@@ -11,7 +11,6 @@ import type { Page as PageType } from '@/payload-types'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { retryOperation } from '@/utilities/retryOperation'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 type Args = {
   params: Promise<{

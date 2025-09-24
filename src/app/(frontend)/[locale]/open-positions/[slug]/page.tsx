@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button'
 import { getImageUrl } from '@/utilities/getImageUrl'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, CheckCircle, ExternalLink, ArrowLeft } from 'lucide-react'
-import type { Media, OpenPosition } from '@/payload-types'
+import type { Media } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
