@@ -14,6 +14,7 @@ import { ZigZagRight } from '../../blocks/ZigZagRight/config'
 import { Products } from '../../blocks/Products/config'
 import { ImageBanner } from '../../blocks/ImageBanner/config'
 import { Cards } from '../../blocks/Cards/config'
+import { Statistics } from '../../blocks/Statistics/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -97,6 +98,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Products,
                 ImageBanner,
                 Cards,
+                Statistics,
               ],
               required: true,
               localized: true,

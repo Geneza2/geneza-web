@@ -232,22 +232,13 @@ export const GoodsSidebar: React.FC<Props> = ({
                   key={subcategory.name}
                   onClick={() => handleSubcategoryClick(subcategory.name)}
                   variant="ghost"
-                  className={`w-full justify-between group h-auto p-3 rounded-xl transition-all duration-300 text-sm ${
+                  className={`w-full justify-start group h-auto p-3 rounded-xl transition-all duration-300 text-sm ${
                     selectedSubcategory === subcategory.name
                       ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg'
                       : 'hover:bg-gray-50 text-gray-600 hover:text-gray-800'
                   }`}
                 >
                   <span className="font-normal">{subcategory.name}</span>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      selectedSubcategory === subcategory.name
-                        ? 'bg-white/20 text-white'
-                        : 'bg-gray-100 text-gray-500 group-hover:bg-[#9BC273]/10 group-hover:text-[#9BC273]'
-                    }`}
-                  >
-                    {subcategory.count}
-                  </span>
                 </Button>
               ))}
             </div>

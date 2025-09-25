@@ -25,7 +25,16 @@ export const OpenPositions: CollectionConfig = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: authenticatedOrPublished,
+    read: ({ req: { user } }) => {
+      // If user is authenticated (admin), they can see all positions (including drafts)
+      if (user) return true
+      // For public users, only show published positions
+      return {
+        _status: {
+          equals: 'published',
+        },
+      }
+    },
     update: authenticated,
   },
   defaultPopulate: {

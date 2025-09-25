@@ -178,24 +178,24 @@ export interface Page {
             newTab?: boolean | null;
             reference?:
               | ({
-                  relationTo: 'pages';
-                  value: number | Page;
-                } | null)
-              | ({
-                  relationTo: 'posts';
-                  value: number | Post;
-                } | null)
-              | ({
-                  relationTo: 'products';
-                  value: number | Product;
+                  relationTo: 'goods';
+                  value: number | Good;
                 } | null)
               | ({
                   relationTo: 'openPositions';
                   value: number | OpenPosition;
                 } | null)
               | ({
-                  relationTo: 'goods';
-                  value: number | Good;
+                  relationTo: 'products';
+                  value: number | Product;
+                } | null)
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
                 } | null)
               | ({
                   relationTo: 'categories';
@@ -232,6 +232,7 @@ export interface Page {
     | ProductsBlock
     | ImageBannerBlock
     | CardsBlock
+    | StatisticsBlock
   )[];
   meta?: {
     title?: string | null;
@@ -250,12 +251,39 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
+ * via the `definition` "goods".
  */
-export interface Post {
+export interface Good {
   id: number;
   title: string;
-  heroImage?: (number | null) | Media;
+  /**
+   * Shown as the header image on Goods page when this category is selected (fallback when global Categories are not used). Use a wide image, e.g. 1920×800.
+   */
+  bannerImage?: (number | null) | Media;
+  products: {
+    image?: (number | null) | Media;
+    /**
+     * Optional PDF to download with details/specification
+     */
+    specPdf?: (number | null) | Media;
+    title: string;
+    description: string;
+    /**
+     * Country of origin
+     */
+    country: string;
+    /**
+     * Optional subcategories for this product (e.g., sizes, cuts)
+     */
+    subcategories?:
+      | {
+          name: string;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
   content: {
     root: {
       type: string;
@@ -271,7 +299,6 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  relatedPosts?: (number | Post)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
@@ -281,14 +308,6 @@ export interface Post {
     image?: (number | null) | Media;
     description?: string | null;
   };
-  publishedAt?: string | null;
-  authors?: (number | User)[] | null;
-  populatedAuthors?:
-    | {
-        id?: string | null;
-        name?: string | null;
-      }[]
-    | null;
   slug?: string | null;
   slugLock?: boolean | null;
   updatedAt: string;
@@ -426,21 +445,65 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "openPositions".
  */
-export interface User {
+export interface OpenPosition {
   id: number;
-  name?: string | null;
+  title: string;
+  jobOffers: {
+    image: number | Media;
+    position: string;
+    date: string;
+    requirementsTitle?: string | null;
+    responsibilitiesTitle?: string | null;
+    requirements?:
+      | {
+          item?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    responsibilities?:
+      | {
+          item?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    callToAction: {
+      text: string;
+      link: string;
+      openInNewTab?: boolean | null;
+    };
+    id?: string | null;
+  }[];
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  categories?: (number | Category)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password?: string | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -511,36 +574,12 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "openPositions".
+ * via the `definition` "posts".
  */
-export interface OpenPosition {
+export interface Post {
   id: number;
   title: string;
-  jobOffers: {
-    image: number | Media;
-    position: string;
-    date: string;
-    requirementsTitle?: string | null;
-    responsibilitiesTitle?: string | null;
-    requirements?:
-      | {
-          item?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    responsibilities?:
-      | {
-          item?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    callToAction: {
-      text: string;
-      link: string;
-      openInNewTab?: boolean | null;
-    };
-    id?: string | null;
-  }[];
+  heroImage?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -556,6 +595,7 @@ export interface OpenPosition {
     };
     [k: string]: unknown;
   };
+  relatedPosts?: (number | Post)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
@@ -565,6 +605,14 @@ export interface OpenPosition {
     image?: (number | null) | Media;
     description?: string | null;
   };
+  publishedAt?: string | null;
+  authors?: (number | User)[] | null;
+  populatedAuthors?:
+    | {
+        id?: string | null;
+        name?: string | null;
+      }[]
+    | null;
   slug?: string | null;
   slugLock?: boolean | null;
   updatedAt: string;
@@ -573,68 +621,21 @@ export interface OpenPosition {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "goods".
+ * via the `definition` "users".
  */
-export interface Good {
+export interface User {
   id: number;
-  title: string;
-  /**
-   * Shown as the header image on Goods page when this category is selected (fallback when global Categories are not used). Use a wide image, e.g. 1920×800.
-   */
-  bannerImage?: (number | null) | Media;
-  products: {
-    image?: (number | null) | Media;
-    /**
-     * Optional PDF to download with details/specification
-     */
-    specPdf?: (number | null) | Media;
-    title: string;
-    description: string;
-    /**
-     * Country of origin
-     */
-    country: string;
-    /**
-     * Optional subcategories for this product (e.g., sizes, cuts)
-     */
-    subcategories?:
-      | {
-          name: string;
-          description?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    id?: string | null;
-  }[];
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  categories?: (number | Category)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  slug?: string | null;
-  slugLock?: boolean | null;
+  name?: string | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -663,24 +664,24 @@ export interface CallToActionBlock {
           newTab?: boolean | null;
           reference?:
             | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null)
-            | ({
-                relationTo: 'products';
-                value: number | Product;
+                relationTo: 'goods';
+                value: number | Good;
               } | null)
             | ({
                 relationTo: 'openPositions';
                 value: number | OpenPosition;
               } | null)
             | ({
-                relationTo: 'goods';
-                value: number | Good;
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
               } | null)
             | ({
                 relationTo: 'categories';
@@ -733,24 +734,24 @@ export interface ContentBlock {
           newTab?: boolean | null;
           reference?:
             | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null)
-            | ({
-                relationTo: 'products';
-                value: number | Product;
+                relationTo: 'goods';
+                value: number | Good;
               } | null)
             | ({
                 relationTo: 'openPositions';
                 value: number | OpenPosition;
               } | null)
             | ({
-                relationTo: 'goods';
-                value: number | Good;
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
               } | null)
             | ({
                 relationTo: 'categories';
@@ -1034,24 +1035,24 @@ export interface CarouselBlock {
         newTab?: boolean | null;
         reference?:
           | ({
-              relationTo: 'pages';
-              value: number | Page;
-            } | null)
-          | ({
-              relationTo: 'posts';
-              value: number | Post;
-            } | null)
-          | ({
-              relationTo: 'products';
-              value: number | Product;
+              relationTo: 'goods';
+              value: number | Good;
             } | null)
           | ({
               relationTo: 'openPositions';
               value: number | OpenPosition;
             } | null)
           | ({
-              relationTo: 'goods';
-              value: number | Good;
+              relationTo: 'products';
+              value: number | Product;
+            } | null)
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
             } | null)
           | ({
               relationTo: 'categories';
@@ -1350,6 +1351,45 @@ export interface CardsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'cards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatisticsBlock".
+ */
+export interface StatisticsBlock {
+  /**
+   * Main heading for the statistics section
+   */
+  title?: string | null;
+  /**
+   * Small text above the title (optional)
+   */
+  subtitle?: string | null;
+  /**
+   * Add statistics to display with animated counters
+   */
+  statistics: {
+    /**
+     * The number to display and animate to
+     */
+    number: number;
+    /**
+     * Text to append after the number (e.g., "+", "%", "K")
+     */
+    suffix?: string | null;
+    /**
+     * Description text below the number
+     */
+    label: string;
+    id?: string | null;
+  }[];
+  /**
+   * Animation duration in milliseconds (default: 2000ms)
+   */
+  animationDuration?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'statistics';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1664,6 +1704,7 @@ export interface PagesSelect<T extends boolean = true> {
         products?: T | ProductsBlockSelect<T>;
         imageBanner?: T | ImageBannerBlockSelect<T>;
         cards?: T | CardsBlockSelect<T>;
+        statistics?: T | StatisticsBlockSelect<T>;
       };
   meta?:
     | T
@@ -1965,6 +2006,25 @@ export interface CardsBlockSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatisticsBlock_select".
+ */
+export interface StatisticsBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  statistics?:
+    | T
+    | {
+        number?: T;
+        suffix?: T;
+        label?: T;
+        id?: T;
+      };
+  animationDuration?: T;
   id?: T;
   blockName?: T;
 }
@@ -2541,24 +2601,24 @@ export interface Header {
           newTab?: boolean | null;
           reference?:
             | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null)
-            | ({
-                relationTo: 'products';
-                value: number | Product;
+                relationTo: 'goods';
+                value: number | Good;
               } | null)
             | ({
                 relationTo: 'openPositions';
                 value: number | OpenPosition;
               } | null)
             | ({
-                relationTo: 'goods';
-                value: number | Good;
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
               } | null)
             | ({
                 relationTo: 'categories';
@@ -2593,24 +2653,24 @@ export interface Header {
                 newTab?: boolean | null;
                 reference?:
                   | ({
-                      relationTo: 'pages';
-                      value: number | Page;
-                    } | null)
-                  | ({
-                      relationTo: 'posts';
-                      value: number | Post;
-                    } | null)
-                  | ({
-                      relationTo: 'products';
-                      value: number | Product;
+                      relationTo: 'goods';
+                      value: number | Good;
                     } | null)
                   | ({
                       relationTo: 'openPositions';
                       value: number | OpenPosition;
                     } | null)
                   | ({
-                      relationTo: 'goods';
-                      value: number | Good;
+                      relationTo: 'products';
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
                     } | null)
                   | ({
                       relationTo: 'categories';
@@ -2656,24 +2716,24 @@ export interface Footer {
                 newTab?: boolean | null;
                 reference?:
                   | ({
-                      relationTo: 'pages';
-                      value: number | Page;
-                    } | null)
-                  | ({
-                      relationTo: 'posts';
-                      value: number | Post;
-                    } | null)
-                  | ({
-                      relationTo: 'products';
-                      value: number | Product;
+                      relationTo: 'goods';
+                      value: number | Good;
                     } | null)
                   | ({
                       relationTo: 'openPositions';
                       value: number | OpenPosition;
                     } | null)
                   | ({
-                      relationTo: 'goods';
-                      value: number | Good;
+                      relationTo: 'products';
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
                     } | null)
                   | ({
                       relationTo: 'categories';
@@ -2705,24 +2765,24 @@ export interface Footer {
           newTab?: boolean | null;
           reference?:
             | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null)
-            | ({
-                relationTo: 'products';
-                value: number | Product;
+                relationTo: 'goods';
+                value: number | Good;
               } | null)
             | ({
                 relationTo: 'openPositions';
                 value: number | OpenPosition;
               } | null)
             | ({
-                relationTo: 'goods';
-                value: number | Good;
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
               } | null)
             | ({
                 relationTo: 'categories';

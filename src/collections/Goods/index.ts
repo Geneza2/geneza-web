@@ -94,20 +94,20 @@ export const Goods: CollectionConfig = {
           name: 'title',
           type: 'text',
           required: true,
-          localized: true,
+          localized: false,
         },
         {
           name: 'description',
           label: 'Packaging',
           type: 'textarea',
           required: true,
-          localized: true,
+          localized: false,
         },
         {
           name: 'country',
           type: 'text',
           required: true,
-          localized: true,
+          localized: false,
           admin: {
             description: 'Country of origin',
           },

@@ -156,27 +156,48 @@ export const GoodsArchive: React.FC<Props> = ({
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesAlphabetical)
 
-  // Extract all unique subcategories from goods
+  // Extract subcategories only from the selected category's goods
   const allSubcategories = React.useMemo(() => {
+    // Don't show subcategories if "all" is selected
+    if (selectedCategory === 'all') {
+      return []
+    }
+
     const subcategoryMap = new Map<string, { name: string; count: number }>()
 
     goods.forEach((good) => {
-      good.products?.forEach((product) => {
-        product.subcategories?.forEach((subcategory) => {
-          if (subcategory.name) {
-            const existing = subcategoryMap.get(subcategory.name)
-            if (existing) {
-              existing.count += 1
-            } else {
-              subcategoryMap.set(subcategory.name, { name: subcategory.name, count: 1 })
+      // Check if this good matches the selected category
+      let matchesCategory = false
+
+      if (availableCategories.length > 0) {
+        matchesCategory =
+          good.categories?.some((cat: number | PayloadCategory) => {
+            const categorySlug = typeof cat === 'object' && cat?.slug ? cat.slug : null
+            return categorySlug === selectedCategory
+          }) || false
+      } else {
+        matchesCategory = good.slug === selectedCategory
+      }
+
+      // Only process subcategories from goods that match the selected category
+      if (matchesCategory) {
+        good.products?.forEach((product) => {
+          product.subcategories?.forEach((subcategory) => {
+            if (subcategory.name) {
+              const existing = subcategoryMap.get(subcategory.name)
+              if (existing) {
+                existing.count += 1
+              } else {
+                subcategoryMap.set(subcategory.name, { name: subcategory.name, count: 1 })
+              }
             }
-          }
+          })
         })
-      })
+      }
     })
 
     return Array.from(subcategoryMap.values()).sort((a, b) => a.name.localeCompare(b.name))
-  }, [goods])
+  }, [goods, selectedCategory, availableCategories])
 
   const filteredGoods = goods
     .map((good) => {

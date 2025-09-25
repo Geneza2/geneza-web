@@ -5,6 +5,7 @@ import {
   HeadingFeature,
   HorizontalRuleFeature,
   InlineToolbarFeature,
+  LinkFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { authenticated } from '../../access/authenticated'
@@ -89,6 +90,16 @@ export const Posts: CollectionConfig<'posts'> = {
                   return [
                     ...rootFeatures,
                     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+                    LinkFeature({
+                      enabledCollections: [
+                        'pages',
+                        'posts',
+                        'products',
+                        'openPositions',
+                        'goods',
+                        'categories',
+                      ],
+                    }),
                     BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),

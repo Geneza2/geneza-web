@@ -75,7 +75,8 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
         condition: (_, siblingData) => siblingData?.type === 'reference',
       },
       label: 'Document to link to',
-      relationTo: ['pages', 'posts', 'products', 'openPositions', 'goods', 'categories'],
+      // Prioritize goods and open positions first so they appear at the top
+      relationTo: ['goods', 'openPositions', 'products', 'pages', 'posts', 'categories'],
       required: true,
     },
     {
