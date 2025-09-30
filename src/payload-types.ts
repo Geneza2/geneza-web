@@ -1146,11 +1146,11 @@ export interface ZigZagLeftBlock {
     image: number | Media;
     title: string;
     description: string;
-    callToAction: {
+    callToAction?: {
       /**
        * Button text to display
        */
-      text: string;
+      text?: string | null;
       linkType?: ('reference' | 'custom') | null;
       newTab?: boolean | null;
       reference?:
@@ -1203,11 +1203,11 @@ export interface ZigZagRightBlock {
     image: number | Media;
     title: string;
     description: string;
-    callToAction: {
+    callToAction?: {
       /**
        * Button text to display
        */
-      text: string;
+      text?: string | null;
       linkType?: ('reference' | 'custom') | null;
       newTab?: boolean | null;
       reference?:

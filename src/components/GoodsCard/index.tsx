@@ -87,13 +87,6 @@ export const GoodsCard: React.FC<{
                 <span>{description}</span>
               </p>
             )}
-
-            <div className="flex items-center pt-2">
-              <div className="flex items-center text-xs text-gray-500">
-                <span className="inline-block w-2 h-2 bg-[#9BC273] rounded-full mr-2"></span>
-                <span className="font-medium">{locale === 'rs' ? 'Dostupno' : 'Available'}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

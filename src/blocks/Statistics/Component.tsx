@@ -88,8 +88,10 @@ export const Statistics: React.FC<StatisticsProps> = ({
               </p>
             )}
             {title && (
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight flex items-center justify-center">
+                <div className="w-8 h-0.5 bg-[#9BC273] mr-3"></div>
                 {title}
+                <div className="w-8 h-0.5 bg-[#9BC273] ml-3"></div>
               </h2>
             )}
           </div>

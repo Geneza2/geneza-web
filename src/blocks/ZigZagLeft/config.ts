@@ -48,7 +48,7 @@ export const ZigZagLeft: Block = {
             {
               name: 'text',
               type: 'text',
-              required: true,
+              required: false,
               admin: {
                 description: 'Button text to display',
               },
@@ -92,7 +92,7 @@ export const ZigZagLeft: Block = {
               },
               label: 'Document to link to',
               relationTo: ['pages', 'posts', 'products', 'openPositions', 'goods', 'categories'],
-              required: true,
+              required: false,
             },
             {
               name: 'anchor',
@@ -112,7 +112,7 @@ export const ZigZagLeft: Block = {
                 condition: (_, siblingData) => siblingData?.linkType === 'custom',
               },
               label: 'Custom URL',
-              required: true,
+              required: false,
             },
           ],
         },

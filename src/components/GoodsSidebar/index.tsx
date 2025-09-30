@@ -117,8 +117,25 @@ export const GoodsSidebar: React.FC<Props> = ({
       }
     })
 
+    if (subcategories && subcategories.length > 0) {
+      const selectedParent = parentCategories.find((p) => p.slug === selectedCategory)
+      if (selectedParent) {
+        if (!selectedParent.subcategories) {
+          selectedParent.subcategories = []
+        }
+
+        selectedParent.subcategories = subcategories.map((sub) => ({
+          slug: sub.name.toLowerCase().replace(/\s+/g, '-'),
+          title: sub.name,
+          parent: null,
+          order: 0,
+          subcategories: [],
+        }))
+      }
+    }
+
     return parentCategories
-  }, [categories])
+  }, [categories, subcategories, selectedCategory])
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-3xl border-0 shadow-xl overflow-hidden">
@@ -179,28 +196,20 @@ export const GoodsSidebar: React.FC<Props> = ({
                 />
               </Button>
 
-              {/* Subcategories */}
               {category.subcategories && category.subcategories.length > 0 && (
-                <div className="ml-4 space-y-1">
+                <div className="ml-6 space-y-1">
                   {category.subcategories.map((subcategory) => (
                     <Button
                       key={subcategory.slug}
-                      onClick={() => handleCategoryClick(subcategory.slug)}
+                      onClick={() => handleSubcategoryClick(subcategory.title)}
                       variant="ghost"
-                      className={`w-full justify-between group h-auto p-3 rounded-xl transition-all duration-300 text-sm ${
-                        selectedCategory === subcategory.slug
+                      className={`w-full justify-start group h-auto p-2 rounded-lg transition-all duration-300 text-sm ${
+                        selectedSubcategory === subcategory.title
                           ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg'
                           : 'hover:bg-gray-50 text-gray-600 hover:text-gray-800'
                       }`}
                     >
-                      <span className="font-normal">• {subcategory.title}</span>
-                      <ChevronRight
-                        className={`w-4 h-4 transition-all duration-300 ${
-                          selectedCategory === subcategory.slug
-                            ? 'rotate-90 text-white'
-                            : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
-                        }`}
-                      />
+                      <span className="font-normal">{subcategory.title}</span>
                     </Button>
                   ))}
                 </div>
@@ -208,42 +217,6 @@ export const GoodsSidebar: React.FC<Props> = ({
             </div>
           ))}
         </div>
-
-        {/* Subcategories Section */}
-        {subcategories.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-xl flex items-center justify-center">
-                <ChevronRight className="w-4 h-4 text-[#9BC273]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-base text-gray-900">
-                  {locale === 'rs' ? 'Podkategorije' : 'Subcategories'}
-                </h4>
-                <p className="text-xs text-gray-500">
-                  {locale === 'rs' ? 'Filtrirajte po tipu' : 'Filter by type'}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              {subcategories.map((subcategory) => (
-                <Button
-                  key={subcategory.name}
-                  onClick={() => handleSubcategoryClick(subcategory.name)}
-                  variant="ghost"
-                  className={`w-full justify-start group h-auto p-3 rounded-xl transition-all duration-300 text-sm ${
-                    selectedSubcategory === subcategory.name
-                      ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg'
-                      : 'hover:bg-gray-50 text-gray-600 hover:text-gray-800'
-                  }`}
-                >
-                  <span className="font-normal">{subcategory.name}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="flex items-center text-sm text-gray-500">

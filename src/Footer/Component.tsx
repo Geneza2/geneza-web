@@ -35,15 +35,15 @@ export async function Footer({ locale }: FooterProps) {
 
     return (
       <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full">
-        <div className="w-full max-w-none pl-12 pr-6 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="w-full max-w-none px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
             {/* Branding Section */}
-            <div className="lg:col-span-3 space-y-8">
+            <div className="lg:col-span-3 space-y-6 sm:space-y-8">
               <Link href={`/${currentLocale}`} className="inline-block">
                 <Logo />
               </Link>
 
-              <p className="text-lg text-gray-700 leading-relaxed max-w-xs font-medium">
+              <p className="text-base sm:text-lg text-gray-700 leading-relaxed max-w-xs font-medium">
                 {branding.missionStatement ||
                   (currentLocale === 'rs'
                     ? 'Naša vizija je da pružimo praktičnost i pomognemo u povećanju vašeg poslovnog prometa.'
@@ -181,45 +181,45 @@ export async function Footer({ locale }: FooterProps) {
           </div>
 
           {/* Contact Information */}
-          <div className="border-t border-gray-200 my-8" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 justify-items-center">
-            <div className="flex items-center space-x-4 group justify-center md:justify-start">
-              <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
-                <Mail className="w-6 h-6 text-white" />
+          <div className="border-t border-gray-200 my-6 sm:my-8" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
+            <div className="flex items-center space-x-3 sm:space-x-4 group justify-center md:justify-start">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 flex-shrink-0">
+                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-800 text-lg">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-gray-800 text-base sm:text-lg">
                   {currentLocale === 'rs' ? 'E-mail' : 'Email'}
                 </p>
-                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium">
+                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words">
                   {contactInfo.email || 'geneza@geneza.com'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4 group justify-center md:justify-start">
-              <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
-                <Phone className="w-6 h-6 text-white" />
+            <div className="flex items-center space-x-3 sm:space-x-4 group justify-center md:justify-start">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 flex-shrink-0">
+                <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-800 text-lg">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-gray-800 text-base sm:text-lg">
                   {currentLocale === 'rs' ? 'Telefon' : 'Phone'}
                 </p>
-                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium">
+                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words">
                   {contactInfo.phone || '+381 24 4874 987'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4 group justify-center md:justify-start">
-              <div className="w-14 h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
-                <MapPin className="w-6 h-6 text-white" />
+            <div className="flex items-center space-x-3 sm:space-x-4 group justify-center md:justify-start">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#9BC273] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 flex-shrink-0">
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div>
-                <p className="font-semibold text-gray-800 text-lg">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-gray-800 text-base sm:text-lg">
                   {currentLocale === 'rs' ? 'Adresa' : 'Address'}
                 </p>
-                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium">
+                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words">
                   {contactInfo.address || '24420 Kanjiža, Srbija Put Narodnih heroja 17'}
                 </p>
               </div>
@@ -229,15 +229,15 @@ export async function Footer({ locale }: FooterProps) {
           {/* Navigation Items */}
           {navItems && navItems.length > 0 && (
             <>
-              <div className="border-t border-gray-200 mb-6" />
-              <div className="flex flex-wrap justify-center gap-8 mb-6">
+              <div className="border-t border-gray-200 mb-4 sm:mb-6" />
+              <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6">
                 {navItems.map((navItem: any, index: number) => {
                   const href = getLinkHref({ link: navItem.link }, currentLocale)
                   return (
                     <Link
                       key={index}
                       href={href}
-                      className="text-gray-600 hover:text-green-700 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-lg hover:bg-green-200/50"
+                      className="text-gray-600 hover:text-green-700 transition-all duration-300 hover:scale-105 px-3 sm:px-4 py-2 rounded-lg hover:bg-green-200/50 text-sm sm:text-base"
                     >
                       {navItem.link?.label || 'Unnamed link'}
                     </Link>
@@ -248,9 +248,9 @@ export async function Footer({ locale }: FooterProps) {
           )}
 
           {/* Copyright */}
-          <div className="border-t border-gray-200 mb-6" />
+          <div className="border-t border-gray-200 mb-4 sm:mb-6" />
           <div className="text-center">
-            <p className="text-gray-600 text-lg">{copyright}</p>
+            <p className="text-gray-600 text-sm sm:text-base lg:text-lg">{copyright}</p>
           </div>
         </div>
       </footer>
@@ -261,9 +261,9 @@ export async function Footer({ locale }: FooterProps) {
     // Fallback footer with default content
     return (
       <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full">
-        <div className="w-full max-w-none pl-12 pr-6 py-12">
+        <div className="w-full max-w-none px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
           <div className="text-center">
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm sm:text-base">
               {currentLocale === 'rs' ? 'Footer se učitava...' : 'Loading footer...'}
             </p>
           </div>

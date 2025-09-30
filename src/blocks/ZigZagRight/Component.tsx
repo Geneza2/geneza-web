@@ -57,8 +57,8 @@ export const ZigZagRightBlock: React.FC<Props> = ({
       style={backgroundStyle}
     >
       {/* Background overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/40 to-black/60"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-l from-black/30 via-black/20 to-black/30"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/25"></div>
 
       <div className="relative z-10 container py-20 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[50vh]">
