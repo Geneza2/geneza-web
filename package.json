@@ -57,6 +57,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "7.45.4",
+    "react-simple-maps": "^3.0.0",
     "sharp": "0.32.6",
     "swiper": "^11.2.10",
     "tailwind-merge": "^2.3.0",

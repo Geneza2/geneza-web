@@ -12,6 +12,7 @@ type Product = {
   title: string
   slug: string
   image?: MediaType
+  highlightImage?: MediaType
 }
 
 type Props = {
@@ -23,24 +24,25 @@ type Props = {
 }
 
 const ProductItem: React.FC<{ product: Product; locale: TypedLocale }> = ({ product, locale }) => {
-  const { title: productTitle, slug, image } = product
+  const { title: productTitle, slug, image, highlightImage } = product
 
   return (
-    <Link
-      href={`/${locale}/products/${slug}`}
-      className="group block text-center h-full transform transition-all duration-300 hover:scale-105 hover:-translate-y-2"
-    >
+    <Link href={`/${locale}/products/${slug}`} className="block text-center h-full">
       {image && (
-        <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-72 mx-auto rounded-lg transition-all duration-300">
-          <Media
-            resource={image}
-            className="w-full h-full object-contain transition-all duration-500 group-hover:scale-105 group-hover:rotate-1"
-          />
+        <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-72 mx-auto rounded-lg group">
+          <Media resource={image} className="w-full h-full object-contain scale-110" />
+          {/* Highlight image overlay */}
+          {highlightImage && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Media
+                resource={highlightImage}
+                className="w-2/3 h-2/3 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ease-out"
+              />
+            </div>
+          )}
         </div>
       )}
-      <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#9BC273] transition-all duration-300 transform group-hover:scale-105">
-        {productTitle}
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-800">{productTitle}</h3>
     </Link>
   )
 }

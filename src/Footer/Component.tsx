@@ -9,6 +9,7 @@ import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react
 import { Button } from '@/components/ui/button'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import SerbiaMap from '@/components/SerbiaMap'
 
 type FooterProps = {
   locale: TypedLocale
@@ -191,9 +192,12 @@ export async function Footer({ locale }: FooterProps) {
                 <p className="font-semibold text-gray-800 text-base sm:text-lg">
                   {currentLocale === 'rs' ? 'E-mail' : 'Email'}
                 </p>
-                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words">
+                <a
+                  href={`mailto:${contactInfo.email || 'geneza@geneza.com'}`}
+                  className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words hover:underline"
+                >
                   {contactInfo.email || 'geneza@geneza.com'}
-                </p>
+                </a>
               </div>
             </div>
 
@@ -205,9 +209,12 @@ export async function Footer({ locale }: FooterProps) {
                 <p className="font-semibold text-gray-800 text-base sm:text-lg">
                   {currentLocale === 'rs' ? 'Telefon' : 'Phone'}
                 </p>
-                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words">
+                <a
+                  href={`tel:${contactInfo.phone || '+381 24 4874 987'}`}
+                  className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words hover:underline"
+                >
                   {contactInfo.phone || '+381 24 4874 987'}
-                </p>
+                </a>
               </div>
             </div>
 
@@ -219,33 +226,21 @@ export async function Footer({ locale }: FooterProps) {
                 <p className="font-semibold text-gray-800 text-base sm:text-lg">
                   {currentLocale === 'rs' ? 'Adresa' : 'Address'}
                 </p>
-                <p className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words">
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(contactInfo.address || '24420 Kanjiža, Srbija Put Narodnih heroja 17')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-[#9BC273] transition-colors font-medium text-sm sm:text-base break-words hover:underline"
+                >
                   {contactInfo.address || '24420 Kanjiža, Srbija Put Narodnih heroja 17'}
-                </p>
+                </a>
               </div>
             </div>
           </div>
 
-          {/* Navigation Items */}
-          {navItems && navItems.length > 0 && (
-            <>
-              <div className="border-t border-gray-200 mb-4 sm:mb-6" />
-              <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6">
-                {navItems.map((navItem: any, index: number) => {
-                  const href = getLinkHref({ link: navItem.link }, currentLocale)
-                  return (
-                    <Link
-                      key={index}
-                      href={href}
-                      className="text-gray-600 hover:text-green-700 transition-all duration-300 hover:scale-105 px-3 sm:px-4 py-2 rounded-lg hover:bg-green-200/50 text-sm sm:text-base"
-                    >
-                      {navItem.link?.label || 'Unnamed link'}
-                    </Link>
-                  )
-                })}
-              </div>
-            </>
-          )}
+          {/* Serbia Map Section */}
+          <div className="border-t border-gray-200" />
+          <SerbiaMap />
 
           {/* Copyright */}
           <div className="border-t border-gray-200 mb-4 sm:mb-6" />

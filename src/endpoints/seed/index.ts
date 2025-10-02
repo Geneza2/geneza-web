@@ -376,20 +376,6 @@ export const seed = async ({
             {
               link: {
                 type: 'custom',
-                label: 'Privacy Policy',
-                url: '/privacy',
-              },
-            },
-            {
-              link: {
-                type: 'custom',
-                label: 'Terms of Service',
-                url: '/terms',
-              },
-            },
-            {
-              link: {
-                type: 'custom',
                 label: 'Admin',
                 url: '/admin',
               },
@@ -526,20 +512,6 @@ export const seed = async ({
           },
           copyright: '©2025 Geneza. Sva prava zadržana.',
           navItems: [
-            {
-              link: {
-                type: 'custom',
-                label: 'Politika privatnosti',
-                url: '/privacy',
-              },
-            },
-            {
-              link: {
-                type: 'custom',
-                label: 'Uslovi korišćenja',
-                url: '/terms',
-              },
-            },
             {
               link: {
                 type: 'custom',

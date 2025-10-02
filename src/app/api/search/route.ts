@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { TypedLocale } from 'payload'
+import { createFuzzySearchCondition, normalizeSearchQuery } from '@/utilities/normalizeSearchQuery'
 
 type SearchResult = {
   id: string
@@ -26,7 +27,7 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 const CACHE_MAX_SIZE = 100 // Maximum cache entries
 
 function getCacheKey(query: string, locale: TypedLocale): string {
-  return `${query.toLowerCase().trim()}_${locale}`
+  return `${normalizeSearchQuery(query)}_${locale}`
 }
 
 function getFromCache(key: string) {
@@ -56,8 +57,6 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get('q')
   const locale = (searchParams.get('locale') || 'en') as TypedLocale
 
-  // quiet logs in production
-
   if (!query || query.length < 3) {
     return NextResponse.json({ results: [], message: 'Query too short' })
   }
@@ -66,23 +65,15 @@ export async function GET(request: NextRequest) {
   const cacheKey = getCacheKey(query, locale)
   const cachedResult = getFromCache(cacheKey)
   if (cachedResult) {
-    // cache hit
     return NextResponse.json(cachedResult)
   }
-
-  // cache miss
 
   try {
     const payload = await getPayload({ config: configPromise })
     const results: SearchResult[] = []
 
-    // payload ready
-
     // Optimized search function - search most relevant collections first
     const performSearch = async (searchLocale: TypedLocale) => {
-      // searching locale
-
-      // Batch search promises for better performance
       const searchPromises = []
 
       // Search most relevant collections first (products and goods are likely most searched)
@@ -91,7 +82,10 @@ export async function GET(request: NextRequest) {
           .find({
             collection: 'products',
             where: {
-              or: [{ title: { contains: query } }, { slug: { contains: query } }],
+              or: [
+                createFuzzySearchCondition('title', query),
+                createFuzzySearchCondition('slug', query),
+              ],
             },
             limit: 4,
             locale: searchLocale,
@@ -106,7 +100,10 @@ export async function GET(request: NextRequest) {
           .find({
             collection: 'goods',
             where: {
-              or: [{ title: { contains: query } }, { slug: { contains: query } }],
+              or: [
+                createFuzzySearchCondition('title', query),
+                createFuzzySearchCondition('slug', query),
+              ],
             },
             limit: 4,
             locale: searchLocale,
@@ -121,7 +118,10 @@ export async function GET(request: NextRequest) {
           .find({
             collection: 'pages',
             where: {
-              or: [{ title: { contains: query } }, { slug: { contains: query } }],
+              or: [
+                createFuzzySearchCondition('title', query),
+                createFuzzySearchCondition('slug', query),
+              ],
             },
             limit: 3,
             locale: searchLocale,
@@ -138,7 +138,10 @@ export async function GET(request: NextRequest) {
             .find({
               collection: 'posts',
               where: {
-                or: [{ title: { contains: query } }, { slug: { contains: query } }],
+                or: [
+                  createFuzzySearchCondition('title', query),
+                  createFuzzySearchCondition('slug', query),
+                ],
               },
               limit: 2,
               locale: searchLocale,
@@ -153,7 +156,10 @@ export async function GET(request: NextRequest) {
             .find({
               collection: 'categories',
               where: {
-                or: [{ title: { contains: query } }, { slug: { contains: query } }],
+                or: [
+                  createFuzzySearchCondition('title', query),
+                  createFuzzySearchCondition('slug', query),
+                ],
               },
               limit: 2,
               locale: searchLocale,
@@ -182,7 +188,6 @@ export async function GET(request: NextRequest) {
             })
           }
         })
-        // counts suppressed
       }
 
       // Process goods
