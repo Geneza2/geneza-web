@@ -3,6 +3,8 @@
 import React from 'react'
 import Image from 'next/image'
 
+// Serbia map component for footer
+
 const SerbiaMap: React.FC = () => {
   return (
     <div className="w-screen h-64 relative -mx-4 sm:-mx-6 lg:-mx-12">

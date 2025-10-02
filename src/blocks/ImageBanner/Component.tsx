@@ -1,10 +1,10 @@
 import React from 'react'
 import Image from 'next/image'
 import { getImageUrl } from '@/utilities/getImageUrl'
-import type { Media } from '@/payload-types' // Import Media type
+import type { Media } from '@/payload-types'
 
 type ImageBannerProps = {
-  image: Media // Use Media type for image
+  image: Media
   height?: 'small' | 'medium' | 'large' | 'full'
   overlay?: boolean
   overlayOpacity?: number
