@@ -61,7 +61,24 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       <ErrorBoundary>
         <article>
           <PayloadRedirects disableNotFound url={url} />
-          <RenderHero {...hero} />
+
+          {slug === 'regenerative-agriculture' && (
+            <section className="w-full">
+              <div className="fixed inset-0 -z-10">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/_p54D9BB12o?autoplay=1&mute=1&loop=1&playlist=_p54D9BB12o&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0&showinfo=0&start=0&end=0&enablejsapi=0`}
+                  title="Regenerative Agriculture"
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  className="absolute inset-0 w-full h-full border-0 object-cover"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+            </section>
+          )}
+
+          <div className="relative z-10">
+            <RenderHero {...hero} />
+          </div>
           {await RenderBlocks({ blocks: layout || [], locale })}
         </article>
       </ErrorBoundary>

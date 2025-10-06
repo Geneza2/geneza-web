@@ -13,6 +13,7 @@ import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
 import { TypedLocale } from 'payload'
 import { getImageUrl } from '@/utilities/getImageUrl'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 import type { Product, Media } from '@/payload-types'
 import { ReactNode } from 'react'
 import { retryOperation } from '@/utilities/retryOperation'
@@ -54,7 +55,6 @@ export async function generateStaticParams() {
       }),
     )
 
-    // Generate params for both locales
     const params = []
     for (const doc of docs) {
       if (doc.slug) {
@@ -271,7 +271,13 @@ export default async function ProductPage({ params: p }: Args) {
     productInfo,
     nutritiveInfo,
   } = product
-  const imageUrl = typeof backgroundImage === 'object' ? backgroundImage?.url : undefined
+  const bgIsVideo =
+    typeof backgroundImage === 'object' && !!backgroundImage?.mimeType?.includes('video')
+  const bgImageUrl = getImageUrl(backgroundImage as any)
+  const bgVideoUrl =
+    typeof backgroundImage === 'object' && backgroundImage?.url
+      ? getMediaUrl(backgroundImage.url as string)
+      : undefined
 
   const productInfoItems = productInfo
     ? [
@@ -348,12 +354,21 @@ export default async function ProductPage({ params: p }: Args) {
       {draft && <LivePreviewListener />}
 
       <div className="relative h-[90vh]">
-        {imageUrl && (
+        {(bgImageUrl || bgVideoUrl) && (
           <div className="absolute inset-0">
-            <div
-              className="w-full h-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${imageUrl})` }}
-            />
+            {bgIsVideo && bgVideoUrl ? (
+              <video className="w-full h-full object-cover" autoPlay muted loop playsInline>
+                <source
+                  src={bgVideoUrl}
+                  type={(backgroundImage as any)?.mimeType || 'video/webm'}
+                />
+              </video>
+            ) : (
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{ backgroundImage: `url(${bgImageUrl})` }}
+              />
+            )}
             <div className="absolute inset-0 bg-black/40" />
           </div>
         )}

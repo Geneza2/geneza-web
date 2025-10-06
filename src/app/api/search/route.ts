@@ -7,13 +7,14 @@ import { createFuzzySearchCondition, normalizeSearchQuery } from '@/utilities/no
 type SearchResult = {
   id: string
   title: string
-  type: 'page' | 'post' | 'product' | 'good' | 'position' | 'category'
+  type: 'page' | 'post' | 'product' | 'good' | 'position' | 'category' | 'media'
   slug: string
   description?: string
   url: string
+  image?: string
+  publishedAt?: string
 }
 
-// Simple in-memory cache with TTL
 type CacheData = {
   results: SearchResult[]
   query: string
@@ -23,8 +24,8 @@ type CacheData = {
 }
 
 const searchCache = new Map<string, { data: CacheData; timestamp: number }>()
-const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
-const CACHE_MAX_SIZE = 100 // Maximum cache entries
+const CACHE_TTL = 0
+const CACHE_MAX_SIZE = 100
 
 function getCacheKey(query: string, locale: TypedLocale): string {
   return `${normalizeSearchQuery(query)}_${locale}`
@@ -36,13 +37,12 @@ function getFromCache(key: string) {
     return cached.data
   }
   if (cached) {
-    searchCache.delete(key) // Remove expired entry
+    searchCache.delete(key)
   }
   return null
 }
 
 function setCache(key: string, data: CacheData) {
-  // Clean old entries if cache is getting too large
   if (searchCache.size >= CACHE_MAX_SIZE) {
     const oldestKey = searchCache.keys().next().value
     if (oldestKey) {
@@ -61,22 +61,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ results: [], message: 'Query too short' })
   }
 
-  // Check cache first
   const cacheKey = getCacheKey(query, locale)
   const cachedResult = getFromCache(cacheKey)
   if (cachedResult) {
-    return NextResponse.json(cachedResult)
+    return NextResponse.json(cachedResult, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    })
   }
 
   try {
     const payload = await getPayload({ config: configPromise })
     const results: SearchResult[] = []
 
-    // Optimized search function - search most relevant collections first
     const performSearch = async (searchLocale: TypedLocale) => {
       const searchPromises = []
 
-      // Search most relevant collections first (products and goods are likely most searched)
       searchPromises.push(
         payload
           .find({
@@ -85,9 +88,10 @@ export async function GET(request: NextRequest) {
               or: [
                 createFuzzySearchCondition('title', query),
                 createFuzzySearchCondition('slug', query),
+                createFuzzySearchCondition('scientificName', query),
               ],
             },
-            limit: 4,
+            limit: 6,
             locale: searchLocale,
           })
           .catch(() => {
@@ -103,10 +107,26 @@ export async function GET(request: NextRequest) {
               or: [
                 createFuzzySearchCondition('title', query),
                 createFuzzySearchCondition('slug', query),
+                {
+                  'products.title': {
+                    contains: query,
+                  },
+                },
+                {
+                  'products.description': {
+                    contains: query,
+                  },
+                },
+                {
+                  'products.country': {
+                    contains: query,
+                  },
+                },
               ],
             },
-            limit: 4,
+            limit: 6,
             locale: searchLocale,
+            depth: 2,
           })
           .catch(() => {
             return { docs: [] }
@@ -123,6 +143,61 @@ export async function GET(request: NextRequest) {
                 createFuzzySearchCondition('slug', query),
               ],
             },
+            limit: 4,
+            locale: searchLocale,
+          })
+          .catch(() => {
+            return { docs: [] }
+          }),
+      )
+
+      searchPromises.push(
+        payload
+          .find({
+            collection: 'posts',
+            where: {
+              or: [
+                createFuzzySearchCondition('title', query),
+                createFuzzySearchCondition('slug', query),
+              ],
+            },
+            limit: 4,
+            locale: searchLocale,
+          })
+          .catch(() => {
+            return { docs: [] }
+          }),
+      )
+
+      searchPromises.push(
+        payload
+          .find({
+            collection: 'categories',
+            where: {
+              or: [
+                createFuzzySearchCondition('title', query),
+                createFuzzySearchCondition('slug', query),
+                createFuzzySearchCondition('description', query),
+              ],
+            },
+            limit: 4,
+            locale: searchLocale,
+          })
+          .catch(() => {
+            return { docs: [] }
+          }),
+      )
+
+      searchPromises.push(
+        payload
+          .find({
+            collection: 'openPositions',
+            where: {
+              or: [
+                createFuzzySearchCondition('title', query),
+                createFuzzySearchCondition('slug', query),
+              ],
+            },
             limit: 3,
             locale: searchLocale,
           })
@@ -131,151 +206,176 @@ export async function GET(request: NextRequest) {
           }),
       )
 
-      // Only search posts and categories if we have fewer than 10 results
-      if (results.length < 10) {
-        searchPromises.push(
-          payload
-            .find({
-              collection: 'posts',
-              where: {
-                or: [
-                  createFuzzySearchCondition('title', query),
-                  createFuzzySearchCondition('slug', query),
-                ],
-              },
-              limit: 2,
-              locale: searchLocale,
-            })
-            .catch(() => {
-              return { docs: [] }
-            }),
-        )
+      const [
+        productsResult,
+        goodsResult,
+        pagesResult,
+        postsResult,
+        categoriesResult,
+        positionsResult,
+      ] = await Promise.all(searchPromises)
 
-        searchPromises.push(
-          payload
-            .find({
-              collection: 'categories',
-              where: {
-                or: [
-                  createFuzzySearchCondition('title', query),
-                  createFuzzySearchCondition('slug', query),
-                ],
-              },
-              limit: 2,
-              locale: searchLocale,
-            })
-            .catch(() => {
-              return { docs: [] }
-            }),
-        )
-      }
-
-      // Execute all searches in parallel
-      const [productsResult, goodsResult, pagesResult, postsResult, categoriesResult] =
-        await Promise.all(searchPromises)
-
-      // Process products
       if (productsResult?.docs) {
         productsResult.docs.forEach((product) => {
           if (!results.some((r) => r.id === `product-${product.id}`)) {
+            const title = product.title || 'Untitled Product'
+            const description = (product as any).meta?.description || ''
+            const slug = product.slug || ''
+
             results.push({
               id: `product-${product.id}`,
-              title: product.title || 'Untitled Product',
+              title,
               type: 'product',
-              slug: product.slug || '',
-              description: (product as any).meta?.description || undefined,
-              url: `/${locale}/products/${product.slug}`,
+              slug,
+              description: description || undefined,
+              url: `/${locale}/products/${slug}`,
+              image: (product as any).image?.url || undefined,
+              publishedAt: (product as any).publishedAt || product.createdAt,
             })
           }
         })
       }
 
-      // Process goods
       if (goodsResult?.docs) {
         goodsResult.docs.forEach((good) => {
           if (!results.some((r) => r.id === `good-${good.id}`)) {
+            const title = good.title || 'Untitled Good'
+            const description = (good as any).description || ''
+            const slug = good.slug || ''
+
+            const firstCategory = (good as any).categories?.[0]
+            const categorySlug =
+              typeof firstCategory === 'object' && firstCategory?.slug ? firstCategory.slug : null
+
+            const goodsUrl = categorySlug
+              ? `/${locale}/goods?category=${categorySlug}`
+              : `/${locale}/goods?category=${slug}`
+
             results.push({
               id: `good-${good.id}`,
-              title: good.title || 'Untitled Good',
+              title,
               type: 'good',
-              slug: good.slug || '',
-              description: (good as any).products?.[0]?.description || undefined,
-              url: `/${locale}/goods?search=${encodeURIComponent(good.title || '')}`,
+              slug,
+              description: description || undefined,
+              url: goodsUrl,
+              publishedAt: (good as any).publishedAt || good.createdAt,
             })
           }
         })
       }
 
-      // Process pages
       if (pagesResult?.docs) {
         pagesResult.docs.forEach((page) => {
           if (!results.some((r) => r.id === `page-${page.id}`)) {
+            const title = page.title || 'Untitled Page'
+            const description = (page as any).meta?.description || ''
+            const slug = page.slug || ''
+
             results.push({
               id: `page-${page.id}`,
-              title: page.title || 'Untitled Page',
+              title,
               type: 'page',
-              slug: page.slug || '',
-              description: (page as any).meta?.description || undefined,
-              url: `/${locale}/${page.slug}`,
+              slug,
+              description: description || undefined,
+              url: `/${locale}/${slug}`,
+              publishedAt: (page as any).publishedAt || page.createdAt,
             })
           }
         })
       }
 
-      // Process posts (if searched)
       if (postsResult?.docs) {
         postsResult.docs.forEach((post) => {
           if (!results.some((r) => r.id === `post-${post.id}`)) {
+            const title = post.title || 'Untitled Post'
+            const description = (post as any).meta?.description || ''
+            const slug = post.slug || ''
+
             results.push({
               id: `post-${post.id}`,
-              title: post.title || 'Untitled Post',
+              title,
               type: 'post',
-              slug: post.slug || '',
-              description: (post as any).meta?.description || undefined,
-              url: `/${locale}/posts/${post.slug}`,
+              slug,
+              description: description || undefined,
+              url: `/${locale}/posts/${slug}`,
+              image: (post as any).image?.url || undefined,
+              publishedAt: (post as any).publishedAt || post.createdAt,
             })
           }
         })
       }
 
-      // Process categories (if searched)
       if (categoriesResult?.docs) {
         categoriesResult.docs.forEach((category) => {
           if (!results.some((r) => r.id === `category-${category.id}`)) {
+            const title = category.title || 'Untitled Category'
+            const description = (category as any).description || ''
+            const slug = category.slug || ''
+
             results.push({
               id: `category-${category.id}`,
-              title: category.title || 'Untitled Category',
+              title,
               type: 'category',
-              slug: category.slug || '',
-              description: (category as any).description || undefined,
-              url: `/${locale}/goods?category=${category.slug}`,
+              slug,
+              description: description || undefined,
+              url: `/${locale}/goods?category=${slug}`,
+              image: (category as any).bannerImage?.url || undefined,
+              publishedAt:
+                (category as any).publishedAt || category.updatedAt || category.createdAt,
+            })
+          }
+        })
+      }
+
+      if (positionsResult?.docs) {
+        positionsResult.docs.forEach((position) => {
+          if (!results.some((r) => r.id === `position-${position.id}`)) {
+            const title = position.title || 'Untitled Position'
+            const description = (position as any).meta?.description || ''
+            const slug = position.slug || ''
+
+            results.push({
+              id: `position-${position.id}`,
+              title,
+              type: 'position',
+              slug,
+              description: description || undefined,
+              url: `/${locale}/careers/${slug}`,
+              publishedAt: (position as any).publishedAt || position.createdAt,
             })
           }
         })
       }
     }
 
-    // Search in current locale
     await performSearch(locale)
 
-    // Also search in the other locale for more results
     const otherLocale = locale === 'en' ? 'rs' : 'en'
     if (results.length < 10) {
       await performSearch(otherLocale)
     }
 
-    // Sort results by relevance (title matches first)
     results.sort((a, b) => {
-      const aTitle = a.title.toLowerCase().includes(query.toLowerCase())
-      const bTitle = b.title.toLowerCase().includes(query.toLowerCase())
+      const typePriority: Record<string, number> = {
+        product: 1,
+        good: 2,
+        page: 3,
+        post: 4,
+        category: 5,
+        position: 6,
+        media: 7,
+      }
+      const aPriority = typePriority[a.type] || 8
+      const bPriority = typePriority[b.type] || 8
 
-      if (aTitle && !bTitle) return -1
-      if (!aTitle && bTitle) return 1
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority
+      }
 
       return a.title.localeCompare(b.title)
     })
 
-    const finalResults = results.slice(0, 15)
+    const finalResults = results.slice(0, 20)
 
     const response = {
       results: finalResults,
@@ -283,12 +383,21 @@ export async function GET(request: NextRequest) {
       total: results.length,
       message: `Found ${results.length} results`,
       cached: false,
+      analytics: {
+        searchId: Date.now().toString(),
+        timestamp: new Date().toISOString(),
+      },
     }
 
-    // Cache the response
     setCache(cacheKey, response)
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    })
   } catch (error) {
     return NextResponse.json(
       {
@@ -297,7 +406,14 @@ export async function GET(request: NextRequest) {
         results: [],
         total: 0,
       },
-      { status: 500 },
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      },
     )
   }
 }

@@ -113,12 +113,12 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ data, locale }) => {
         </div>
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <SheetDescription className="sr-only">Main navigation links for the site</SheetDescription>
-        <nav className="flex flex-col gap-4 p-4">
+        <nav className="flex flex-col gap-3 p-4">
           {navItems.map((item) => (
             <Link
               key={item.id}
               href={getLinkHref(item, locale)}
-              className="relative w-full h-24 flex items-center justify-center font-bold text-2xl"
+              className="relative w-full h-20 sm:h-24 flex items-center justify-center font-bold text-xl sm:text-2xl"
               onClick={() => setIsOpen(false)}
             >
               {(() => {

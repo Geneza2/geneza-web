@@ -24,18 +24,22 @@ export async function Header({ locale }: HeaderProps) {
     >
       <div className="absolute inset-0 bg-gradient-to-r from-[#9BC273]/5 via-[#17323E]/3 to-[#9BC273]/5"></div>
       <div className="relative z-10">
-        <div className="hidden md:flex items-center justify-between w-full">
-          <div className="flex items-center w-[260px] min-w-[240px]">
+        <div className="hidden md:grid grid-cols-[minmax(240px,300px)_1fr_minmax(240px,300px)] items-center w-full gap-3 md:gap-4 lg:gap-6">
+          <div className="flex items-center min-w-0">
             <Link className="flex items-center" href={`/${locale || 'en'}`}>
               <Logo />
             </Link>
           </div>
-          <div className="flex flex-1 justify-center items-center">
+          <div className="flex flex-1 justify-center items-center min-w-0 px-2">
             <HeaderNav data={headerData} locale={locale} />
           </div>
-          <div className="flex items-center justify-end gap-4 w-[260px] min-w-[240px]">
-            <NavbarSearch locale={locale} />
-            <LanguageSwitcher />
+          <div className="flex items-center justify-end gap-2 md:gap-3 lg:gap-4 min-w-0">
+            <div className="w-full max-w-[220px] md:max-w-[260px] lg:max-w-[300px]">
+              <NavbarSearch locale={locale} />
+            </div>
+            <div className="flex-shrink-0">
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
         <div className="flex md:hidden items-center justify-between w-full">

@@ -19,7 +19,6 @@ export async function Footer({ locale }: FooterProps) {
   const currentLocale = locale ?? 'en'
 
   try {
-    // Temporarily bypass cache to test if data exists
     const payload = await getPayload({ config: configPromise })
     const footerData: FooterType = await payload.findGlobal({
       slug: 'footer',
@@ -35,10 +34,9 @@ export async function Footer({ locale }: FooterProps) {
     const sitemapSections = footer?.sitemapSections || []
 
     return (
-      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full">
+      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full overflow-hidden">
         <div className="w-full max-w-none px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
-            {/* Branding Section */}
             <div className="lg:col-span-3 space-y-6 sm:space-y-8">
               <Link href={`/${currentLocale}`} className="inline-block">
                 <Logo />
@@ -51,9 +49,7 @@ export async function Footer({ locale }: FooterProps) {
                     : 'Our vision is to provide convenience and help increase your sales business.')}
               </p>
 
-              {/* Social Media Buttons */}
               <div className="flex space-x-4">
-                {/* Show message if no social media data */}
                 {(!branding.socialMedia || Object.keys(branding.socialMedia).length === 0) && (
                   <p className="text-sm text-gray-500 italic">
                     {currentLocale === 'rs'
@@ -139,7 +135,6 @@ export async function Footer({ locale }: FooterProps) {
               </div>
             </div>
 
-            {/* Sitemap Sections */}
             <div className="lg:col-span-9">
               {sitemapSections && sitemapSections.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -181,7 +176,6 @@ export async function Footer({ locale }: FooterProps) {
             </div>
           </div>
 
-          {/* Contact Information */}
           <div className="border-t border-gray-200 my-6 sm:my-8" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
             <div className="flex items-center space-x-3 sm:space-x-4 group justify-center md:justify-start">
@@ -238,11 +232,9 @@ export async function Footer({ locale }: FooterProps) {
             </div>
           </div>
 
-          {/* Serbia Map Section */}
           <div className="border-t border-gray-200" />
           <SerbiaMap />
 
-          {/* Copyright */}
           <div className="border-t border-gray-200 mb-4 sm:mb-6" />
           <div className="text-center">
             <p className="text-gray-600 text-sm sm:text-base lg:text-lg">{copyright}</p>
@@ -255,7 +247,7 @@ export async function Footer({ locale }: FooterProps) {
 
     // Fallback footer with default content
     return (
-      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full">
+      <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full overflow-hidden">
         <div className="w-full max-w-none px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
           <div className="text-center">
             <p className="text-gray-600 text-sm sm:text-base">

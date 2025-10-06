@@ -29,14 +29,13 @@ const ProductItem: React.FC<{ product: Product; locale: TypedLocale }> = ({ prod
   return (
     <Link href={`/${locale}/products/${slug}`} className="block text-center h-full">
       {image && (
-        <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-72 mx-auto rounded-lg group">
-          <Media resource={image} className="w-full h-full object-contain scale-110" />
-          {/* Highlight image overlay */}
+        <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-80 mx-auto rounded-lg group">
+          <Media resource={image} className="w-full h-full object-contain scale-95" />
           {highlightImage && (
             <div className="absolute inset-0 flex items-center justify-center">
               <Media
                 resource={highlightImage}
-                className="w-2/3 h-2/3 object-contain group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ease-out"
+                className="w-2/3 h-2/3 object-contain group-hover:scale-105 group-hover:rotate-6 transition-all duration-300 ease-out"
               />
             </div>
           )}
@@ -68,12 +67,10 @@ export const ProductsBlock: React.FC<Props> = ({
       )}
     >
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        {/* Larger, denser blurry blobs */}
         <div className="absolute -top-40 left-1/3 -translate-x-1/2 w-[44rem] h-[44rem] rounded-full bg-[#9BC273]/30 blur-[120px]" />
         <div className="absolute top-1/4 -right-40 w-[42rem] h-[42rem] rounded-full bg-amber-200/35 blur-[120px]" />
         <div className="absolute -bottom-40 left-0 w-[52rem] h-[52rem] rounded-full bg-[#9BC273]/25 blur-[120px]" />
 
-        {/* Denser dotted texture */}
         <div className="absolute inset-0 opacity-[0.16] [background-image:radial-gradient(circle,_rgba(155,194,115,0.7)_1px,_transparent_1px)] [background-size:14px_14px]" />
       </div>
 
@@ -119,7 +116,6 @@ export const ProductsBlock: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Curved bottom shape */}
       <div className="absolute bottom-0 left-0 right-0 w-full">
         <svg
           className="w-full h-auto"

@@ -3,12 +3,9 @@
 import React from 'react'
 import Image from 'next/image'
 
-// Serbia map component for footer
-
 const SerbiaMap: React.FC = () => {
   return (
-    <div className="w-screen h-64 relative -mx-4 sm:-mx-6 lg:-mx-12">
-      {/* Background Image - Full Width */}
+    <div className="w-full h-64 relative overflow-hidden rounded-lg">
       <Image
         src="/footer_bg.jpg"
         alt="Serbia and Europe Map"
@@ -17,7 +14,6 @@ const SerbiaMap: React.FC = () => {
         priority
       />
 
-      {/* Overlay for better text visibility */}
       <div className="absolute inset-0 bg-black bg-opacity-20" />
     </div>
   )
