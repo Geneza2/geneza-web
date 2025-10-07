@@ -46,10 +46,9 @@ export default async function SearchPage({ params, searchParams }: Args) {
   if (query.trim()) {
     try {
       await getPayload({ config: configPromise })
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}/api/search?q=${encodeURIComponent(query)}&locale=${safeLocale}`,
-        { cache: 'no-store' },
-      )
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&locale=${safeLocale}`, {
+        cache: 'no-store',
+      })
       if (res.ok) {
         const data = await res.json()
         results = data.results || []

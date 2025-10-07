@@ -14,6 +14,7 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { TypedLocale } from 'payload'
 import { getImageUrl } from '@/utilities/getImageUrl'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { BackgroundVideo } from '@/components/BackgroundVideo'
 import type { Product, Media } from '@/payload-types'
 import { ReactNode } from 'react'
 import { retryOperation } from '@/utilities/retryOperation'
@@ -155,7 +156,7 @@ const CutSizes = ({ cutSizes, locale }: { cutSizes: CutSize[] | null; locale: st
           {cutSizes?.map((cut: CutSize) => (
             <span
               key={cut.id ?? cut.name}
-              className="px-3 py-1 text-sm lg:px-4 lg:py-2 lg:text-base font-medium uppercase tracking-wide bg-white/10 text-gray-200 rounded-md hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-default"
+              className="px-3 py-1 text-sm lg:px-4 lg:py-2 lg:text-base font-medium uppercase tracking-wide bg-white/30 text-gray-100 rounded-md hover:bg-white/40 hover:scale-105 transition-all duration-300 cursor-default"
             >
               {cut.name}
             </span>
@@ -169,7 +170,11 @@ const ProductImage = ({ image, title, isMobile }: ProductImageProps) => (
   <div className="flex justify-center py-4 lg:justify-start">
     <div className="relative">
       <div
-        className={`${isMobile ? 'w-48 h-48 sm:w-56 sm:h-56 p-5' : 'w-80 h-80 xl:w-96 xl:h-96 2xl:w-[26rem] 2xl:h-[26rem] p-6 xl:p-8'} rounded-full overflow-hidden bg-white/15 backdrop-blur-sm border-2 border-white/30`}
+        className={`${
+          isMobile
+            ? 'w-52 h-52 sm:w-60 sm:h-60 p-5'
+            : 'w-96 h-96 xl:w-[28rem] xl:h-[28rem] 2xl:w-[32rem] 2xl:h-[32rem] p-8 xl:p-10'
+        } rounded-full overflow-hidden bg-white/15 backdrop-blur-sm border-2 border-white/30`}
       >
         {(() => {
           const imageUrl = getImageUrl(image)
@@ -177,8 +182,8 @@ const ProductImage = ({ image, title, isMobile }: ProductImageProps) => (
             <Image
               src={imageUrl}
               alt={typeof image === 'object' && image?.alt ? image.alt : title}
-              width={600}
-              height={600}
+              width={900}
+              height={900}
               className="w-full h-full object-contain"
             />
           ) : null
@@ -186,8 +191,13 @@ const ProductImage = ({ image, title, isMobile }: ProductImageProps) => (
       </div>
       {!isMobile && (
         <>
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/30 rounded-full blur-2xl animate-pulse" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse" />
+          {/* Large centered blurred circle behind the image */}
+          <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+            <div className="w-[40rem] h-[40rem] rounded-full bg-primary/25 blur-[120px] opacity-80" />
+          </div>
+          {/* Accent corner glows */}
+          <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/30 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-14 -left-14 w-56 h-56 bg-white/15 rounded-full blur-3xl animate-pulse" />
         </>
       )}
     </div>
@@ -228,8 +238,7 @@ const HeroContent = ({
         {scientificName && (
           <div className="relative">
             <p
-              className={`${isMobile ? 'text-lg sm:text-xl italic font-bold' : 'text-xl xl:text-2xl 2xl:text-3xl italic font-bold tracking-wide'} relative z-10 px-3 py-1 rounded-md bg-[#9BC273]/20 border border-[#9BC273]/30`}
-              style={{ color: '#9BC273' }}
+              className={`${isMobile ? 'text-lg sm:text-xl italic font-bold' : 'text-xl xl:text-2xl 2xl:text-3xl italic font-bold tracking-wide'} relative z-10 px-3 py-1 rounded-md bg-[#2F6D3A]/90 border border-[#2F6D3A] text-white shadow-sm`}
             >
               {scientificName}
             </p>
@@ -353,16 +362,14 @@ export default async function ProductPage({ params: p }: Args) {
       <PayloadRedirects disableNotFound url={`/${locale}/products/${slug}`} />
       {draft && <LivePreviewListener />}
 
-      <div className="relative h-[90vh]">
+      <div className="relative h-[100vh] -mt-[72px] md:-mt-[80px]">
         {(bgImageUrl || bgVideoUrl) && (
           <div className="absolute inset-0">
             {bgIsVideo && bgVideoUrl ? (
-              <video className="w-full h-full object-cover" autoPlay muted loop playsInline>
-                <source
-                  src={bgVideoUrl}
-                  type={(backgroundImage as any)?.mimeType || 'video/webm'}
-                />
-              </video>
+              <BackgroundVideo
+                src={bgVideoUrl}
+                type={(backgroundImage as any)?.mimeType || 'video/webm'}
+              />
             ) : (
               <div
                 className="w-full h-full bg-cover bg-center"
@@ -372,7 +379,7 @@ export default async function ProductPage({ params: p }: Args) {
             <div className="absolute inset-0 bg-black/40" />
           </div>
         )}
-        <div className="relative z-10 h-[90vh] flex items-center justify-center py-4 lg:py-8">
+        <div className="relative z-10 h-[100vh] flex items-center justify-center py-4 lg:py-8">
           <div className="container mx-auto px-4 lg:px-8">
             <div className="lg:hidden flex items-center justify-center h-full">
               <HeroContent

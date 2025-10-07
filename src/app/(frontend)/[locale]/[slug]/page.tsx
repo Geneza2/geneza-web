@@ -63,15 +63,18 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           <PayloadRedirects disableNotFound url={url} />
 
           {slug === 'regenerative-agriculture' && (
-            <section className="w-full">
-              <div className="fixed inset-0 -z-10">
+            <section className="relative z-0 w-full h-[100vh] -mt-[72px] md:-mt-[80px] overflow-hidden">
+              <div className="absolute inset-0 w-[100vw] h-full">
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/_p54D9BB12o?autoplay=1&mute=1&loop=1&playlist=_p54D9BB12o&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0&showinfo=0&start=0&end=0&enablejsapi=0`}
+                  src={`https://www.youtube-nocookie.com/embed/_p54D9BB12o?autoplay=1&mute=1&loop=1&playlist=_p54D9BB12o&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0`}
                   title="Regenerative Agriculture"
-                  allow="autoplay; encrypted-media; picture-in-picture"
-                  className="absolute inset-0 w-full h-full border-0 object-cover"
+                  allow="autoplay; encrypted-media"
+                  className="absolute inset-0 w-full h-full border-0"
                   style={{ objectFit: 'cover' }}
+                  loading="eager"
+                  referrerPolicy="no-referrer"
                 />
+                <div className="absolute inset-0 bg-black/20" />
               </div>
             </section>
           )}

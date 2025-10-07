@@ -39,7 +39,8 @@ export const Products: CollectionConfig = {
     },
   },
   admin: {
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'order', 'updatedAt'],
+    enableRichTextRelationship: false,
     livePreview: {
       url: ({ data, req }) =>
         generatePreviewPath({
@@ -57,6 +58,15 @@ export const Products: CollectionConfig = {
     useAsTitle: 'title',
   },
   fields: [
+    {
+      name: 'order',
+      type: 'number',
+      required: true,
+      defaultValue: 0,
+      admin: {
+        description: 'Drag to reorder in the list view',
+      },
+    },
     {
       name: 'title',
       type: 'text',

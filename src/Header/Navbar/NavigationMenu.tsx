@@ -24,8 +24,10 @@ type HeaderNavProps = {
 export const HeaderNav: React.FC<HeaderNavProps> = ({ data, locale }) => {
   const navItems = data?.navItems || []
 
+  const tooMany = navItems.length > 6
+
   return (
-    <NavigationMenu>
+    <NavigationMenu className={tooMany ? 'hidden lg:block' : ''}>
       <NavigationMenuList className="justify-center w-full gap-2 md:gap-3 lg:gap-4 flex-wrap">
         {navItems.map((item) => {
           const hasSubcategories = item.subcategories && item.subcategories.length > 0

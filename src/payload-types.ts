@@ -255,6 +255,10 @@ export interface Page {
  */
 export interface Good {
   id: number;
+  /**
+   * Drag to reorder in the list view
+   */
+  order: number;
   title: string;
   /**
    * Shown as the header image on Goods page when this category is selected (fallback when global Categories are not used). Use a wide image, e.g. 1920×800.
@@ -449,6 +453,10 @@ export interface Category {
  */
 export interface OpenPosition {
   id: number;
+  /**
+   * Drag to reorder in the list view
+   */
+  order: number;
   title: string;
   jobOffers: {
     image: number | Media;
@@ -511,6 +519,10 @@ export interface OpenPosition {
  */
 export interface Product {
   id: number;
+  /**
+   * Drag to reorder in the list view
+   */
+  order: number;
   title: string;
   scientificName?: string | null;
   description: {
@@ -2197,6 +2209,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "openPositions_select".
  */
 export interface OpenPositionsSelect<T extends boolean = true> {
+  order?: T;
   title?: T;
   jobOffers?:
     | T
@@ -2247,6 +2260,7 @@ export interface OpenPositionsSelect<T extends boolean = true> {
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
+  order?: T;
   title?: T;
   scientificName?: T;
   description?: T;
@@ -2299,6 +2313,7 @@ export interface ProductsSelect<T extends boolean = true> {
  * via the `definition` "goods_select".
  */
 export interface GoodsSelect<T extends boolean = true> {
+  order?: T;
   title?: T;
   bannerImage?: T;
   products?:

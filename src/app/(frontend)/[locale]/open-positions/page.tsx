@@ -104,6 +104,32 @@ export default async function Page({ params: paramsPromise }: Args) {
         </div>
 
         <OpenPositionsArchive openPositions={allPositions} locale={locale} />
+
+        <div className="container mt-8">
+          <div className="rounded-xl bg-[#9BC273]/10 border border-[#9BC273]/20 p-4 text-sm text-gray-700">
+            {allPositions.length === 0 ? (
+              <span>
+                {locale === 'rs'
+                  ? 'Ne pronalazite odgovarajuću poziciju? Pišite nam na '
+                  : "Didn't find a matching role? Email us at "}
+                <a href="mailto:hr@geneza.rs" className="font-semibold text-[#7BA050] underline">
+                  hr@geneza.rs
+                </a>
+                .
+              </span>
+            ) : (
+              <span>
+                {locale === 'rs'
+                  ? 'Ne pronalazite odgovarajuću poziciju? Pošaljite nam biografiju na '
+                  : "Don't see your position? Send your CV to "}
+                <a href="mailto:hr@geneza.rs" className="font-semibold text-[#7BA050] underline">
+                  hr@geneza.rs
+                </a>
+                .
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     )
   } catch (_error) {
