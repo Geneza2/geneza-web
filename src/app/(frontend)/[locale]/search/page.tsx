@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { SearchResults } from '@/components/SearchResults/index'
+import { getServerSideURL } from '@/utilities/getURL'
 
 type Args = {
   params: Promise<{ locale: string }>
@@ -46,9 +47,13 @@ export default async function SearchPage({ params, searchParams }: Args) {
   if (query.trim()) {
     try {
       await getPayload({ config: configPromise })
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&locale=${safeLocale}`, {
-        cache: 'no-store',
-      })
+      const baseURL = getServerSideURL()
+      const res = await fetch(
+        `${baseURL}/api/search?q=${encodeURIComponent(query)}&locale=${safeLocale}`,
+        {
+          cache: 'no-store',
+        },
+      )
       if (res.ok) {
         const data = await res.json()
         results = data.results || []

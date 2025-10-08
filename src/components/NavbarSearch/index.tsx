@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { TypedLocale } from 'payload'
 import { useRouter } from 'next/navigation'
 import { useSearchAnalytics } from '@/components/SearchAnalytics'
+import { getApiURL } from '@/utilities/getURL'
 import { SearchSuggestions } from '@/components/SearchSuggestions'
 import Image from 'next/image'
 
@@ -49,7 +50,9 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
     setSelectedIndex(-1)
 
     try {
-      const searchUrl = `/api/search?q=${encodeURIComponent(searchQuery)}&locale=${locale}`
+      const searchUrl = getApiURL(
+        `/api/search?q=${encodeURIComponent(searchQuery)}&locale=${locale}`,
+      )
       const response = await fetch(searchUrl)
 
       if (response.ok) {

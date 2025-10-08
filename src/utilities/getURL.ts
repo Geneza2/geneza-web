@@ -34,3 +34,8 @@ export const getClientSideURL = () => {
   // Fallback to localhost for development
   return 'http://localhost:3000'
 }
+
+export const getApiURL = (endpoint: string) => {
+  const baseURL = canUseDOM ? getClientSideURL() : getServerSideURL()
+  return `${baseURL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
+}

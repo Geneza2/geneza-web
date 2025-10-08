@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { TypedLocale } from 'payload'
 import { useRouter } from 'next/navigation'
 import { useDebounce } from '@/utilities/useDebounce'
+import { getApiURL } from '@/utilities/getURL'
 
 type SearchResult = {
   id: string
@@ -41,7 +42,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ locale }) => {
       setIsLoading(true)
       try {
         const response = await fetch(
-          `/api/search?q=${encodeURIComponent(debouncedQuery)}&locale=${locale}`,
+          getApiURL(`/api/search?q=${encodeURIComponent(debouncedQuery)}&locale=${locale}`),
         )
         if (response.ok) {
           const data = await response.json()

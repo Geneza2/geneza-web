@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+
+// Ensure this API runs in a Node.js runtime (Payload SDK is not Edge-compatible)
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { TypedLocale } from 'payload'
