@@ -38,25 +38,15 @@ export default async function Page({
     const payload = await getPayload({ config: configPromise })
     const { isEnabled: draft } = await draftMode()
 
-    const [goods, categories] = await Promise.all([
-      payload.find({
-        collection: 'goods',
-        depth: 2, // Reduced depth to improve performance
-        limit: 100,
-        overrideAccess: draft,
-        draft: draft,
-        locale: safeLocale,
-      }),
-      payload.find({
-        collection: 'categories',
-        depth: 2,
-        limit: 100,
-        overrideAccess: draft,
-        draft: draft,
-        locale: safeLocale,
-        sort: 'order',
-      }),
-    ])
+    const goods = await payload.find({
+      collection: 'goods',
+      depth: 2, // Reduced depth to improve performance
+      limit: 100,
+      overrideAccess: draft,
+      draft: draft,
+      locale: safeLocale,
+      sort: 'order', // Sort goods by order
+    })
 
     // Get the selected category to determine banner image
     const selectedCategorySlug = Array.isArray(searchParams.category)
@@ -64,7 +54,7 @@ export default async function Page({
       : searchParams.category
 
     const selectedCategory = selectedCategorySlug
-      ? categories.docs.find((cat: any) => cat.slug === selectedCategorySlug)
+      ? goods.docs.find((good: any) => good.slug === selectedCategorySlug)
       : null
 
     // Get all products at once instead of individual queries
@@ -113,10 +103,9 @@ export default async function Page({
 
     const bannerTitle = selectedCategory?.title || t.title
     const bannerDescription =
-      selectedCategory?.description ||
-      (safeLocale === 'rs'
+      safeLocale === 'rs'
         ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
-        : 'Discover our wide range of quality products directly from the source')
+        : 'Discover our wide range of quality products directly from the source'
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
@@ -200,7 +189,7 @@ export default async function Page({
             <GoodsArchive
               goods={goods?.docs || []}
               locale={safeLocale}
-              availableCategories={categories?.docs || []}
+              availableCategories={goods?.docs || []}
               productCutSizes={productCutSizes}
               searchParams={searchParams}
             />

@@ -15,6 +15,7 @@ import { Logo } from '../Logo/Logo'
 type Category = {
   slug: string
   title: string
+  order?: number
 }
 
 interface ProductCutSize {
@@ -128,7 +129,7 @@ export const GoodsArchive: React.FC<Props> = ({
     updateSearchInURL(query || '')
   }
 
-  const sortCategoriesAlphabetical = (a: Category, b: Category) => a.title.localeCompare(b.title)
+  const sortCategoriesByOrder = (a: Category, b: Category) => (a.order || 0) - (b.order || 0)
 
   const categories: Category[] =
     availableCategories.length > 0
@@ -146,18 +147,18 @@ export const GoodsArchive: React.FC<Props> = ({
             order: typeof category.order === 'number' ? category.order : 0,
           }))
           .filter((category) => category.slug && category.title)
-          .sort(sortCategoriesAlphabetical)
+          .sort(sortCategoriesByOrder)
       : goods
           .map((good) => ({
             slug: good.slug || '',
             title: good.title || '',
             parent: null,
-            order: 0,
+            order: typeof good.order === 'number' ? good.order : 0,
           }))
           .filter((category) => category.slug && category.title)
-          .sort(sortCategoriesAlphabetical)
+          .sort(sortCategoriesByOrder)
 
-  // Extract subcategories only from the selected category's goods
+  // Extract subcategories from the selected good's products
   const allSubcategories = React.useMemo(() => {
     // Don't show subcategories if "all" is selected
     if (selectedCategory === 'all') {
@@ -166,57 +167,33 @@ export const GoodsArchive: React.FC<Props> = ({
 
     const subcategoryMap = new Map<string, { name: string; count: number }>()
 
-    goods.forEach((good) => {
-      // Check if this good matches the selected category
-      let matchesCategory = false
-
-      if (availableCategories.length > 0) {
-        matchesCategory =
-          good.categories?.some((cat: number | PayloadCategory) => {
-            const categorySlug = typeof cat === 'object' && cat?.slug ? cat.slug : null
-            return categorySlug === selectedCategory
-          }) || false
-      } else {
-        matchesCategory = good.slug === selectedCategory
-      }
-
-      // Only process subcategories from goods that match the selected category
-      if (matchesCategory) {
-        good.products?.forEach((product) => {
-          product.subcategories?.forEach((subcategory) => {
-            if (subcategory.name) {
-              const existing = subcategoryMap.get(subcategory.name)
-              if (existing) {
-                existing.count += 1
-              } else {
-                subcategoryMap.set(subcategory.name, { name: subcategory.name, count: 1 })
-              }
+    // Find the selected good and extract subcategories from its products
+    const selectedGood = goods.find((good) => good.slug === selectedCategory)
+    if (selectedGood && selectedGood.products) {
+      selectedGood.products.forEach((product) => {
+        product.subcategories?.forEach((subcategory) => {
+          if (subcategory.name) {
+            const existing = subcategoryMap.get(subcategory.name)
+            if (existing) {
+              existing.count += 1
+            } else {
+              subcategoryMap.set(subcategory.name, { name: subcategory.name, count: 1 })
             }
-          })
+          }
         })
-      }
-    })
+      })
+    }
 
     return Array.from(subcategoryMap.values()).sort((a, b) => a.name.localeCompare(b.name))
-  }, [goods, selectedCategory, availableCategories])
+  }, [goods, selectedCategory])
 
   const filteredGoods = goods
     .map((good) => {
       if (!good.products?.length) return null
 
-      let matchesCategory = selectedCategory === 'all'
-
-      if (selectedCategory !== 'all') {
-        if (availableCategories.length > 0) {
-          matchesCategory =
-            good.categories?.some((cat: number | PayloadCategory) => {
-              const categorySlug = typeof cat === 'object' && cat?.slug ? cat.slug : null
-              return categorySlug === selectedCategory
-            }) || false
-        } else {
-          matchesCategory = good.slug === selectedCategory
-        }
-      }
+      // If "all" is selected, show all goods
+      // Otherwise, show only the selected good
+      const matchesCategory = selectedCategory === 'all' || good.slug === selectedCategory
 
       if (!matchesCategory) return null
 
