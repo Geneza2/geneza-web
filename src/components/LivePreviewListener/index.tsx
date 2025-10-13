@@ -10,7 +10,6 @@ export const LivePreviewListener: React.FC = () => {
 
   // Ensure we have a valid server URL
   if (!serverURL) {
-    console.warn('LivePreviewListener: No server URL available')
     return null
   }
 

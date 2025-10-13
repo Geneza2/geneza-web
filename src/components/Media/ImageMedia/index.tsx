@@ -73,7 +73,6 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         src={src}
         width={!fill ? width : undefined}
         onError={(e) => {
-          console.error('Image failed to load:', src)
           e.currentTarget.style.display = 'none'
         }}
       />

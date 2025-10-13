@@ -50,7 +50,6 @@ export default async function RootLayout({ children, params }: Args) {
       </html>
     )
   } catch (error) {
-    console.error('Critical error in layout:', error)
     return (
       <html lang="en">
         <head>

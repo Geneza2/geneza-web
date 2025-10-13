@@ -23,13 +23,11 @@ export const RenderHero: React.FC<Page['hero']> = (props) => {
     const HeroToRender = heroes[type as keyof typeof heroes]
 
     if (!HeroToRender) {
-      console.error('Hero component not found for type:', type)
       return null
     }
 
     return <HeroToRender {...props} />
   } catch (error) {
-    console.error('Error rendering hero:', error)
     return null
   }
 }

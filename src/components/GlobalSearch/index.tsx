@@ -49,7 +49,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ locale }) => {
           setResults(data.results || [])
         }
       } catch (error) {
-        console.error('Search error:', error)
         setResults([])
       } finally {
         setIsLoading(false)

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
 // Create Next.js cache directories
 const cacheDirs = [
@@ -7,16 +7,11 @@ const cacheDirs = [
   '.next/cache/next-babel-loader',
   '.next/cache/next-minifier',
   '.next/cache/swc',
-];
+]
 
-cacheDirs.forEach(dir => {
-  const fullPath = path.join(process.cwd(), dir);
+cacheDirs.forEach((dir) => {
+  const fullPath = path.join(process.cwd(), dir)
   if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true });
-    console.log(`Created cache directory: ${dir}`);
-  } else {
-    console.log(`Cache directory already exists: ${dir}`);
+    fs.mkdirSync(fullPath, { recursive: true })
   }
-});
-
-console.log('Cache directories setup complete!'); 
+})

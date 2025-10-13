@@ -51,7 +51,6 @@ export default async function Page({ params: paramsPromise }: Args) {
         page = result.docs?.[0] || null
       }
     } catch (error) {
-      console.error('Error querying page:', error)
       page = null
     }
 
@@ -66,12 +65,6 @@ export default async function Page({ params: paramsPromise }: Args) {
     const { hero, layout } = page
 
     // Ensure we have valid data
-    if (!hero) {
-      console.warn('No hero data found for home page')
-    }
-    if (!layout || !Array.isArray(layout)) {
-      console.warn('No layout data found or invalid format for home page')
-    }
 
     return (
       <article>
@@ -91,7 +84,6 @@ export default async function Page({ params: paramsPromise }: Args) {
       </article>
     )
   } catch (error) {
-    console.error('Critical error in home page:', error)
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center max-w-md">
@@ -137,7 +129,6 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
     return generateMeta({ doc: page })
   } catch (error) {
-    console.error('Error generating metadata:', error)
     return {
       title: 'Geneza',
       description: 'Welcome to Geneza',
@@ -168,13 +159,6 @@ const queryPage = cache(async ({ locale, slug }: { locale: TypedLocale; slug: st
 
     return result.docs?.[0] || null
   } catch (error) {
-    console.error('Error in queryPage:', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      slug,
-      locale,
-      hasPayload: !!process.env.PAYLOAD_SECRET,
-      hasDatabase: !!process.env.POSTGRES_URL,
-    })
     return null
   }
 })

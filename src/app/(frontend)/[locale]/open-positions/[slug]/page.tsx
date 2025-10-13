@@ -52,7 +52,6 @@ export async function generateStaticParams() {
 
     return params
   } catch (error) {
-    console.error('Error generating static params:', error)
     return []
   }
 }
@@ -205,7 +204,6 @@ export default async function Position({ params: paramsPromise }: Args) {
       </div>
     )
   } catch (error) {
-    console.error('Error loading position:', error)
     const { locale } = await paramsPromise
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -297,7 +295,6 @@ const queryPositionBySlug = cache(
 
       return { ...doc, jobOffers: [specificJobOffer] }
     } catch (error) {
-      console.error('Error querying position by slug:', error)
       return null
     }
   },

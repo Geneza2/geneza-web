@@ -22,8 +22,6 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     const { slug = 'home', locale } = (await params) as Params
     const url = '/' + slug
 
-    console.log('Attempting to load page:', { slug, locale, url })
-
     let page: RequiredDataFromCollectionSlug<'pages'> | null = null
 
     try {
@@ -32,30 +30,18 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         locale,
       })
     } catch (error) {
-      console.error('Error querying page:', error)
+      // Error handled by queryPage
     }
 
     if (!page && (slug === 'home' || slug === 'production')) {
-      console.log('Using homeStatic fallback for:', slug)
       page = homeStatic
     }
 
     if (!page) {
-      console.log('No page found for:', { slug, locale, url })
       return <PayloadRedirects url={url} />
     }
 
-    console.log('Page found:', { slug, hasHero: !!page.hero, hasLayout: !!page.layout })
-
     const { hero, layout } = page
-
-    // Ensure we have valid data
-    if (!hero) {
-      console.warn('No hero data found for page:', slug)
-    }
-    if (!layout || !Array.isArray(layout)) {
-      console.warn('No layout data found or invalid format for page:', slug)
-    }
 
     return (
       <ErrorBoundary>
@@ -87,7 +73,6 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       </ErrorBoundary>
     )
   } catch (error) {
-    console.error('Error in page component:', error)
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
@@ -140,7 +125,6 @@ const queryPage = cache(async ({ slug, locale }: { slug: string; locale: TypedLo
 
     return result.docs?.[0] || null
   } catch (error) {
-    console.error('Error in queryPage:', error)
     return null
   }
 })

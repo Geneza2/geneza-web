@@ -55,7 +55,6 @@ export const ArchiveBlock: React.FC<
 
         posts = fetchedPosts.docs
       } catch (error) {
-        console.error('Error fetching posts in ArchiveBlock:', error)
         posts = []
       }
     } else {
@@ -79,7 +78,6 @@ export const ArchiveBlock: React.FC<
       </div>
     )
   } catch (error) {
-    console.error('Error in ArchiveBlock:', error)
     return (
       <div className="my-16 p-4 bg-red-100 border border-red-300 rounded">
         <p className="text-red-600">Error loading archive content</p>

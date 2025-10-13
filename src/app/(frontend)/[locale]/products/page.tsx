@@ -93,7 +93,6 @@ export default async function ProductsPage({ params: p }: Args) {
       </div>
     )
   } catch (error) {
-    console.error('Error loading products:', error)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

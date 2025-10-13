@@ -87,7 +87,6 @@ export async function generateStaticParams() {
 
     return pages
   } catch (error) {
-    console.error('Error generating static params for posts pagination:', error)
     return []
   }
 }

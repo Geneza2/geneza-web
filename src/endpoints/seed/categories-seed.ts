@@ -7,11 +7,8 @@ export const seedCategories = async (payload: Payload): Promise<void> => {
   })
 
   if (existingCategories.length > 0) {
-    console.log('Categories already exist, skipping seed...')
     return
   }
-
-  console.log('Seeding categories...')
 
   // Create main categories for English
   const driedVegetablesEn = await payload.create({
@@ -148,6 +145,4 @@ export const seedCategories = async (payload: Payload): Promise<void> => {
     },
     locale: 'rs',
   })
-
-  console.log('✅ Categories seeded successfully!')
 }

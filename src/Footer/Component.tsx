@@ -243,8 +243,6 @@ export async function Footer({ locale }: FooterProps) {
       </footer>
     )
   } catch (error) {
-    console.error('Error loading footer data:', error)
-
     // Fallback footer with default content
     return (
       <footer className="bg-gray-50 text-gray-800 border-t-4 border-[#9BC273] w-full overflow-hidden">

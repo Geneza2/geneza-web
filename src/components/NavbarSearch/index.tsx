@@ -70,7 +70,6 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
         setResults([])
       }
     } catch (error) {
-      console.error('Search error:', error)
       setResults([])
     } finally {
       setIsLoading(false)

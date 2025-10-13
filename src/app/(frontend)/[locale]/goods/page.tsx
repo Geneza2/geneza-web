@@ -79,7 +79,6 @@ export default async function Page({
         })
       }
     } catch (error) {
-      console.error('Error loading products for cut sizes:', error)
       // Continue without cut sizes if there's an error
     }
 
@@ -198,14 +197,6 @@ export default async function Page({
       </div>
     )
   } catch (error) {
-    console.error('Error loading goods:', error)
-
-    // Log additional error details for debugging
-    if (error instanceof Error) {
-      console.error('Error message:', error.message)
-      console.error('Error stack:', error.stack)
-    }
-
     // Return a fallback page with empty data
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">

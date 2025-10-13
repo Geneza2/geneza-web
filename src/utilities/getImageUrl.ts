@@ -31,7 +31,6 @@ export const getImageUrl = (
 
     return fallback
   } catch (error) {
-    console.error('Error in getImageUrl:', error)
     return fallback
   }
 }

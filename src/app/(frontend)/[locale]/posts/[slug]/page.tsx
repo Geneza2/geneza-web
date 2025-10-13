@@ -40,7 +40,6 @@ export async function generateStaticParams() {
 
     return params
   } catch (error) {
-    console.error('Error generating static params for posts:', error)
     return []
   }
 }

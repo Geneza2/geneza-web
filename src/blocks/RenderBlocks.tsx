@@ -63,7 +63,6 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               } else {
-                console.error(`Block component not found for type: ${blockType}`)
                 return (
                   <div key={index} className="p-4 bg-yellow-100 border border-yellow-300 rounded">
                     <p className="text-yellow-600">Block component not found: {blockType}</p>
@@ -71,7 +70,6 @@ export const RenderBlocks: React.FC<{
                 )
               }
             } else {
-              console.error(`Unknown block type: ${blockType}`)
               return (
                 <div key={index} className="p-4 bg-yellow-100 border border-yellow-300 rounded">
                   <p className="text-yellow-600">Unknown block type: {blockType}</p>
@@ -79,7 +77,6 @@ export const RenderBlocks: React.FC<{
               )
             }
           } catch (error) {
-            console.error(`Error rendering block ${index}:`, error)
             return (
               <div key={index} className="p-4 bg-red-100 border border-red-300 rounded">
                 <p className="text-red-600">
@@ -96,7 +93,6 @@ export const RenderBlocks: React.FC<{
 
     return null
   } catch (error) {
-    console.error('Error in RenderBlocks:', error)
     return (
       <div className="p-4 bg-red-100 border border-red-300 rounded">
         <p className="text-red-600">
