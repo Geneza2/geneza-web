@@ -139,8 +139,8 @@ export const GoodsSidebar: React.FC<Props> = ({
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-3xl border-0 shadow-xl overflow-hidden">
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="flex items-center gap-3 mb-6 lg:mb-8">
+      <div className="p-3 sm:p-4 lg:p-8">
+        <div className="flex items-center gap-3 mb-4 sm:mb-6 lg:mb-8">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center">
             <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
           </div>
@@ -158,7 +158,7 @@ export const GoodsSidebar: React.FC<Props> = ({
           <Button
             onClick={() => handleCategoryClick('all')}
             variant="ghost"
-            className={`w-full justify-between group h-auto p-4 rounded-2xl transition-all duration-300 ${
+            className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] ${
               selectedCategory === 'all'
                 ? 'bg-gradient-to-r from-[#9BC273] to-[#8AB162] text-white shadow-lg hover:shadow-xl'
                 : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
@@ -180,7 +180,7 @@ export const GoodsSidebar: React.FC<Props> = ({
               <Button
                 onClick={() => handleCategoryClick(category.slug)}
                 variant="ghost"
-                className={`w-full justify-between group h-auto p-4 rounded-2xl transition-all duration-300 ${
+                className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] ${
                   selectedCategory === category.slug
                     ? 'bg-gradient-to-r from-[#9BC273] to-[#8AB162] text-white shadow-lg hover:shadow-xl'
                     : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'

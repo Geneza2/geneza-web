@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useTransition } from 'react'
@@ -18,6 +19,11 @@ export function LanguageSwitcher() {
   const router = useRouter()
   const pathname = usePathname()
   const [, startTransition] = useTransition()
+  const [isMounted, setIsMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const pathSegments = pathname.split('/')
   const currentLocale =
@@ -41,6 +47,14 @@ export function LanguageSwitcher() {
   const placeholderText = currentLocale === 'rs' ? 'Jezik' : 'Language'
   const getLabel = (lang: (typeof languages)[0]) =>
     currentLocale === 'rs' ? lang.labelRs : lang.labelEn
+
+  if (!isMounted) {
+    return (
+      <div className="flex items-center">
+        <div className="w-[80px] h-10 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex items-center">

@@ -24,8 +24,9 @@ import { getLinkHref } from '@/utilities/getLinkHref'
 import { TypedLocale } from 'payload'
 import { usePathname, useRouter } from 'next/navigation'
 import { useLocale } from 'next-intl'
-import { useTransition, useState } from 'react'
+import React, { useTransition, useState } from 'react'
 import { languages } from '@/utilities/argumentTypes'
+import { NavbarSearch } from '@/components/NavbarSearch'
 
 type MobileMenuProps = {
   data: HeaderType
@@ -91,9 +92,18 @@ const MobileLanguageSwitcher: React.FC<{ onLanguageChange: () => void }> = ({
 export const MobileMenu: React.FC<MobileMenuProps> = ({ data, locale }) => {
   const navItems = data?.navItems || []
   const [isOpen, setIsOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleLanguageChange = () => {
     setIsOpen(false)
+  }
+
+  if (!isMounted) {
+    return <div className="w-10 h-10 bg-gray-200 rounded animate-pulse"></div>
   }
 
   return (
@@ -113,6 +123,12 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ data, locale }) => {
         </div>
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <SheetDescription className="sr-only">Main navigation links for the site</SheetDescription>
+
+        {/* Mobile Search */}
+        <div className="p-4 border-b border-border flex justify-center">
+          <NavbarSearch locale={locale} />
+        </div>
+
         <nav className="flex flex-col gap-3 p-4">
           {navItems.map((item) => (
             <Link

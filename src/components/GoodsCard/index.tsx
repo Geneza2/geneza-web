@@ -32,12 +32,12 @@ export const GoodsCard: React.FC<{
         className,
       )}
     >
-      <div className="flex h-32 sm:h-36 lg:h-40">
+      <div className="flex h-28 sm:h-32 lg:h-36 xl:h-40">
         {(image || metaImage) &&
           (() => {
             const imageUrl = getImageUrl(image || metaImage)
             return imageUrl && imageUrl !== '/noimg.svg' ? (
-              <div className="w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 flex-shrink-0 relative overflow-hidden rounded-l-3xl">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40 flex-shrink-0 relative overflow-hidden rounded-l-3xl">
                 <Image
                   src={imageUrl}
                   alt={(image as Media)?.alt || (metaImage as Media)?.alt || 'Product image'}
@@ -49,8 +49,8 @@ export const GoodsCard: React.FC<{
             ) : null
           })()}
 
-        <div className="flex-1 p-4 sm:p-6 flex flex-col justify-between min-h-0">
-          <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col justify-between min-h-0">
+          <div className="flex items-start justify-between mb-2 sm:mb-3">
             <div className="flex-1 mr-4">
               <CardTitle className="text-base sm:text-lg font-bold text-gray-900 line-clamp-2 leading-tight transition-colors duration-300 group-hover:text-[#9BC273]">
                 {title}
@@ -68,14 +68,14 @@ export const GoodsCard: React.FC<{
                   href={(specPdf as any).url as string}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 hover:from-[#9BC273]/20 hover:to-[#9BC273]/10 hover:scale-110"
+                  className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 hover:from-[#9BC273]/20 hover:to-[#9BC273]/10 hover:scale-110"
                   aria-label="Open product PDF"
                 >
-                  <FileCheck2 className="w-6 h-6 text-[#9BC273]" />
+                  <FileCheck2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
                 </Link>
               )}
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:from-[#9BC273]/20 group-hover:to-[#9BC273]/10 group-hover:scale-110">
-                <Package className="w-6 h-6 text-[#9BC273]" />
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:from-[#9BC273]/20 group-hover:to-[#9BC273]/10 group-hover:scale-110">
+                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
               </div>
             </div>
           </div>

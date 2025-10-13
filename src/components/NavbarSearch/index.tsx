@@ -33,10 +33,15 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [isMounted, setIsMounted] = useState(false)
 
   const router = useRouter()
   const inputRef = React.useRef<HTMLInputElement>(null)
   const { trackResultClick } = useSearchAnalytics()
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 3) {
@@ -162,6 +167,16 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
   }
 
   const shouldShowResults = isFocused && results.length > 0
+
+  if (!isMounted) {
+    return (
+      <div className="relative w-full max-w-[260px]">
+        <div className="px-3 py-2 w-full border border-gray-200 bg-white/80 backdrop-blur-sm rounded-2xl">
+          <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="relative w-full max-w-[260px]">
