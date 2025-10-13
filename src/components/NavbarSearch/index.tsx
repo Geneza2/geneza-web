@@ -63,8 +63,19 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
       if (response.ok) {
         const data = await response.json()
         setResults(data.results || [])
-        if (typeof window !== 'undefined' && (window as any).searchAnalytics) {
-          ;(window as any).searchAnalytics.trackSearch(searchQuery, data.results?.length || 0)
+        if (
+          typeof window !== 'undefined' &&
+          (
+            window as unknown as {
+              searchAnalytics?: { trackSearch: (query: string, count: number) => void }
+            }
+          ).searchAnalytics
+        ) {
+          ;(
+            window as unknown as {
+              searchAnalytics: { trackSearch: (query: string, count: number) => void }
+            }
+          ).searchAnalytics.trackSearch(searchQuery, data.results?.length || 0)
         }
       } else {
         setResults([])
@@ -166,7 +177,7 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
     return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-700'
   }
 
-  const shouldShowResults = isFocused && results.length > 0
+  const shouldShowResults = isFocused && query.length >= 3
 
   if (!isMounted) {
     return (

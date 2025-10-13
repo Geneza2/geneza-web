@@ -4,10 +4,8 @@ import React from 'react'
 import { TypedLocale } from 'payload'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   Search,
-  TrendingUp,
   Package,
   FileText,
   ShoppingBag,
@@ -17,7 +15,6 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
 
 type SearchResult = {
   id: string
@@ -113,13 +110,6 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, locale, res
             ? `Nema rezultata za "${query}". Pokušajte sa drugim pojmom.`
             : `No results found for "${query}". Try a different search term.`}
         </p>
-        <Button
-          onClick={() => router.back()}
-          variant="outline"
-          className="border-[#9BC273] text-[#9BC273] hover:bg-[#9BC273] hover:text-white"
-        >
-          {locale === 'rs' ? 'Nazad' : 'Go Back'}
-        </Button>
       </div>
     )
   }
@@ -147,56 +137,49 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, locale, res
         </div>
       </div>
 
-      <div className="grid gap-6">
-        {results.map((result, index) => (
+      <div className="grid gap-8">
+        {results.map((result) => (
           <Card
             key={result.id}
-            className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm border-0 rounded-3xl shadow-lg overflow-hidden"
+            onClick={() => handleResultClick(result.url)}
+            className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm border-0 rounded-3xl shadow-lg overflow-hidden cursor-pointer"
           >
             <CardContent className="p-0">
-              <div className="flex items-start gap-6 p-8">
+              <div className="flex flex-col sm:flex-row">
                 {result.image && (
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 shadow-md">
+                  <div className="flex-shrink-0 w-full sm:w-48 h-48 sm:h-auto rounded-t-3xl sm:rounded-l-3xl sm:rounded-tr-none overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 shadow-md">
                     <Image
                       src={result.image}
                       alt={result.title}
-                      width={48}
-                      height={48}
+                      width={192}
+                      height={192}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 )}
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-6">
+                <div className="flex-1 p-8">
+                  <div className="flex items-start justify-between gap-6 mb-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#9BC273] transition-colors duration-300">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#9BC273] transition-colors duration-300">
                         {result.title}
                       </h3>
 
                       {result.description && (
-                        <p className="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        <p className="text-gray-600 mb-4 line-clamp-3 leading-relaxed text-lg">
                           {result.description}
                         </p>
                       )}
                     </div>
 
-                    <div className="flex flex-col items-end gap-4">
+                    <div className="flex-shrink-0">
                       <Badge
                         variant="outline"
-                        className={`${getTypeColor(result.type)} flex items-center gap-2 px-4 py-2 font-semibold`}
+                        className={`${getTypeColor(result.type)} flex items-center gap-2 px-4 py-2 font-semibold text-sm`}
                       >
                         {getTypeIcon(result.type)}
                         {getTypeLabel(result.type)}
                       </Badge>
-
-                      <Button
-                        onClick={() => handleResultClick(result.url)}
-                        className="bg-gradient-to-r from-[#9BC273] to-[#7BA050] hover:from-[#8AB162] hover:to-[#6B8F40] text-white font-semibold px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                        size="sm"
-                      >
-                        {locale === 'rs' ? 'Pogledaj' : 'View'}
-                      </Button>
                     </div>
                   </div>
                 </div>
@@ -204,16 +187,6 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, locale, res
             </CardContent>
           </Card>
         ))}
-      </div>
-
-      <div className="text-center pt-8">
-        <Button
-          onClick={() => router.back()}
-          variant="outline"
-          className="border-2 border-[#9BC273] text-[#9BC273] hover:bg-[#9BC273] hover:text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 hover:shadow-lg"
-        >
-          {locale === 'rs' ? 'Nazad' : 'Go Back'}
-        </Button>
       </div>
     </div>
   )

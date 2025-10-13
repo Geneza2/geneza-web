@@ -9,6 +9,7 @@ import { Header } from '@/Header/Component'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { NextIntlClientProvider } from 'next-intl'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { ServiceWorker } from '@/components/ServiceWorker'
 import './globals.css'
 import { TypedLocale } from 'payload'
 import { draftMode } from 'next/headers'
@@ -35,8 +36,19 @@ export default async function RootLayout({ children, params }: Args) {
         <head>
           <link href="/favicon.ico" rel="icon" sizes="32x32" />
           <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+          <link href="/manifest.json" rel="manifest" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+          <meta name="theme-color" content="#9BC273" />
+          <meta name="color-scheme" content="light" />
+          <meta name="robots" content="index, follow" />
+          <meta name="googlebot" content="index, follow" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          <meta name="apple-mobile-web-app-title" content="Geneza" />
+          <link rel="apple-touch-icon" href="/favicon.svg" />
         </head>
         <body suppressHydrationWarning>
+          <ServiceWorker />
           <NextIntlClientProvider>
             <div className="relative z-50">
               <AdminBar adminBarProps={{ preview: isEnabled }} />
