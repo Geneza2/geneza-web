@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button'
 import { getImageUrl } from '@/utilities/getImageUrl'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, CheckCircle, ExternalLink, ArrowLeft } from 'lucide-react'
-import type { Media, OpenPosition } from '@/payload-types'
+import type { Media } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -185,7 +185,7 @@ export default async function Position({ params: paramsPromise }: Args) {
                         <p className="mb-6 opacity-90">{t.applyMessage}</p>
                         <Button asChild variant="secondary" size="lg" className="font-semibold">
                           <a
-                            href="mailto:geneza@geneza.com?subject=Job Application"
+                            href="mailto:hr@geneza.rs?subject=Job Application"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2"

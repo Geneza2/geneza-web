@@ -1,4 +1,3 @@
-// import { getCachedGlobal } from '@/utilities/getGlobals'
 import Link from 'next/link'
 import React from 'react'
 import type { Footer as FooterType } from '@/payload-types'

@@ -62,7 +62,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         <article>
           <PayloadRedirects disableNotFound url={url} />
 
-          {slug === 'regenerative-agriculture' && (
+          {slug === 'about' && (
             <section className="relative z-0 w-full h-[100vh] -mt-[72px] md:-mt-[80px] overflow-hidden">
               <div className="absolute inset-0 w-[100vw] h-full">
                 <iframe

@@ -6,7 +6,7 @@ import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good, Category as PayloadCategory } from '@/payload-types'
 import { Input } from '@/components/ui/input'
-import { Search, Package, ArrowRight, X, Filter, XCircle, ChevronDown } from 'lucide-react'
+import { Search, Package, ArrowRight, X, XCircle, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { GoodsSidebar } from '@/components/GoodsSidebar'
@@ -38,7 +38,7 @@ export const GoodsArchive: React.FC<Props> = ({
   searchParams,
 }) => {
   const router = useRouter()
-  const [isFiltersOpen, setIsFiltersOpen] = React.useState(false)
+  const [openAccordion, setOpenAccordion] = React.useState<'categories' | 'search' | null>(null)
 
   const selectedCategory: string = Array.isArray(searchParams.category)
     ? searchParams.category[0] || 'all'
@@ -239,8 +239,8 @@ export const GoodsArchive: React.FC<Props> = ({
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-12">
-        {/* Mobile: Sidebar at top, Desktop: Sidebar on left */}
-        <div className="lg:w-80 flex-shrink-0 order-1 lg:order-1">
+        {/* Desktop: Sidebar on left, Mobile: Hidden by default, shown in dropdown */}
+        <div className="hidden lg:block lg:w-80 flex-shrink-0 order-1">
           <div className="lg:sticky lg:top-8">
             <GoodsSidebar
               categories={categories}
@@ -255,7 +255,97 @@ export const GoodsArchive: React.FC<Props> = ({
         </div>
 
         <div className="flex-1 min-w-0 order-2 lg:order-2">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border-0 shadow-xl p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
+          {/* Mobile Categories Dropdown */}
+          <div className="lg:hidden mb-4">
+            <Button
+              variant="outline"
+              onClick={() => setOpenAccordion(openAccordion === 'categories' ? null : 'categories')}
+              className={`w-full flex items-center justify-between gap-2 px-4 py-3 border-2 border-white/30 bg-white/90 backdrop-blur-md hover:border-[#9BC273] transition-all duration-200 min-h-[48px] shadow-lg ${
+                openAccordion === 'categories'
+                  ? 'rounded-t-2xl rounded-b-none border-b-0'
+                  : 'rounded-2xl'
+              }`}
+            >
+              <span className="text-sm font-medium">
+                {locale === 'rs' ? 'Kategorije' : 'Categories'}
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${openAccordion === 'categories' ? 'rotate-180' : ''}`}
+              />
+            </Button>
+
+            {openAccordion === 'categories' && (
+              <div className="border-2 border-t-0 border-white rounded-b-2xl overflow-hidden shadow-lg">
+                <GoodsSidebar
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  subcategories={allSubcategories}
+                  selectedSubcategory={selectedSubcategory}
+                  setSelectedSubcategory={setSelectedSubcategory}
+                  locale={locale}
+                  isAccordion={true}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Search Dropdown */}
+          <div className="lg:hidden mb-4">
+            <Button
+              variant="outline"
+              onClick={() => setOpenAccordion(openAccordion === 'search' ? null : 'search')}
+              className={`w-full flex items-center justify-between gap-2 px-4 py-3 border-2 border-white/30 bg-white/90 backdrop-blur-md hover:border-[#9BC273] transition-all duration-200 min-h-[48px] shadow-lg ${
+                openAccordion === 'search'
+                  ? 'rounded-t-2xl rounded-b-none border-b-0'
+                  : 'rounded-2xl'
+              }`}
+            >
+              <span className="text-sm font-medium">{locale === 'rs' ? 'Pretraga' : 'Search'}</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${openAccordion === 'search' ? 'rotate-180' : ''}`}
+              />
+            </Button>
+
+            {openAccordion === 'search' && (
+              <div className="bg-white/90 backdrop-blur-md rounded-b-2xl border-2 border-t-0 border-white shadow-xl p-4">
+                <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      name="search"
+                      type="text"
+                      placeholder={t.searchPlaceholder}
+                      defaultValue={searchQuery || ''}
+                      className="pl-10 pr-10 py-3 text-sm border-2 border-white/30 bg-white/90 backdrop-blur-sm rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
+                    />
+                    {searchQuery && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearSearch}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100 rounded-xl"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="px-4 py-3 rounded-2xl bg-[#9BC273] hover:bg-[#8AB162] border-0 shadow-lg w-full"
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    {locale === 'rs' ? 'Pretraži' : 'Search'}
+                  </Button>
+                </form>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Search */}
+          <div className="hidden lg:block bg-white/90 backdrop-blur-md rounded-3xl border-0 shadow-xl p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
             <div className="max-w-2xl">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 {locale === 'rs' ? 'Pronađite proizvod' : 'Find Product'}
@@ -274,7 +364,7 @@ export const GoodsArchive: React.FC<Props> = ({
                     type="text"
                     placeholder={t.searchPlaceholder}
                     defaultValue={searchQuery || ''}
-                    className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base border-2 border-gray-200 bg-white rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
+                    className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base border-2 border-white/30 bg-white/90 backdrop-blur-sm rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
                   />
                   {searchQuery && (
                     <Button
@@ -297,102 +387,80 @@ export const GoodsArchive: React.FC<Props> = ({
                 </Button>
               </form>
 
-              {/* Active Filters Dropdown */}
+              {/* Active Filters - Show as Tags Immediately */}
               {(selectedCategory !== 'all' || selectedSubcategory || searchQuery) && (
-                <div className="mt-4">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                    className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 px-3 py-2 rounded-xl transition-all duration-200 w-full sm:w-auto"
-                  >
-                    <Filter className="w-4 h-4" />
-                    <span className="text-sm font-medium">
-                      {locale === 'rs' ? 'Aktivni filteri' : 'Active Filters'}
-                    </span>
-                    <span className="bg-[#9BC273] text-white text-xs px-2 py-1 rounded-full">
-                      {[
-                        selectedCategory !== 'all' ? 1 : 0,
-                        selectedSubcategory ? 1 : 0,
-                        searchQuery ? 1 : 0,
-                      ].reduce((a, b) => a + b, 0)}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-200 ml-auto sm:ml-0 ${isFiltersOpen ? 'rotate-180' : ''}`}
-                    />
-                  </Button>
-
-                  {isFiltersOpen && (
-                    <div className="mt-3 p-3 sm:p-4 bg-gray-50 rounded-2xl border border-gray-200">
-                      <div className="flex flex-wrap gap-2">
-                        {/* Category Filter */}
-                        {selectedCategory !== 'all' && (
-                          <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
-                            <span className="text-sm font-medium flex-1 truncate">
-                              {availableCategories.find((cat) => cat.slug === selectedCategory)
-                                ?.title || selectedCategory}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedCategory('all')}
-                              className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        )}
-
-                        {/* Subcategory Filter */}
-                        {selectedSubcategory && (
-                          <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
-                            <span className="text-sm font-medium flex-1 truncate">
-                              {selectedSubcategory}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedSubcategory('')}
-                              className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        )}
-
-                        {/* Search Filter */}
-                        {searchQuery && (
-                          <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
-                            <span className="text-sm font-medium flex-1 truncate">
-                              &quot;{searchQuery}&quot;
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={clearSearch}
-                              className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        )}
-
-                        {/* Clear All Button */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    {locale === 'rs' ? 'Aktivni filteri' : 'Active Filters'}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {/* Category Filter */}
+                    {selectedCategory !== 'all' && (
+                      <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
+                        <span className="text-sm font-medium flex-1 truncate">
+                          {availableCategories.find((cat) => cat.slug === selectedCategory)
+                            ?.title || selectedCategory}
+                        </span>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => {
-                            setSelectedCategory('all')
-                            setSelectedSubcategory('')
-                            clearSearch()
-                          }}
-                          className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-xl w-full sm:w-auto"
+                          onClick={() => setSelectedCategory('all')}
+                          className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
                         >
-                          <X className="w-4 h-4 mr-1" />
-                          {locale === 'rs' ? 'Obriši sve' : 'Clear all'}
+                          <XCircle className="w-4 h-4" />
                         </Button>
                       </div>
-                    </div>
-                  )}
+                    )}
+
+                    {/* Subcategory Filter */}
+                    {selectedSubcategory && (
+                      <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
+                        <span className="text-sm font-medium flex-1 truncate">
+                          {selectedSubcategory}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedSubcategory('')}
+                          className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Search Filter */}
+                    {searchQuery && (
+                      <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
+                        <span className="text-sm font-medium flex-1 truncate">
+                          &quot;{searchQuery}&quot;
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={clearSearch}
+                          className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Clear All Button */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedCategory('all')
+                        setSelectedSubcategory('')
+                        clearSearch()
+                      }}
+                      className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-xl min-h-[44px]"
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      {locale === 'rs' ? 'Obriši sve' : 'Clear all'}
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -400,7 +468,7 @@ export const GoodsArchive: React.FC<Props> = ({
 
           {filteredGoods.length === 0 ? (
             <div className="text-center py-16">
-              <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 sm:p-12 max-w-md mx-auto border-0 shadow-xl">
+              <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-12 max-w-md mx-auto border-0 shadow-xl">
                 <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-gray-100 via-white to-gray-50 rounded-3xl flex items-center justify-center shadow-inner">
                   <div className="flex items-center gap-2">
                     <Package className="w-16 h-16 text-gray-400" />

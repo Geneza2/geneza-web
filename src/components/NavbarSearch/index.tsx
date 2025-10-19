@@ -129,6 +129,25 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
       trackResultClick(query.trim(), url)
     }
 
+    // Check if we're on mobile
+    const isMobile = window.innerWidth < 768
+
+    if (isMobile) {
+      // On mobile, scroll to the result if on same page, otherwise navigate
+      const currentPath = window.location.pathname
+      const targetPath = url.split('?')[0]
+
+      if (currentPath === targetPath) {
+        // Same page - just scroll to top or refresh content
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setQuery('')
+        setResults([])
+        setIsFocused(false)
+        setSelectedIndex(-1)
+        return
+      }
+    }
+
     router.push(url)
     setQuery('')
     setResults([])

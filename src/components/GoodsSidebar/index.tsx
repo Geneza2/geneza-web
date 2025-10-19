@@ -32,6 +32,7 @@ type Props = {
   selectedSubcategory: string
   setSelectedSubcategory: (subcategory: string) => void
   locale: TypedLocale
+  isAccordion?: boolean
 }
 
 export const GoodsSidebar: React.FC<Props> = ({
@@ -42,6 +43,7 @@ export const GoodsSidebar: React.FC<Props> = ({
   selectedSubcategory,
   setSelectedSubcategory,
   locale,
+  isAccordion = false,
 }) => {
   const t = goodsTranslations[locale] || goodsTranslations.en
   const router = useRouter()
@@ -138,7 +140,9 @@ export const GoodsSidebar: React.FC<Props> = ({
   }, [categories, subcategories, selectedCategory])
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-3xl border-0 shadow-xl overflow-hidden">
+    <div
+      className={`bg-white/90 backdrop-blur-md border-0 shadow-xl overflow-hidden ${isAccordion ? '' : 'rounded-3xl'}`}
+    >
       <div className="p-3 sm:p-4 lg:p-8">
         <div className="flex items-center gap-3 mb-4 sm:mb-6 lg:mb-8">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center">

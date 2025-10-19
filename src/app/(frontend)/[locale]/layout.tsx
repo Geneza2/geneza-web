@@ -6,6 +6,8 @@ import { GeistSans } from 'geist/font/sans'
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
+import { SkipToContent } from '@/components/SkipToContent'
+import { StructuredData } from '@/components/StructuredData'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { NextIntlClientProvider } from 'next-intl'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
@@ -48,6 +50,21 @@ export default async function RootLayout({ children, params }: Args) {
           <link rel="apple-touch-icon" href="/favicon.svg" />
         </head>
         <body suppressHydrationWarning>
+          <SkipToContent />
+          <StructuredData
+            type="organization"
+            data={{
+              name: 'Geneza',
+              description: 'Leading provider of quality products and services',
+              phone: '+381 11 123 4567',
+              email: 'info@geneza.rs',
+              socialMedia: {
+                facebook: 'https://facebook.com/geneza',
+                instagram: 'https://instagram.com/geneza',
+                linkedin: 'https://linkedin.com/company/geneza',
+              },
+            }}
+          />
           <ServiceWorker />
           <NextIntlClientProvider>
             <div className="relative z-50">
@@ -55,8 +72,12 @@ export default async function RootLayout({ children, params }: Args) {
               <Header locale={locale} />
             </div>
             <LivePreviewListener />
-            <main>{children}</main>
-            <Footer locale={locale} />
+            <main id="main-content" tabIndex={-1} className="focus:outline-none">
+              {children}
+            </main>
+            <div className="relative z-50">
+              <Footer locale={locale} />
+            </div>
           </NextIntlClientProvider>
         </body>
       </html>

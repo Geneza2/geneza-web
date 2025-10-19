@@ -28,7 +28,7 @@ export const GoodsCard: React.FC<{
   return (
     <Card
       className={cn(
-        'group overflow-hidden bg-white/80 backdrop-blur-sm border-0 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#9BC273]/10 hover:-translate-y-1',
+        'group overflow-hidden bg-white/95 backdrop-blur-lg border-0 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#9BC273]/10 hover:-translate-y-1',
         className,
       )}
     >

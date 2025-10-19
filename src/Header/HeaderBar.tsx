@@ -17,17 +17,32 @@ export const HeaderBar: React.FC<Props> = ({ data, locale }) => {
   return (
     <>
       {/* Mobile Layout - Hidden on large screens */}
-      <div className="flex items-center justify-between w-full lg:hidden">
-        <Link className="flex items-center" href={`/${locale || 'en'}`}>
+      <div
+        className="flex items-center justify-between w-full lg:hidden"
+        role="navigation"
+        aria-label="Mobile navigation"
+      >
+        <Link
+          className="flex items-center"
+          href={`/${locale || 'en'}`}
+          aria-label="Geneza home page"
+        >
           <Logo />
         </Link>
         <MobileMenu data={data} locale={locale} />
       </div>
 
       {/* Desktop Layout - Hidden on mobile */}
-      <div className="hidden lg:grid grid-cols-[minmax(200px,260px)_1fr_minmax(200px,300px)] items-center w-full gap-2 md:gap-3 lg:gap-5">
+      <nav
+        className="hidden lg:grid grid-cols-[minmax(200px,260px)_1fr_minmax(200px,300px)] items-center w-full gap-2 md:gap-3 lg:gap-5"
+        aria-label="Desktop navigation"
+      >
         <div className="flex items-center min-w-0">
-          <Link className="flex items-center" href={`/${locale || 'en'}`}>
+          <Link
+            className="flex items-center"
+            href={`/${locale || 'en'}`}
+            aria-label="Geneza home page"
+          >
             <Logo />
           </Link>
         </div>
@@ -42,7 +57,7 @@ export const HeaderBar: React.FC<Props> = ({ data, locale }) => {
             <LanguageSwitcher />
           </div>
         </div>
-      </div>
+      </nav>
     </>
   )
 }

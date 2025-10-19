@@ -1,4 +1,3 @@
-// Header.tsx
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import React from 'react'
 import { HeaderBar } from './HeaderBar'
@@ -16,6 +15,8 @@ export async function Header({ locale }: HeaderProps) {
     <header
       className="w-full px-3 py-3 md:px-6 lg:px-10 bg-white/95 backdrop-blur-md relative z-10 border-b border-[#9BC273]/30"
       id="main-header"
+      role="banner"
+      aria-label="Main navigation"
     >
       <div className="absolute inset-0 bg-gradient-to-r from-[#9BC273]/5 via-[#17323E]/3 to-[#9BC273]/5"></div>
       <div className="relative z-10">

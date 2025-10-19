@@ -5,7 +5,6 @@ import { Media } from '@/components/Media'
 import Link from 'next/link'
 import { TypedLocale } from 'payload'
 import type { Media as MediaType } from '@/payload-types'
-import { useState } from 'react'
 
 type Product = {
   id: number
@@ -53,8 +52,6 @@ export const ProductsBlock: React.FC<Props> = ({
   products,
   locale,
 }) => {
-  const [showAll, setShowAll] = useState(false)
-
   if (!products || products.length === 0) {
     return null
   }
@@ -80,39 +77,15 @@ export const ProductsBlock: React.FC<Props> = ({
           <p className="text-base text-gray-700 max-w-3xl mx-auto leading-relaxed">{description}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((product, index) => (
             <div
               key={product.id ? `product-${product.id}` : `product-${index}`}
-              className={cn(
-                'transition-all duration-300',
-                index >= 3 && !showAll && 'hidden sm:block',
-                index >= 3 && showAll && 'block',
-                index < 3 && 'block',
-              )}
+              className="transition-all duration-300"
             >
               <ProductItem product={product} locale={locale} />
             </div>
           ))}
-        </div>
-
-        <div className="block sm:hidden">
-          {products.length > 3 && (
-            <div className="text-center mt-8">
-              <button
-                onClick={() => setShowAll(!showAll)}
-                className="inline-flex items-center px-6 py-3 bg-[#9BC273] text-white font-semibold rounded-lg hover:bg-[#8BAF66] transition-colors duration-200 transform hover:scale-105"
-              >
-                {showAll
-                  ? locale === 'rs'
-                    ? 'Prikaži manje'
-                    : 'Show Less'
-                  : locale === 'rs'
-                    ? 'Prikaži više'
-                    : 'View More'}
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
