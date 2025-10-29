@@ -3,6 +3,7 @@ import { TypedLocale } from 'payload'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
+import Image from 'next/image'
 import { OpenPositionsArchive } from '@/components/OpenPositionsArchive'
 import { openPositionsTranslations } from '@/i18n/translations/open-positions'
 import { Badge } from '@/components/ui/badge'
@@ -105,29 +106,66 @@ export default async function Page({ params: paramsPromise }: Args) {
 
         <OpenPositionsArchive openPositions={allPositions} locale={locale} />
 
-        <div className="container mt-8">
-          <div className="rounded-xl bg-[#9BC273]/10 border border-[#9BC273]/20 p-4 text-sm text-gray-700">
-            {allPositions.length === 0 ? (
-              <span>
-                {locale === 'rs'
-                  ? 'Ne pronalazite odgovarajuću poziciju? Pišite nam na '
-                  : "Didn't find a matching role? Email us at "}
-                <a href="mailto:hr@geneza.rs" className="font-semibold text-[#7BA050] underline">
-                  hr@geneza.rs
-                </a>
-                .
-              </span>
-            ) : (
-              <span>
-                {locale === 'rs'
-                  ? 'Ne pronalazite odgovarajuću poziciju? Pošaljite nam biografiju na '
-                  : "Don't see your position? Send your CV to "}
-                <a href="mailto:hr@geneza.rs" className="font-semibold text-[#7BA050] underline">
-                  hr@geneza.rs
-                </a>
-                .
-              </span>
-            )}
+        <div className="container mt-16">
+          <div className="rounded-2xl bg-gradient-to-br from-[#9BC273]/10 to-[#7BA050]/5 border border-[#9BC273]/20 overflow-hidden shadow-lg">
+            <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-0 items-center">
+              {/* Square Image on the left */}
+              <div className="relative w-full md:w-64 lg:w-80 h-64 lg:h-80">
+                <Image
+                  src="/api/media/file/Geneza-011.jpg"
+                  alt="Join our team"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 320px"
+                  priority={false}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#9BC273]/20"></div>
+              </div>
+
+              {/* Text on the right */}
+              <div className="p-8 md:p-12">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+                  {locale === 'rs' ? 'Ne vidite svoju poziciju?' : "Don't see your position?"}
+                </h3>
+                <p className="text-base md:text-lg text-gray-700 mb-6">
+                  {allPositions.length === 0 ? (
+                    <span>
+                      {locale === 'rs'
+                        ? 'Ne pronalazite odgovarajuću poziciju? Kontaktirajte nas direktno i predstavite se.'
+                        : "Didn't find a matching role? Contact us directly and introduce yourself."}
+                    </span>
+                  ) : (
+                    <span>
+                      {locale === 'rs'
+                        ? 'Pošaljite nam svoju biografiju i predstavite se. Uvek tražimo talentovane ljude koji dele naše vrednosti.'
+                        : "Send us your CV and introduce yourself. We're always looking for talented people who share our values."}
+                    </span>
+                  )}
+                </p>
+                <div className="flex justify-end">
+                  <a
+                    href="mailto:hr@geneza.rs"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#7BA050] hover:bg-[#6A8F45] text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    hr@geneza.rs
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

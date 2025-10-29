@@ -18,7 +18,7 @@ export const HeaderBar: React.FC<Props> = ({ data, locale }) => {
     <>
       {/* Mobile Layout - Hidden on large screens */}
       <div
-        className="flex items-center justify-between w-full lg:hidden"
+        className="flex items-center justify-between w-full nav:hidden transition-all duration-300 ease-in-out"
         role="navigation"
         aria-label="Mobile navigation"
       >
@@ -34,7 +34,7 @@ export const HeaderBar: React.FC<Props> = ({ data, locale }) => {
 
       {/* Desktop Layout - Hidden on mobile */}
       <nav
-        className="hidden lg:grid grid-cols-[minmax(200px,260px)_1fr_minmax(200px,300px)] items-center w-full gap-2 md:gap-3 lg:gap-5"
+        className="hidden nav:grid grid-cols-[minmax(200px,260px)_1fr_minmax(200px,300px)] items-center w-full gap-2 md:gap-3 lg:gap-5 transition-all duration-300 ease-in-out"
         aria-label="Desktop navigation"
       >
         <div className="flex items-center min-w-0">

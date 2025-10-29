@@ -37,12 +37,20 @@ const config = {
         xl: '2rem',
       },
       screens: {
-        '2xl': '86rem',
-        lg: '64rem',
-        md: '48rem',
         sm: '40rem',
+        md: '48rem',
+        lg: '64rem',
         xl: '80rem',
+        '2xl': '86rem',
       },
+    },
+    screens: {
+      sm: '40rem',
+      md: '48rem',
+      lg: '64rem',
+      nav: '1208px',
+      xl: '80rem',
+      '2xl': '86rem',
     },
     extend: {
       animation: {
