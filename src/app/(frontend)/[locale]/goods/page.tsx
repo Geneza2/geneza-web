@@ -9,7 +9,6 @@ import { goodsTranslations } from '@/i18n/translations/goods'
 import { Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import type { Product } from '@/payload-types'
 
 type CutSize = {
   id?: string | null
@@ -57,29 +56,31 @@ export default async function Page({
       ? goods.docs.find((good: any) => good.slug === selectedCategorySlug)
       : null
 
-    // Get all products at once instead of individual queries
+    // Build productCutSizes from goods data instead of fetching all products
+    // This avoids memory issues during build by only using data already loaded
     const productCutSizes: Record<string, CutSize[]> = {}
 
     try {
-      const productsResponse = await payload.find({
-        collection: 'products',
-        limit: 1000, // Get all products
-        depth: 1,
-        overrideAccess: draft,
-        draft: draft,
-        locale: safeLocale,
+      // Extract cut sizes from products already loaded in goods
+      goods.docs.forEach((good: any) => {
+        if (good?.products && Array.isArray(good.products)) {
+          good.products.forEach((product: any) => {
+            if (
+              product?.title &&
+              product?.cutSizes &&
+              Array.isArray(product.cutSizes) &&
+              product.cutSizes.length > 0
+            ) {
+              productCutSizes[product.title] = product.cutSizes.map((cs: any) => ({
+                id: cs?.id || null,
+                name: typeof cs === 'string' ? cs : cs?.name || '',
+              }))
+            }
+          })
+        }
       })
-
-      // Build the cut sizes mapping
-      if (productsResponse?.docs) {
-        productsResponse.docs.forEach((product: any) => {
-          if (product?.title && product?.cutSizes && product.cutSizes.length > 0) {
-            productCutSizes[product.title] = product.cutSizes
-          }
-        })
-      }
     } catch (error) {
-      console.error('Error loading products for cut sizes:', error)
+      console.error('Error building product cut sizes:', error)
       // Continue without cut sizes if there's an error
     }
 
@@ -101,28 +102,6 @@ export default async function Page({
       }
     }
 
-    // If still no banner, try to get first available banner from any good
-    if (!bannerImage) {
-      for (const good of goods?.docs || []) {
-        if (
-          good?.bannerImage &&
-          typeof good.bannerImage === 'object' &&
-          'url' in good.bannerImage
-        ) {
-          bannerImage = good.bannerImage.url as string
-          break
-        }
-      }
-    }
-
-    // Ensure the URL is absolute if it exists
-    if (bannerImage && !bannerImage.startsWith('http')) {
-      const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3002'
-      bannerImage = `${baseUrl}${bannerImage}`
-    }
-
-    console.log('Banner Image URL:', bannerImage)
-
     const bannerTitle = selectedCategory?.title || t.title
     const bannerDescription =
       safeLocale === 'rs'
@@ -130,77 +109,92 @@ export default async function Page({
         : 'Discover our wide range of quality products directly from the source'
 
     return (
-      <div className="relative min-h-screen">
+      <div className="min-h-screen">
         {draft && <LivePreviewListener />}
+        <div className="relative overflow-hidden">
+          {bannerImage ? (
+            // Custom image banner
+            <>
+              <div
+                className="relative h-[60vh] min-h-[400px] bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${bannerImage})` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30"></div>
 
-        {/* Fixed background - image only, stays locked in place and extends full height */}
-        {bannerImage && (
-          <div
-            className="fixed top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url('${bannerImage}')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              zIndex: 0,
-            }}
-          />
-        )}
-
-        {/* Scrollable content - everything scrolls over the fixed background */}
-        <div className="relative" style={{ zIndex: 1 }}>
-          {/* Hero section - visible over background */}
-          <div className="pt-[72px] md:pt-[80px]">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-              <div className="text-center max-w-4xl mx-auto mb-16">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-white/80 backdrop-blur-sm rounded-3xl mb-8 border border-white/30 shadow-xl">
-                  <Package className="w-10 h-10 text-gray-600" />
-                </div>
-
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-2xl">
-                  {bannerImage ? bannerTitle : locale === 'rs' ? 'Proizvodi' : 'Products'}
-                </h1>
-
-                <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto drop-shadow-xl">
-                  {bannerImage
-                    ? bannerDescription
-                    : locale === 'rs'
-                      ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
-                      : 'Discover our wide range of quality products directly from the source'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Content area - cards/sidebar scrolling over fixed image */}
-          <div className="pb-16">
-            {!hasProducts ? (
-              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <Card className="max-w-md mx-auto text-center bg-white/95 backdrop-blur-md border-0 shadow-2xl">
-                  <CardContent className="pt-8 pb-6 px-6">
-                    <div className="w-24 h-24 mx-auto mb-6 bg-white rounded-3xl flex items-center justify-center border border-gray-200">
-                      <Package className="w-12 h-12 text-gray-400" />
+                <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 h-full flex items-center">
+                  <div className="text-center max-w-4xl mx-auto">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                      <Package className="w-10 h-10 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                      {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
-                    </h3>
-                    <p className="text-gray-600">
-                      {locale === 'rs'
-                        ? 'Proverite kasnije za nove proizvode'
-                        : 'Check back later for new products'}
+
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
+                      {bannerTitle}
+                    </h1>
+
+                    <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+                      {bannerDescription}
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <GoodsArchive
-                goods={goods?.docs || []}
-                locale={safeLocale}
-                availableCategories={goods?.docs || []}
-                productCutSizes={productCutSizes}
-                searchParams={searchParams}
-              />
-            )}
-          </div>
+            </>
+          ) : (
+            // Default gradient banner
+            <>
+              <div className="relative overflow-hidden">
+                <div className="absolute inset-0 bg-black/5"></div>
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+                <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+                  <div className="text-center max-w-4xl mx-auto">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
+                      <Package className="w-10 h-10 text-white" />
+                    </div>
+
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+                      {bannerTitle}
+                    </h1>
+
+                    <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+                      {bannerDescription}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="relative -mt-16 pb-16">
+          {!hasProducts ? (
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <Card className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
+                <CardContent className="pt-8 pb-6 px-6">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-50 rounded-3xl flex items-center justify-center">
+                    <Package className="w-12 h-12 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {locale === 'rs' ? 'Nema proizvoda' : 'No products available'}
+                  </h3>
+                  <p className="text-gray-600">
+                    {locale === 'rs'
+                      ? 'Proverite kasnije za nove proizvode'
+                      : 'Check back later for new products'}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <GoodsArchive
+              goods={goods?.docs || []}
+              locale={safeLocale}
+              availableCategories={goods?.docs || []}
+              productCutSizes={productCutSizes}
+              searchParams={searchParams}
+            />
+          )}
         </div>
       </div>
     )
@@ -215,25 +209,24 @@ export default async function Page({
 
     // Return a fallback page with empty data
     return (
-      <div className="relative min-h-screen">
-        {/* Fixed 100vh background - stays locked in place */}
-        <div className="fixed top-0 left-0 w-full h-[100vh] bg-gray-50" style={{ zIndex: 0 }} />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
+        <div className="relative  overflow-hidden h-64 sm:h-80 lg:h-96">
+          <div className="absolute inset-0 bg-black/5"></div>
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
 
-        {/* Scrollable content - everything scrolls over the fixed background */}
-        <div className="relative" style={{ zIndex: 1 }}>
-          {/* Hero section - visible over background */}
-          <div className="pt-[72px] md:pt-[80px]">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-              <div className="text-center max-w-4xl mx-auto mb-16">
+          <div className="absolute inset-0 z-20 flex items-center justify-center">
+            <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+              <div className="text-center max-w-4xl mx-auto">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-8 backdrop-blur-sm border border-white/30">
-                  <Package className="w-10 h-10 text-gray-600" />
+                  <Package className="w-10 h-10 text-white" />
                 </div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
                   {t.title}
                 </h1>
 
-                <p className="text-xl sm:text-2xl text-gray-700 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+                <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
                   {locale === 'rs'
                     ? 'Otkrijte našu široku paletu kvalitetnih proizvoda direktno od proizvođača'
                     : 'Discover our wide range of quality products directly from the source'}
@@ -241,24 +234,23 @@ export default async function Page({
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Content area - cards scrolling over fixed image */}
-          <div className="pb-16">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <Card className="max-w-md mx-auto text-center bg-white border-0 shadow-2xl">
-                <CardContent className="pt-8 pb-6 px-6">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-white rounded-3xl flex items-center justify-center border border-gray-200">
-                    <Package className="w-12 h-12 text-red-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {locale === 'rs' ? 'Greška pri učitavanju' : 'Error loading goods'}
-                  </h3>
-                  <p className="text-gray-600">
-                    {locale === 'rs' ? 'Pokušajte ponovo kasnije' : 'Please try again later'}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+        <div className="relative -mt-16 pb-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <Card className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
+              <CardContent className="pt-8 pb-6 px-6">
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-red-100 to-red-50 rounded-3xl flex items-center justify-center">
+                  <Package className="w-12 h-12 text-red-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  {locale === 'rs' ? 'Greška pri učitavanju' : 'Error loading goods'}
+                </h3>
+                <p className="text-gray-600">
+                  {locale === 'rs' ? 'Pokušajte ponovo kasnije' : 'Please try again later'}
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

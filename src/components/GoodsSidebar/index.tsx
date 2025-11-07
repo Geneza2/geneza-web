@@ -50,12 +50,15 @@ export const GoodsSidebar: React.FC<Props> = ({
   const searchParams = useSearchParams()
 
   const handleCategoryClick = (categorySlug: string) => {
-    if (categorySlug === 'all') {
-      setSelectedCategory(categorySlug)
+    if (categorySlug === selectedCategory) {
+      // If clicking the same category, do nothing
+      return
+    } else if (categorySlug === 'all') {
+      setSelectedCategory('all')
       const params = new URLSearchParams(searchParams.toString())
       params.delete('category')
-      params.delete('subcategory') // Clear subcategory when selecting all
-      const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`
+      params.delete('subcategory') // Clear subcategory when selecting "All categories"
+      const newUrl = `${window.location.pathname}?${params.toString()}`
       router.push(newUrl, { scroll: false })
     } else {
       setSelectedCategory(categorySlug)
@@ -140,10 +143,9 @@ export const GoodsSidebar: React.FC<Props> = ({
   }, [categories, subcategories, selectedCategory])
 
   return (
-    <div
-      className={`bg-white/90 backdrop-blur-md border-0 shadow-xl overflow-hidden ${isAccordion ? '' : 'rounded-3xl'}`}
-    >
+    <div className={`bg-white/90 backdrop-blur-md border-0 shadow-xl overflow-hidden ${isAccordion ? '' : 'rounded-3xl'}`}>
       <div className="p-3 sm:p-4 lg:p-8">
+        {/* Categories section */}
         <div className="flex items-center gap-3 mb-4 sm:mb-6 lg:mb-8">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center">
             <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
@@ -181,24 +183,54 @@ export const GoodsSidebar: React.FC<Props> = ({
           {organizedCategories.map((category, _index) => (
             <div key={category.slug} className="space-y-2">
               {/* Parent Category */}
-              <Button
-                onClick={() => handleCategoryClick(category.slug)}
-                variant="ghost"
-                className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] ${
-                  selectedCategory === category.slug
-                    ? 'bg-gradient-to-r from-[#9BC273] to-[#8AB162] text-white shadow-lg hover:shadow-xl'
-                    : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
-                }`}
-              >
-                <span className="font-medium">{category.title}</span>
-                <ChevronRight
-                  className={`w-5 h-5 transition-all duration-300 ${
+              {category.slug === 'produced-by-geneza' ? (
+                <Button
+                  onClick={() => handleCategoryClick(category.slug)}
+                  variant="ghost"
+                  className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] relative overflow-hidden ${
                     selectedCategory === category.slug
-                      ? 'rotate-90 text-white'
-                      : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
+                      ? 'text-white shadow-lg hover:shadow-xl'
+                      : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
                   }`}
-                />
-              </Button>
+                  style={
+                    selectedCategory === category.slug
+                      ? {
+                          backgroundImage: "url('/api/media/file/Geneza-011.webp')",
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                        }
+                      : {}
+                  }
+                >
+                  <span className="font-medium relative z-10">{category.title}</span>
+                  <ChevronRight
+                    className={`w-5 h-5 transition-all duration-300 relative z-10 ${
+                      selectedCategory === category.slug
+                        ? 'rotate-90 text-white'
+                        : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
+                    }`}
+                  />
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => handleCategoryClick(category.slug)}
+                  variant="ghost"
+                  className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] ${
+                    selectedCategory === category.slug
+                      ? 'bg-gradient-to-r from-[#9BC273] to-[#8AB162] text-white shadow-lg hover:shadow-xl'
+                      : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
+                  }`}
+                >
+                  <span className="font-medium">{category.title}</span>
+                  <ChevronRight
+                    className={`w-5 h-5 transition-all duration-300 ${
+                      selectedCategory === category.slug
+                        ? 'rotate-90 text-white'
+                        : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
+                    }`}
+                  />
+                </Button>
+              )}
 
               {category.subcategories && category.subcategories.length > 0 && (
                 <div className="ml-6 space-y-1">
