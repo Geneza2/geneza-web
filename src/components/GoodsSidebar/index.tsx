@@ -57,14 +57,14 @@ export const GoodsSidebar: React.FC<Props> = ({
       setSelectedCategory('all')
       const params = new URLSearchParams(searchParams.toString())
       params.delete('category')
-      params.delete('subcategory') // Clear subcategory when selecting "All categories"
+      params.delete('subcategory')
       const newUrl = `${window.location.pathname}?${params.toString()}`
       router.push(newUrl, { scroll: false })
     } else {
       setSelectedCategory(categorySlug)
       const params = new URLSearchParams(searchParams.toString())
       params.set('category', categorySlug)
-      params.delete('subcategory') // Clear subcategory when changing category
+      params.delete('subcategory')
       const newUrl = `${window.location.pathname}?${params.toString()}`
       router.push(newUrl, { scroll: false })
     }
@@ -143,7 +143,9 @@ export const GoodsSidebar: React.FC<Props> = ({
   }, [categories, subcategories, selectedCategory])
 
   return (
-    <div className={`bg-white/90 backdrop-blur-md border-0 shadow-xl overflow-hidden ${isAccordion ? '' : 'rounded-3xl'}`}>
+    <div
+      className={`bg-white/90 backdrop-blur-md border-0 shadow-xl overflow-hidden ${isAccordion ? '' : 'rounded-3xl'}`}
+    >
       <div className="p-3 sm:p-4 lg:p-8">
         {/* Categories section */}
         <div className="flex items-center gap-3 mb-4 sm:mb-6 lg:mb-8">
@@ -158,9 +160,9 @@ export const GoodsSidebar: React.FC<Props> = ({
               {locale === 'rs' ? 'Filtrirajte proizvode' : 'Filter products'}
             </p>
           </div>
-        </div>
-
+        </div>{' '}
         <div className="space-y-3">
+          {' '}
           <Button
             onClick={() => handleCategoryClick('all')}
             variant="ghost"
@@ -171,25 +173,17 @@ export const GoodsSidebar: React.FC<Props> = ({
             }`}
           >
             <span className="font-medium">{t.allCategories}</span>
-            <ChevronRight
-              className={`w-5 h-5 transition-all duration-300 ${
-                selectedCategory === 'all'
-                  ? 'rotate-90 text-white'
-                  : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
-              }`}
-            />
           </Button>
-
           {organizedCategories.map((category, _index) => (
             <div key={category.slug} className="space-y-2">
-              {/* Parent Category */}
+              {/* Parent Category */}{' '}
               {category.slug === 'produced-by-geneza' ? (
                 <Button
                   onClick={() => handleCategoryClick(category.slug)}
                   variant="ghost"
                   className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] relative overflow-hidden ${
                     selectedCategory === category.slug
-                      ? 'text-white shadow-lg hover:shadow-xl'
+                      ? 'text-white shadow-lg hover:shadow-xl hover:text-white'
                       : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
                   }`}
                   style={
@@ -202,12 +196,15 @@ export const GoodsSidebar: React.FC<Props> = ({
                       : {}
                   }
                 >
+                  {' '}
                   <span className="font-medium relative z-10">{category.title}</span>
                   <ChevronRight
                     className={`w-5 h-5 transition-all duration-300 relative z-10 ${
-                      selectedCategory === category.slug
-                        ? 'rotate-90 text-white'
-                        : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
+                      category.subcategories && category.subcategories.length > 0
+                        ? selectedCategory === category.slug
+                          ? 'rotate-90 text-white'
+                          : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
+                        : 'invisible'
                     }`}
                   />
                 </Button>
@@ -217,21 +214,23 @@ export const GoodsSidebar: React.FC<Props> = ({
                   variant="ghost"
                   className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] ${
                     selectedCategory === category.slug
-                      ? 'bg-gradient-to-r from-[#9BC273] to-[#8AB162] text-white shadow-lg hover:shadow-xl'
+                      ? 'bg-gradient-to-r from-[#9BC273] to-[#8AB162] text-white shadow-lg hover:shadow-xl hover:text-white'
                       : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
                   }`}
                 >
+                  {' '}
                   <span className="font-medium">{category.title}</span>
-                  <ChevronRight
-                    className={`w-5 h-5 transition-all duration-300 ${
-                      selectedCategory === category.slug
-                        ? 'rotate-90 text-white'
-                        : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
-                    }`}
-                  />
+                  {category.subcategories && category.subcategories.length > 0 && (
+                    <ChevronRight
+                      className={`w-5 h-5 transition-all duration-300 ${
+                        selectedCategory === category.slug
+                          ? 'rotate-90 text-white'
+                          : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
+                      }`}
+                    />
+                  )}
                 </Button>
-              )}
-
+              )}{' '}
               {category.subcategories && category.subcategories.length > 0 && (
                 <div className="ml-6 space-y-1">
                   {category.subcategories.map((subcategory) => (
@@ -241,7 +240,7 @@ export const GoodsSidebar: React.FC<Props> = ({
                       variant="ghost"
                       className={`w-full justify-start group h-auto p-2 rounded-lg transition-all duration-300 text-sm ${
                         selectedSubcategory === subcategory.title
-                          ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg'
+                          ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg hover:text-white'
                           : 'hover:bg-gray-50 text-gray-600 hover:text-gray-800'
                       }`}
                     >
@@ -252,21 +251,6 @@ export const GoodsSidebar: React.FC<Props> = ({
               )}
             </div>
           ))}
-        </div>
-
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="flex items-center text-sm text-gray-500">
-            <span className="inline-block w-2 h-2 bg-[#9BC273] rounded-full mr-2"></span>
-            <span>
-              {categories.length + 1} {locale === 'rs' ? 'kategorija' : 'categories'}
-            </span>
-          </div>
-          {organizedCategories.some((cat) => cat.subcategories && cat.subcategories.length > 0) && (
-            <div className="flex items-center text-xs text-gray-400 mt-1">
-              <span className="inline-block w-1.5 h-1.5 bg-gray-300 rounded-full mr-2"></span>
-              <span>{locale === 'rs' ? 'Sa podkategorijama' : 'With subcategories'}</span>
-            </div>
-          )}
         </div>
       </div>
     </div>

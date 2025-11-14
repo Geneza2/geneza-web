@@ -37,6 +37,15 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'blob.vercel-storage.com',
       },
+      // Add Cloudflare R2 domains
+      {
+        protocol: 'https',
+        hostname: '*.r2.cloudflarestorage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.pub.r2.dev',
+      },
       {
         protocol: 'http',
         hostname: 'localhost',

@@ -17,6 +17,11 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     return cacheTag ? `${cleanUrl}?${cacheTag}` : cleanUrl
   }
 
+  // Handle Cloudflare R2 URLs - return as is
+  if (cleanUrl.includes('r2.cloudflarestorage.com') || cleanUrl.includes('.pub.r2.dev')) {
+    return cacheTag ? `${cleanUrl}?${cacheTag}` : cleanUrl
+  }
+
   // Check if URL already has http/https protocol
   if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
     return cacheTag ? `${cleanUrl}?${cacheTag}` : cleanUrl

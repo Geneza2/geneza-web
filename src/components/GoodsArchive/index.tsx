@@ -158,16 +158,13 @@ export const GoodsArchive: React.FC<Props> = ({
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesByOrder)
 
-  // Extract subcategories from the selected good's products
   const allSubcategories = React.useMemo(() => {
-    // Don't show subcategories if "all" is selected
     if (selectedCategory === 'all') {
       return []
     }
 
     const subcategoryMap = new Map<string, { name: string; count: number }>()
 
-    // Find the selected good and extract subcategories from its products
     const selectedGood = goods.find((good) => good.slug === selectedCategory)
     if (selectedGood && selectedGood.products) {
       selectedGood.products.forEach((product) => {
