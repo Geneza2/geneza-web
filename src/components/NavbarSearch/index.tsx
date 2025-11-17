@@ -25,9 +25,10 @@ type SearchResult = {
 
 type NavbarSearchProps = {
   locale: TypedLocale
+  autoFocus?: boolean
 }
 
-export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
+export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale, autoFocus = false }) => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -42,6 +43,17 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
   React.useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Auto-focus when autoFocus prop changes to true (e.g., when mobile menu opens)
+  React.useEffect(() => {
+    if (autoFocus && isMounted && inputRef.current) {
+      // Small delay to ensure the component is fully rendered
+      const timer = setTimeout(() => {
+        inputRef.current?.focus()
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [autoFocus, isMounted])
 
   const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 3) {
@@ -207,7 +219,6 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
       </div>
     )
   }
-
   return (
     <div className="relative w-full max-w-[260px]">
       <form onSubmit={handleSearchSubmit} className="relative">
@@ -221,9 +232,18 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
             performSearch(e.target.value)
           }}
           onKeyDown={handleKeyDown}
-          onFocus={() => setIsFocused(true)}
+          onFocus={(e) => {
+            // Remove readOnly on focus to allow typing
+            e.currentTarget.removeAttribute('readonly')
+            setIsFocused(true)
+          }}
           onBlur={() => {
             setTimeout(() => setIsFocused(false), 200)
+          }}
+          readOnly
+          onClick={(e) => {
+            // Remove readOnly when clicked
+            e.currentTarget.removeAttribute('readonly')
           }}
           className="px-3 pr-10 py-2 w-full border border-gray-200 bg-white/80 backdrop-blur-sm rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
         />

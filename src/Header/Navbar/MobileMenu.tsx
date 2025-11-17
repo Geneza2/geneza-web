@@ -120,15 +120,13 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ data, locale }) => {
       >
         <div className="flex items-center justify-between p-4 border-b border-border">
           <Logo />
-        </div>
+        </div>{' '}
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <SheetDescription className="sr-only">Main navigation links for the site</SheetDescription>
-
         {/* Mobile Search */}
         <div className="p-4 border-b border-border flex justify-center">
-          <NavbarSearch locale={locale} />
+          <NavbarSearch locale={locale} autoFocus={isOpen} />
         </div>
-
         <nav className="flex flex-col gap-3 p-4">
           {navItems.map((item) => (
             <Link
