@@ -19,14 +19,12 @@ export async function retryOperation<T>(
     } catch (error) {
       lastError = error as Error
 
-      // Log the error for debugging
       console.error(`Attempt ${attempt} failed:`, {
         message: lastError.message,
         name: lastError.name,
         stack: process.env.NODE_ENV === 'development' ? lastError.stack : undefined,
       })
 
-      // Don't retry on certain types of errors
       if (error instanceof Error) {
         if (
           error.message.includes('404') ||

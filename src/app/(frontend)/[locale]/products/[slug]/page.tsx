@@ -191,11 +191,9 @@ const ProductImage = ({ image, title, isMobile }: ProductImageProps) => (
       </div>
       {!isMobile && (
         <>
-          {/* Large centered blurred circle behind the image */}
           <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
             <div className="w-[40rem] h-[40rem] rounded-full bg-primary/25 blur-[120px] opacity-80" />
           </div>
-          {/* Accent corner glows */}
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/30 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-14 -left-14 w-56 h-56 bg-white/15 rounded-full blur-3xl animate-pulse" />
         </>
@@ -214,7 +212,6 @@ const HeroContent = ({
   locale,
   isMobile,
 }: HeroContentProps) => {
-  // Use highlightImage if available, otherwise fall back to regular image
   const displayImage = highlightImage || image
 
   return (

@@ -16,6 +16,7 @@ type Category = {
   } | null
   order?: number
   subcategories?: Category[]
+  hasSubcategories?: boolean
 }
 
 type Subcategory = {
@@ -23,7 +24,6 @@ type Subcategory = {
   count: number
 }
 
-// Props interface for GoodsSidebar component
 type Props = {
   categories: Category[]
   selectedCategory: string
@@ -51,7 +51,6 @@ export const GoodsSidebar: React.FC<Props> = ({
 
   const handleCategoryClick = (categorySlug: string) => {
     if (categorySlug === selectedCategory) {
-      // If clicking the same category, do nothing
       return
     } else if (categorySlug === 'all') {
       setSelectedCategory('all')
@@ -72,7 +71,6 @@ export const GoodsSidebar: React.FC<Props> = ({
 
   const handleSubcategoryClick = (subcategoryName: string) => {
     if (subcategoryName === selectedSubcategory) {
-      // If clicking the same subcategory, clear it
       setSelectedSubcategory('')
       const params = new URLSearchParams(searchParams.toString())
       params.delete('subcategory')
@@ -87,7 +85,6 @@ export const GoodsSidebar: React.FC<Props> = ({
     }
   }
 
-  // Organize categories into parent-child structure
   const organizedCategories = React.useMemo(() => {
     const parentCategories: Category[] = []
     const childCategories: Category[] = []
@@ -103,7 +100,6 @@ export const GoodsSidebar: React.FC<Props> = ({
       }
     })
 
-    // Add subcategories to their parent categories
     childCategories.forEach((child) => {
       if (child.parent) {
         const parentSlug = typeof child.parent === 'object' ? child.parent.slug : child.parent
@@ -114,7 +110,6 @@ export const GoodsSidebar: React.FC<Props> = ({
       }
     })
 
-    // Sort by order
     parentCategories.sort((a, b) => (a.order || 0) - (b.order || 0))
     parentCategories.forEach((parent) => {
       if (parent.subcategories) {
@@ -122,22 +117,23 @@ export const GoodsSidebar: React.FC<Props> = ({
       }
     })
 
-    if (subcategories && subcategories.length > 0) {
-      const selectedParent = parentCategories.find((p) => p.slug === selectedCategory)
-      if (selectedParent) {
-        if (!selectedParent.subcategories) {
-          selectedParent.subcategories = []
+    parentCategories.forEach((parent) => {
+      const categorySubcategories = subcategories && subcategories.length > 0
+      if (categorySubcategories && parent.slug === selectedCategory) {
+        if (!parent.subcategories) {
+          parent.subcategories = []
         }
-
-        selectedParent.subcategories = subcategories.map((sub) => ({
+        parent.subcategories = subcategories.map((sub) => ({
           slug: sub.name.toLowerCase().replace(/\s+/g, '-'),
           title: sub.name,
           parent: null,
           order: 0,
           subcategories: [],
         }))
+      } else if (!parent.subcategories || parent.subcategories.length === 0) {
+        parent.subcategories = []
       }
-    }
+    })
 
     return parentCategories
   }, [categories, subcategories, selectedCategory])
@@ -147,7 +143,6 @@ export const GoodsSidebar: React.FC<Props> = ({
       className={`bg-white/90 backdrop-blur-md border-0 shadow-xl overflow-hidden ${isAccordion ? '' : 'rounded-3xl'}`}
     >
       <div className="p-3 sm:p-4 lg:p-8">
-        {/* Categories section */}
         <div className="flex items-center gap-3 mb-4 sm:mb-6 lg:mb-8">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center">
             <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
@@ -176,7 +171,6 @@ export const GoodsSidebar: React.FC<Props> = ({
           </Button>
           {organizedCategories.map((category, _index) => (
             <div key={category.slug} className="space-y-2">
-              {/* Parent Category */}{' '}
               {category.slug === 'produced-by-geneza' ? (
                 <Button
                   onClick={() => handleCategoryClick(category.slug)}
@@ -200,7 +194,8 @@ export const GoodsSidebar: React.FC<Props> = ({
                   <span className="font-medium relative z-10">{category.title}</span>
                   <ChevronRight
                     className={`w-5 h-5 transition-all duration-300 relative z-10 ${
-                      category.subcategories && category.subcategories.length > 0
+                      category.hasSubcategories ||
+                      (category.subcategories && category.subcategories.length > 0)
                         ? selectedCategory === category.slug
                           ? 'rotate-90 text-white'
                           : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
@@ -220,35 +215,38 @@ export const GoodsSidebar: React.FC<Props> = ({
                 >
                   {' '}
                   <span className="font-medium">{category.title}</span>
-                  {category.subcategories && category.subcategories.length > 0 && (
-                    <ChevronRight
-                      className={`w-5 h-5 transition-all duration-300 ${
-                        selectedCategory === category.slug
+                  <ChevronRight
+                    className={`w-5 h-5 transition-all duration-300 ${
+                      category.hasSubcategories ||
+                      (category.subcategories && category.subcategories.length > 0)
+                        ? selectedCategory === category.slug
                           ? 'rotate-90 text-white'
                           : 'text-gray-400 group-hover:text-[#9BC273] group-hover:translate-x-1'
-                      }`}
-                    />
-                  )}
+                        : 'invisible'
+                    }`}
+                  />
                 </Button>
-              )}{' '}
-              {category.subcategories && category.subcategories.length > 0 && (
-                <div className="ml-6 space-y-1">
-                  {category.subcategories.map((subcategory) => (
-                    <Button
-                      key={subcategory.slug}
-                      onClick={() => handleSubcategoryClick(subcategory.title)}
-                      variant="ghost"
-                      className={`w-full justify-start group h-auto p-2 rounded-lg transition-all duration-300 text-sm ${
-                        selectedSubcategory === subcategory.title
-                          ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg hover:text-white'
-                          : 'hover:bg-gray-50 text-gray-600 hover:text-gray-800'
-                      }`}
-                    >
-                      <span className="font-normal">{subcategory.title}</span>
-                    </Button>
-                  ))}
-                </div>
               )}
+              {selectedCategory === category.slug &&
+                category.subcategories &&
+                category.subcategories.length > 0 && (
+                  <div className="ml-6 space-y-1">
+                    {category.subcategories.map((subcategory) => (
+                      <Button
+                        key={subcategory.slug}
+                        onClick={() => handleSubcategoryClick(subcategory.title)}
+                        variant="ghost"
+                        className={`w-full justify-start group h-auto p-2 rounded-lg transition-all duration-300 text-sm ${
+                          selectedSubcategory === subcategory.title
+                            ? 'bg-gradient-to-r from-[#9BC273]/80 to-[#8AB162]/80 text-white shadow-md hover:shadow-lg hover:text-white'
+                            : 'hover:bg-gray-50 text-gray-600 hover:text-gray-800'
+                        }`}
+                      >
+                        <span className="font-normal">{subcategory.title}</span>
+                      </Button>
+                    ))}
+                  </div>
+                )}
             </div>
           ))}
         </div>

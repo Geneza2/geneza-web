@@ -32,37 +32,39 @@ export const GoodsCard: React.FC<{
         className,
       )}
     >
-      <div className="flex h-28 sm:h-32 lg:h-36 xl:h-40">
+      <div className="flex min-h-[7rem] sm:min-h-[8rem] lg:min-h-[9rem] xl:min-h-[10rem]">
         {(image || metaImage) &&
           (() => {
             const imageUrl = getImageUrl(image || metaImage)
             return imageUrl && imageUrl !== '/noimg.svg' ? (
-              <div className="w-28 h-28 sm:w-32 sm:h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40 flex-shrink-0 relative overflow-hidden rounded-l-3xl">
-                <Image
-                  src={imageUrl}
-                  alt={(image as Media)?.alt || (metaImage as Media)?.alt || 'Product image'}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 640px) 128px, (max-width: 1024px) 144px, 160px"
-                />
+              <div className="w-28 h-full sm:w-32 lg:w-36 xl:w-40 flex-shrink-0 relative overflow-hidden rounded-l-3xl">
+                <div className="relative w-full h-full min-h-[7rem] sm:min-h-[8rem] lg:min-h-[9rem] xl:min-h-[10rem]">
+                  <Image
+                    src={imageUrl}
+                    alt={(image as Media)?.alt || (metaImage as Media)?.alt || 'Product image'}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 640px) 128px, (max-width: 1024px) 144px, 160px"
+                  />
+                </div>
               </div>
             ) : null
           })()}
 
-        <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col justify-between min-h-0">
-          <div className="flex items-start justify-between mb-2 sm:mb-3">
-            <div className="flex-1 mr-4">
-              <CardTitle className="text-base sm:text-lg font-bold text-gray-900 line-clamp-2 leading-tight transition-colors duration-300 group-hover:text-[#9BC273]">
+        <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col justify-between min-w-0">
+          <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-base sm:text-lg font-bold text-gray-900 line-clamp-2 leading-tight transition-colors duration-300 group-hover:text-[#9BC273] break-words">
                 {title}
               </CardTitle>
               {country && (
                 <div className="flex items-center text-gray-500 mt-2">
-                  <MapPin className="w-4 h-4 mr-2 text-[#9BC273]" />
-                  <span className="text-sm font-medium">{country}</span>
+                  <MapPin className="w-4 h-4 mr-2 text-[#9BC273] flex-shrink-0" />
+                  <span className="text-sm font-medium truncate">{country}</span>
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {specPdf && typeof specPdf === 'object' && 'url' in specPdf && specPdf.url && (
                 <Link
                   href={(specPdf as any).url as string}
@@ -80,11 +82,11 @@ export const GoodsCard: React.FC<{
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0">
             {description && (
-              <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed flex items-center gap-2">
-                <Package className="w-4 h-4 text-[#9BC273]" />
-                <span>{description}</span>
+              <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed flex items-start gap-2">
+                <Package className="w-4 h-4 text-[#9BC273] flex-shrink-0 mt-0.5" />
+                <span className="break-words">{description}</span>
               </p>
             )}
           </div>

@@ -1,8 +1,3 @@
-// Performance optimization utilities
-
-/**
- * Debounce function to limit the rate of function execution
- */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number,
@@ -17,9 +12,6 @@ export function debounce<T extends (...args: any[]) => any>(
   }
 }
 
-/**
- * Throttle function to limit the rate of function execution
- */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number,
@@ -35,9 +27,6 @@ export function throttle<T extends (...args: any[]) => any>(
   }
 }
 
-/**
- * Check if element is in viewport
- */
 export function isInViewport(element: Element): boolean {
   const rect = element.getBoundingClientRect()
   return (
@@ -48,9 +37,6 @@ export function isInViewport(element: Element): boolean {
   )
 }
 
-/**
- * Lazy load images when they enter viewport
- */
 export function lazyLoadImages() {
   const images = document.querySelectorAll('img[data-src]')
 
@@ -68,9 +54,6 @@ export function lazyLoadImages() {
   images.forEach((img) => imageObserver.observe(img))
 }
 
-/**
- * Preload critical resources
- */
 export function preloadCriticalResources() {
   const criticalImages = ['/logo-color.svg', '/favicon.svg']
 
@@ -83,14 +66,10 @@ export function preloadCriticalResources() {
   })
 }
 
-/**
- * Optimize scroll performance
- */
 export function optimizeScroll() {
   let ticking = false
 
   function updateScroll() {
-    // Your scroll handling logic here
     ticking = false
   }
 

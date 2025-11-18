@@ -6,7 +6,7 @@ import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good, Category as PayloadCategory } from '@/payload-types'
 import { Input } from '@/components/ui/input'
-import { Search, Package, ArrowRight, X, XCircle, ChevronDown } from 'lucide-react'
+import { Search, Package, X, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { GoodsSidebar } from '@/components/GoodsSidebar'
@@ -16,6 +16,11 @@ type Category = {
   slug: string
   title: string
   order?: number
+  hasSubcategories?: boolean
+  parent?: {
+    slug: string
+    title: string
+  } | null
 }
 
 interface ProductCutSize {
@@ -39,6 +44,7 @@ export const GoodsArchive: React.FC<Props> = ({
 }) => {
   const router = useRouter()
   const [openAccordion, setOpenAccordion] = React.useState<'categories' | 'search' | null>(null)
+  const [searchInput, setSearchInput] = React.useState<string>('')
 
   const selectedCategory: string = Array.isArray(searchParams.category)
     ? searchParams.category[0] || 'all'
@@ -54,6 +60,49 @@ export const GoodsArchive: React.FC<Props> = ({
 
   const t = goodsTranslations[locale] || goodsTranslations.en
 
+  const updateSearchInURL = React.useCallback(
+    (query: string) => {
+      const currentParams = new URLSearchParams()
+
+      if (selectedCategory && selectedCategory !== 'all') {
+        currentParams.set('category', selectedCategory)
+      }
+
+      if (selectedSubcategory) {
+        currentParams.set('subcategory', selectedSubcategory)
+      }
+
+      if (query.trim()) {
+        currentParams.set('search', query.trim())
+      }
+
+      const queryString = currentParams.toString()
+      router.push(`${window.location.pathname}${queryString ? `?${queryString}` : ''}`, {
+        scroll: false,
+      })
+    },
+    [router, selectedCategory, selectedSubcategory],
+  )
+
+  const clearSearch = React.useCallback(() => {
+    setSearchInput('')
+    updateSearchInURL('')
+  }, [updateSearchInURL])
+
+  React.useEffect(() => {
+    setSearchInput(searchQuery)
+  }, [searchQuery])
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== searchQuery) {
+        updateSearchInURL(searchInput)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [searchInput, searchQuery, updateSearchInURL])
+
   const setSelectedCategory = (category: string) => {
     const currentParams = new URLSearchParams()
 
@@ -65,7 +114,6 @@ export const GoodsArchive: React.FC<Props> = ({
       currentParams.set('category', category)
     }
 
-    // Clear subcategory when changing category
     if (selectedSubcategory) {
       currentParams.delete('subcategory')
     }
@@ -97,63 +145,55 @@ export const GoodsArchive: React.FC<Props> = ({
     })
   }
 
-  const updateSearchInURL = (query: string) => {
-    const currentParams = new URLSearchParams()
-
-    if (selectedCategory && selectedCategory !== 'all') {
-      currentParams.set('category', selectedCategory)
-    }
-
-    if (selectedSubcategory) {
-      currentParams.set('subcategory', selectedSubcategory)
-    }
-
-    if (query.trim()) {
-      currentParams.set('search', query.trim())
-    }
-
-    const queryString = currentParams.toString()
-    router.push(`${window.location.pathname}${queryString ? `?${queryString}` : ''}`, {
-      scroll: false,
-    })
-  }
-
-  const clearSearch = () => {
-    updateSearchInURL('')
-  }
-
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const query = formData.get('search') as string
-    updateSearchInURL(query || '')
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value)
   }
 
   const sortCategoriesByOrder = (a: Category, b: Category) => (a.order || 0) - (b.order || 0)
 
+  const categoriesWithSubcategories = React.useMemo(() => {
+    const categorySet = new Set<string>()
+    goods.forEach((good) => {
+      if (!good) return
+      if (good.products && good.products.length > 0) {
+        const hasSubcategories = good.products.some(
+          (product) => product && product.subcategories && product.subcategories.length > 0,
+        )
+        if (hasSubcategories) {
+          categorySet.add(good.slug || '')
+        }
+      }
+    })
+    return categorySet
+  }, [goods])
+
   const categories: Category[] =
     availableCategories.length > 0
       ? availableCategories
+          .filter((category) => category !== null && category !== undefined)
           .map((category) => ({
             slug: category.slug || '',
             title: category.title || '',
             parent:
-              typeof category.parent === 'object' && category.parent
+              typeof category.parent === 'object' && category.parent && category.parent !== null
                 ? {
                     slug: category.parent.slug || '',
                     title: category.parent.title || '',
                   }
                 : null,
             order: typeof category.order === 'number' ? category.order : 0,
+            hasSubcategories: categoriesWithSubcategories.has(category.slug || ''),
           }))
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesByOrder)
       : goods
+          .filter((good) => good !== null && good !== undefined)
           .map((good) => ({
             slug: good.slug || '',
             title: good.title || '',
             parent: null,
             order: typeof good.order === 'number' ? good.order : 0,
+            hasSubcategories: categoriesWithSubcategories.has(good.slug || ''),
           }))
           .filter((category) => category.slug && category.title)
           .sort(sortCategoriesByOrder)
@@ -165,17 +205,17 @@ export const GoodsArchive: React.FC<Props> = ({
 
     const subcategoryMap = new Map<string, { name: string; count: number }>()
 
-    const selectedGood = goods.find((good) => good.slug === selectedCategory)
+    const selectedGood = goods.find((good) => good && good.slug === selectedCategory)
     if (selectedGood && selectedGood.products) {
       selectedGood.products.forEach((product) => {
+        if (!product) return
         product.subcategories?.forEach((subcategory) => {
-          if (subcategory.name) {
-            const existing = subcategoryMap.get(subcategory.name)
-            if (existing) {
-              existing.count += 1
-            } else {
-              subcategoryMap.set(subcategory.name, { name: subcategory.name, count: 1 })
-            }
+          if (!subcategory || !subcategory.name) return
+          const existing = subcategoryMap.get(subcategory.name)
+          if (existing) {
+            existing.count += 1
+          } else {
+            subcategoryMap.set(subcategory.name, { name: subcategory.name, count: 1 })
           }
         })
       })
@@ -188,8 +228,6 @@ export const GoodsArchive: React.FC<Props> = ({
     .map((good) => {
       if (!good.products?.length) return null
 
-      // If "all" is selected, show all goods
-      // Otherwise, show only the selected good
       const matchesCategory = selectedCategory === 'all' || good.slug === selectedCategory
 
       if (!matchesCategory) return null
@@ -197,7 +235,6 @@ export const GoodsArchive: React.FC<Props> = ({
       const matchingProducts = good.products.filter((product) => {
         if (!product) return false
 
-        // Filter by subcategory if selected
         if (selectedSubcategory) {
           const hasMatchingSubcategory = product.subcategories?.some(
             (subcategory) => subcategory.name === selectedSubcategory,
@@ -205,7 +242,6 @@ export const GoodsArchive: React.FC<Props> = ({
           if (!hasMatchingSubcategory) return false
         }
 
-        // Filter by search query if provided
         if (!searchQuery || !searchQuery.trim()) return true
 
         const searchLower = searchQuery.toLowerCase().trim()
@@ -214,7 +250,6 @@ export const GoodsArchive: React.FC<Props> = ({
         const descriptionMatch = product.description?.toLowerCase().includes(searchLower)
         const countryMatch = product.country?.toLowerCase().includes(searchLower)
 
-        // Also search in subcategories
         const subcategoryMatch = product.subcategories?.some(
           (subcategory) =>
             subcategory.name?.toLowerCase().includes(searchLower) ||
@@ -236,7 +271,6 @@ export const GoodsArchive: React.FC<Props> = ({
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-12">
-        {/* Desktop: Sidebar on left, Mobile: Hidden by default, shown in dropdown */}
         <div className="hidden lg:block lg:w-80 flex-shrink-0 order-1">
           <div className="lg:sticky lg:top-8">
             <GoodsSidebar
@@ -252,7 +286,6 @@ export const GoodsArchive: React.FC<Props> = ({
         </div>
 
         <div className="flex-1 min-w-0 order-2 lg:order-2">
-          {/* Mobile Categories Dropdown */}
           <div className="lg:hidden mb-4">
             <Button
               variant="outline"
@@ -287,7 +320,6 @@ export const GoodsArchive: React.FC<Props> = ({
             )}
           </div>
 
-          {/* Mobile Search Dropdown */}
           <div className="lg:hidden mb-4">
             <Button
               variant="outline"
@@ -306,17 +338,22 @@ export const GoodsArchive: React.FC<Props> = ({
 
             {openAccordion === 'search' && (
               <div className="bg-white/90 backdrop-blur-md rounded-b-2xl border-2 border-t-0 border-white shadow-xl p-4">
-                <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                       name="search"
                       type="text"
                       placeholder={t.searchPlaceholder}
-                      defaultValue={searchQuery || ''}
-                      className="pl-10 pr-10 py-3 text-sm border-2 border-white/30 bg-white/90 backdrop-blur-sm rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
+                      value={searchInput}
+                      onChange={handleSearchChange}
+                      autoFocus={false}
+                      autoComplete="off"
+                      inputMode="none"
+                      onFocus={(e) => e.target.setAttribute('inputmode', 'text')}
+                      className="pl-10 pr-10 py-3 text-sm border-2 border-black bg-transparent rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
                     />
-                    {searchQuery && (
+                    {searchInput && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -328,138 +365,37 @@ export const GoodsArchive: React.FC<Props> = ({
                       </Button>
                     )}
                   </div>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="px-4 py-3 rounded-2xl bg-[#9BC273] hover:bg-[#8AB162] border-0 shadow-lg w-full"
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    {locale === 'rs' ? 'Pretraži' : 'Search'}
-                  </Button>
-                </form>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Desktop Search */}
-          <div className="hidden lg:block bg-white/90 backdrop-blur-md rounded-3xl border-0 shadow-xl p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
+          <div className="hidden lg:block mb-6 lg:mb-8">
             <div className="max-w-2xl">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                {locale === 'rs' ? 'Pronađite proizvod' : 'Find Product'}
-              </h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                {locale === 'rs'
-                  ? 'Pretražite kroz našu kolekciju kvalitetnih proizvoda'
-                  : 'Search through our collection of quality products'}
-              </p>
-
-              <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                   <Input
                     name="search"
                     type="text"
                     placeholder={t.searchPlaceholder}
-                    defaultValue={searchQuery || ''}
-                    className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base border-2 border-white/30 bg-white/90 backdrop-blur-sm rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
+                    value={searchInput}
+                    onChange={handleSearchChange}
+                    className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base border-2 border-black bg-transparent rounded-2xl transition-all duration-200 focus:outline-none focus:ring-0 focus:border-[#9BC273] placeholder:text-gray-400"
                   />
-                  {searchQuery && (
+                  {searchInput && (
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={clearSearch}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 sm:h-8 sm:w-8 p-0 hover:bg-gray-100 rounded-xl"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 sm:h-8 sm:w-8 p-0 hover:bg-gray-100/50 rounded-xl"
                     >
                       <X className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   )}
                 </div>
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="px-4 sm:px-6 py-3 sm:py-4 rounded-2xl bg-[#9BC273] hover:bg-[#8AB162] border-0 shadow-lg w-full sm:w-auto"
-                >
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </form>
-
-              {/* Active Filters - Show as Tags Immediately */}
-              {(selectedCategory !== 'all' || selectedSubcategory || searchQuery) && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                    {locale === 'rs' ? 'Aktivni filteri' : 'Active Filters'}
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {/* Category Filter */}
-                    {selectedCategory !== 'all' && (
-                      <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
-                        <span className="text-sm font-medium flex-1 truncate">
-                          {availableCategories.find((cat) => cat.slug === selectedCategory)
-                            ?.title || selectedCategory}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedCategory('all')}
-                          className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Subcategory Filter */}
-                    {selectedSubcategory && (
-                      <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
-                        <span className="text-sm font-medium flex-1 truncate">
-                          {selectedSubcategory}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedSubcategory('')}
-                          className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Search Filter */}
-                    {searchQuery && (
-                      <div className="flex items-center gap-2 bg-[#9BC273]/10 text-[#9BC273] px-3 py-2 rounded-xl border border-[#9BC273]/20 min-h-[44px]">
-                        <span className="text-sm font-medium flex-1 truncate">
-                          &quot;{searchQuery}&quot;
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={clearSearch}
-                          className="h-8 w-8 p-0 hover:bg-[#9BC273]/20 rounded-full flex-shrink-0"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Clear All Button */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedCategory('all')
-                        setSelectedSubcategory('')
-                        clearSearch()
-                      }}
-                      className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-xl min-h-[44px]"
-                    >
-                      <X className="w-4 h-4 mr-1" />
-                      {locale === 'rs' ? 'Obriši sve' : 'Clear all'}
-                    </Button>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           </div>
 

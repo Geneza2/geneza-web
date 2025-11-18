@@ -1,10 +1,4 @@
-/**
- * Normalizes search queries by converting special characters to their base forms
- * This allows searching for "sargarepa" to match "šargarepa" and vice versa
- */
-
 const characterMap: Record<string, string> = {
-  // Serbian/Croatian characters
   š: 's',
   Š: 'S',
   ć: 'c',
@@ -87,7 +81,6 @@ const characterMap: Record<string, string> = {
   Ç: 'C',
 }
 
-// Common misspellings and variations for Serbian/Croatian
 const commonVariations: Record<string, string[]> = {
   peršun: ['persun', 'peršun', 'peršun', 'peršun'],
   šargarepa: ['sargarepa', 'šargarepa', 'sargarepa', 'šargarepa'],
@@ -105,22 +98,15 @@ const commonVariations: Record<string, string[]> = {
   jecam: ['ječam', 'jecam', 'ječam', 'jecam'],
 }
 
-/**
- * Normalizes a search query by converting special characters to their base forms
- * @param query - The search query to normalize
- * @returns The normalized query with special characters converted to base forms
- */
 export function normalizeSearchQuery(query: string): string {
   if (!query) return ''
 
   let normalized = query.toLowerCase().trim()
 
-  // Handle multi-character replacements first (like 'nj', 'lj', 'dž')
   normalized = normalized.replace(/dž/g, 'd')
   normalized = normalized.replace(/nj/g, 'n')
   normalized = normalized.replace(/lj/g, 'l')
 
-  // Handle single character replacements
   for (const [special, base] of Object.entries(characterMap)) {
     normalized = normalized.replace(new RegExp(special, 'g'), base)
   }
@@ -128,30 +114,21 @@ export function normalizeSearchQuery(query: string): string {
   return normalized
 }
 
-/**
- * Gets all possible search variations for a query
- * @param query - The search query
- * @returns Array of all possible variations to search for
- */
 export function getSearchVariations(query: string): string[] {
   if (!query) return []
 
   const variations = new Set<string>()
   const lowerQuery = query.toLowerCase().trim()
 
-  // Add original query
   variations.add(lowerQuery)
 
-  // Add normalized version
   const normalized = normalizeSearchQuery(query)
   variations.add(normalized)
 
-  // Add common variations
   for (const [key, variants] of Object.entries(commonVariations)) {
     if (key === lowerQuery || normalized === key) {
       variants.forEach((variant) => variations.add(variant))
     }
-    // Also check if any variant matches our query
     if (variants.includes(lowerQuery)) {
       variants.forEach((variant) => variations.add(variant))
     }
@@ -182,9 +159,7 @@ function generateCharacterVariations(query: string): string[] {
   }
   variations.add(withSpecials)
 
-  // Add partial matches for better fuzzy matching
   if (query.length > 3) {
-    // Add substring variations
     for (let i = 0; i <= query.length - 3; i++) {
       const substring = query.substring(i, query.length)
       if (substring.length >= 3) {
@@ -197,30 +172,21 @@ function generateCharacterVariations(query: string): string[] {
   return Array.from(variations)
 }
 
-/**
- * Creates an advanced fuzzy search condition with multiple strategies
- * @param field - The field to search in
- * @param query - The search query
- * @returns A Payload search condition object
- */
 export function createFuzzySearchCondition(field: string, query: string) {
   const variations = getSearchVariations(query)
   const conditions: Array<{
     [key: string]: { equals?: string; contains?: string; like?: string }
   }> = []
 
-  // Add exact matches (highest priority)
   variations.forEach((variation) => {
     conditions.push({ [field]: { equals: variation } })
     conditions.push({ [field]: { contains: variation } })
   })
 
-  // Add case-insensitive matches
   variations.forEach((variation) => {
     conditions.push({ [field]: { like: `%${variation}%` } })
   })
 
-  // Add partial word matches for longer queries
   if (query.length > 4) {
     const words = query.split(/\s+/)
     words.forEach((word) => {

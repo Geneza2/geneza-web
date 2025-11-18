@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom animations for goods page */
 @keyframes fadeInUp {
   from {
     opacity: 0;

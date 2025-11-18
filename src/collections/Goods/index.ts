@@ -176,6 +176,7 @@ export const Goods: CollectionConfig = {
               type: 'relationship',
               relationTo: 'categories',
               hasMany: true,
+              required: false,
               admin: { position: 'sidebar' },
             },
           ],

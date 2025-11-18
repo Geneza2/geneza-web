@@ -39,15 +39,14 @@ export default async function Page({
 
     const goods = await payload.find({
       collection: 'goods',
-      depth: 2, // Reduced depth to improve performance
+      depth: 2,
       limit: 100,
       overrideAccess: draft,
       draft: draft,
       locale: safeLocale,
-      sort: 'order', // Sort goods by order
+      sort: 'order',
     })
 
-    // Get the selected category to determine banner image
     const selectedCategorySlug = Array.isArray(searchParams.category)
       ? searchParams.category[0]
       : searchParams.category
@@ -56,12 +55,9 @@ export default async function Page({
       ? goods.docs.find((good: any) => good.slug === selectedCategorySlug)
       : null
 
-    // Build productCutSizes from goods data instead of fetching all products
-    // This avoids memory issues during build by only using data already loaded
     const productCutSizes: Record<string, CutSize[]> = {}
 
     try {
-      // Extract cut sizes from products already loaded in goods
       goods.docs.forEach((good: any) => {
         if (good?.products && Array.isArray(good.products)) {
           good.products.forEach((product: any) => {
@@ -81,14 +77,11 @@ export default async function Page({
       })
     } catch (error) {
       console.error('Error building product cut sizes:', error)
-      // Continue without cut sizes if there's an error
     }
 
     const hasProducts =
       goods?.docs?.some((doc: any) => doc?.products && doc.products.length > 0) || false
 
-    // Determine banner image and content
-    // Prefer category.bannerImage from Categories collection; else fall back to Goods-level bannerImage
     let bannerImage: string | null = null
     if (selectedCategory?.bannerImage && typeof selectedCategory.bannerImage === 'object') {
       bannerImage = selectedCategory.bannerImage.url || null
@@ -109,21 +102,18 @@ export default async function Page({
         : 'Discover our wide range of quality products directly from the source'
 
     return (
-      <div className="relative w-full">
+      <div className="relative w-full min-h-screen">
         {draft && <LivePreviewListener />}
-        {/* Banner that spans full width behind content */}
-        <div className="absolute top-0 left-0 right-0 bottom-0 w-full pointer-events-none z-0">
+        <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full pointer-events-none z-0">
           {bannerImage ? (
-            // Custom image banner
             <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
               style={{ backgroundImage: `url(${bannerImage})` }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30"></div>
             </div>
           ) : (
-            // Default gradient banner
             <div className="absolute inset-0 overflow-hidden">
               <div className="absolute inset-0 bg-black/5"></div>
               <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
@@ -132,9 +122,7 @@ export default async function Page({
           )}
         </div>
 
-        {/* Content overlay on top of banner */}
         <div className="relative z-10">
-          {/* Banner content section */}
           <div className="relative h-[60vh] min-h-[400px] flex items-center">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 w-full">
               <div className="text-center max-w-4xl mx-auto">
@@ -153,7 +141,6 @@ export default async function Page({
             </div>
           </div>
 
-          {/* Main content with cards and sidebar */}
           <div className="relative -mt-16 pb-16">
             {!hasProducts ? (
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -189,13 +176,11 @@ export default async function Page({
   } catch (error) {
     console.error('Error loading goods:', error)
 
-    // Log additional error details for debugging
     if (error instanceof Error) {
       console.error('Error message:', error.message)
       console.error('Error stack:', error.stack)
     }
 
-    // Return a fallback page with empty data
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
         <div className="relative  overflow-hidden h-64 sm:h-80 lg:h-96">

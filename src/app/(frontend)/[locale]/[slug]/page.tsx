@@ -66,13 +66,13 @@ export default async function Page({ params }: { params: Promise<Params> }) {
             <section className="relative z-0 w-full h-[100vh] -mt-[72px] md:-mt-[80px] overflow-hidden">
               <div className="absolute inset-0 w-[100vw] h-full">
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/_p54D9BB12o?autoplay=1&mute=1&loop=1&playlist=_p54D9BB12o&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0`}
+                  src={`https://www.youtube.com/embed/_p54D9BB12o?autoplay=1&mute=1&loop=1&playlist=_p54D9BB12o&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1`}
                   title="Regenerative Agriculture"
-                  allow="autoplay; encrypted-media"
+                  allow="autoplay; encrypted-media; accelerometer; gyroscope; picture-in-picture"
+                  allowFullScreen
                   className="absolute inset-0 w-full h-full border-0"
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', pointerEvents: 'none' }}
                   loading="eager"
-                  referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-black/20" />
               </div>

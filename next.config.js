@@ -8,11 +8,10 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : undefined || process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
+      ...[NEXT_PUBLIC_SERVER_URL].map((item) => {
         const url = new URL(item)
 
         return {
@@ -20,7 +19,6 @@ const nextConfig = {
           protocol: url.protocol.replace(':', ''),
         }
       }),
-      // Add Vercel Blob Storage domains
       {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
@@ -37,7 +35,6 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'blob.vercel-storage.com',
       },
-      // Add Cloudflare R2 domains
       {
         protocol: 'https',
         hostname: '*.r2.cloudflarestorage.com',
@@ -64,7 +61,6 @@ const nextConfig = {
       '.mjs': ['.mts', '.mjs'],
     }
 
-    // Fix Jest worker issues
     if (!isServer) {
       webpackConfig.resolve.fallback = {
         ...webpackConfig.resolve.fallback,
@@ -74,7 +70,6 @@ const nextConfig = {
       }
     }
 
-    // Optimize build performance
     webpackConfig.optimization = {
       ...webpackConfig.optimization,
       splitChunks: {
@@ -86,11 +81,9 @@ const nextConfig = {
 
     return webpackConfig
   },
-  // Add experimental features to improve build stability
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
-  // Turbopack configuration (moved from experimental.turbo)
   turbopack: {
     rules: {
       '*.svg': {
