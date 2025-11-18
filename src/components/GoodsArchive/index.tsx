@@ -320,82 +320,57 @@ export const GoodsArchive: React.FC<Props> = ({
             )}
           </div>
 
-          <div className="lg:hidden mb-4">
-            <Button
-              variant="outline"
-              onClick={() => setOpenAccordion(openAccordion === 'search' ? null : 'search')}
-              className={`w-full flex items-center justify-between gap-2 px-4 py-3 border-2 border-white/30 bg-white/90 backdrop-blur-md hover:border-[#9BC273] transition-all duration-200 min-h-[48px] shadow-lg ${
-                openAccordion === 'search'
-                  ? 'rounded-t-2xl rounded-b-none border-b-0'
-                  : 'rounded-2xl'
-              }`}
-            >
-              <span className="text-sm font-medium">{locale === 'rs' ? 'Pretraga' : 'Search'}</span>
-              <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${openAccordion === 'search' ? 'rotate-180' : ''}`}
+          <div className="lg:hidden mb-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                name="search"
+                type="text"
+                placeholder={t.searchPlaceholder}
+                value={searchInput}
+                onChange={handleSearchChange}
+                autoFocus={false}
+                autoComplete="off"
+                inputMode="none"
+                onFocus={(e) => e.target.setAttribute('inputmode', 'text')}
+                className="pl-12 pr-12 py-4 text-base text-gray-900 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20 focus:shadow-md placeholder:text-gray-400"
               />
-            </Button>
-
-            {openAccordion === 'search' && (
-              <div className="bg-white/90 backdrop-blur-md rounded-b-2xl border-2 border-t-0 border-white shadow-xl p-4">
-                <div className="flex flex-col gap-3">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      name="search"
-                      type="text"
-                      placeholder={t.searchPlaceholder}
-                      value={searchInput}
-                      onChange={handleSearchChange}
-                      autoFocus={false}
-                      autoComplete="off"
-                      inputMode="none"
-                      onFocus={(e) => e.target.setAttribute('inputmode', 'text')}
-                      className="pl-10 pr-10 py-3 text-sm border-2 border-black bg-transparent rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
-                    />
-                    {searchInput && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={clearSearch}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100 rounded-xl"
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+              {searchInput && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearSearch}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 rounded-lg"
+                >
+                  <X className="w-4 h-4 text-gray-500" />
+                </Button>
+              )}
+            </div>
           </div>
 
-          <div className="hidden lg:block mb-6 lg:mb-8">
-            <div className="max-w-2xl">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
-                  <Input
-                    name="search"
-                    type="text"
-                    placeholder={t.searchPlaceholder}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base border-2 border-black bg-transparent rounded-2xl transition-all duration-200 focus:outline-none focus:ring-0 focus:border-[#9BC273] placeholder:text-gray-400"
-                  />
-                  {searchInput && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearSearch}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 sm:h-8 sm:w-8 p-0 hover:bg-gray-100/50 rounded-xl"
-                    >
-                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
+          <div className="hidden lg:block mb-8">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                name="search"
+                type="text"
+                placeholder={t.searchPlaceholder}
+                value={searchInput}
+                onChange={handleSearchChange}
+                className="pl-12 pr-12 py-4 text-base text-gray-900 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20 focus:shadow-md placeholder:text-gray-400"
+              />
+              {searchInput && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearSearch}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 rounded-lg"
+                >
+                  <X className="w-4 h-4 text-gray-500" />
+                </Button>
+              )}
             </div>
           </div>
 

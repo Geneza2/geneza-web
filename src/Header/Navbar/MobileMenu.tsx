@@ -125,7 +125,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ data, locale }) => {
         <SheetDescription className="sr-only">Main navigation links for the site</SheetDescription>
         {/* Mobile Search */}
         <div className="p-4 border-b border-border flex justify-center">
-          <NavbarSearch locale={locale} autoFocus={isOpen} />
+          <NavbarSearch locale={locale} autoFocus={false} />
         </div>
         <nav className="flex flex-col gap-3 p-4">
           {navItems.map((item) => (

@@ -29,15 +29,20 @@ const ProductItem: React.FC<{ product: Product; locale: TypedLocale }> = ({ prod
     <Link href={`/${locale}/products/${slug}`} className="block text-center h-full">
       {image && (
         <div className="relative w-full aspect-square overflow-hidden mb-3 max-w-80 mx-auto rounded-lg group">
-          <Media resource={image} className="w-full h-full object-contain scale-95" />
           {highlightImage && (
             <div className="absolute inset-0 flex items-center justify-center">
               <Media
                 resource={highlightImage}
-                className="w-2/3 h-2/3 object-contain group-hover:scale-105 group-hover:rotate-6 transition-all duration-300 ease-out"
+                className="w-full h-full object-contain transition-all duration-300 ease-out"
               />
             </div>
           )}
+          <div className="relative z-10 flex items-center justify-center h-full">
+            <Media
+              resource={image}
+              className="w-3/4 h-3/4 object-contain scale-95 group-hover:scale-105 group-hover:rotate-6 transition-all duration-300 ease-out"
+            />
+          </div>
         </div>
       )}
       <h3 className="text-lg font-semibold text-gray-800">{productTitle}</h3>

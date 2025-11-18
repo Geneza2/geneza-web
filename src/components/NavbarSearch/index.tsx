@@ -28,7 +28,7 @@ type NavbarSearchProps = {
   autoFocus?: boolean
 }
 
-export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale, autoFocus = false }) => {
+export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale }) => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -43,17 +43,6 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale, autoFocus = 
   React.useEffect(() => {
     setIsMounted(true)
   }, [])
-
-  // Auto-focus when autoFocus prop changes to true (e.g., when mobile menu opens)
-  React.useEffect(() => {
-    if (autoFocus && isMounted && inputRef.current) {
-      // Small delay to ensure the component is fully rendered
-      const timer = setTimeout(() => {
-        inputRef.current?.focus()
-      }, 300)
-      return () => clearTimeout(timer)
-    }
-  }, [autoFocus, isMounted])
 
   const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 3) {
@@ -141,16 +130,13 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale, autoFocus = 
       trackResultClick(query.trim(), url)
     }
 
-    // Check if we're on mobile
     const isMobile = window.innerWidth < 768
 
     if (isMobile) {
-      // On mobile, scroll to the result if on same page, otherwise navigate
       const currentPath = window.location.pathname
       const targetPath = url.split('?')[0]
 
       if (currentPath === targetPath) {
-        // Same page - just scroll to top or refresh content
         window.scrollTo({ top: 0, behavior: 'smooth' })
         setQuery('')
         setResults([])
@@ -232,19 +218,14 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({ locale, autoFocus = 
             performSearch(e.target.value)
           }}
           onKeyDown={handleKeyDown}
-          onFocus={(e) => {
-            // Remove readOnly on focus to allow typing
-            e.currentTarget.removeAttribute('readonly')
+          onFocus={() => {
             setIsFocused(true)
           }}
           onBlur={() => {
             setTimeout(() => setIsFocused(false), 200)
           }}
-          readOnly
-          onClick={(e) => {
-            // Remove readOnly when clicked
-            e.currentTarget.removeAttribute('readonly')
-          }}
+          autoComplete="off"
+          autoFocus={false}
           className="px-3 pr-10 py-2 w-full border border-gray-200 bg-white/80 backdrop-blur-sm rounded-2xl transition-all duration-200 focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20"
         />
         {query ? (
