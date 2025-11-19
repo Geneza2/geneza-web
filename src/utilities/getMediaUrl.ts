@@ -13,9 +13,9 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
   const cleanUrl = url.trim()
 
   // Handle Vercel Blob Storage URLs - return as is
-  if (cleanUrl.includes('vercel-storage.com')) {
-    return cacheTag ? `${cleanUrl}?${cacheTag}` : cleanUrl
-  }
+  //if (cleanUrl.includes('vercel-storage.com')) {
+  // return cacheTag ? `${cleanUrl}?${cacheTag}` : cleanUrl
+  // }
 
   // Handle Cloudflare R2 URLs - return as is
   if (cleanUrl.includes('r2.cloudflarestorage.com') || cleanUrl.includes('.pub.r2.dev')) {
