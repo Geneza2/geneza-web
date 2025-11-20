@@ -228,7 +228,7 @@ export const seed = async ({
             link: {
               type: 'custom',
               label: 'Goods',
-              url: '/goods',
+              url: '/goods?category=dried-vegetables-herbs',
             },
           },
           {

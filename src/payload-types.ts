@@ -286,6 +286,43 @@ export interface Good {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Optional: Add an internal link to this product (e.g., to a page or another product)
+     */
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'goods';
+            value: number | Good;
+          } | null)
+        | ({
+            relationTo: 'openPositions';
+            value: number | OpenPosition;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      /**
+       * Optional: Add section ID to scroll to (e.g., "Page" for #section-id)
+       */
+      anchor?: string | null;
+      url?: string | null;
+    };
     id?: string | null;
   }[];
   content: {
@@ -412,43 +449,6 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: number;
-  title: string;
-  description?: string | null;
-  /**
-   * Category banner image that will replace the green gradient banner
-   */
-  bannerImage?: (number | null) | Media;
-  /**
-   * Select a parent category to make this a subcategory
-   */
-  parent?: (number | null) | Category;
-  /**
-   * Order of display (lower numbers appear first)
-   */
-  order?: number | null;
-  /**
-   * Featured categories appear prominently
-   */
-  featured?: boolean | null;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  breadcrumbs?:
-    | {
-        doc?: (number | null) | Category;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "openPositions".
  */
 export interface OpenPosition {
@@ -512,6 +512,43 @@ export interface OpenPosition {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  title: string;
+  description?: string | null;
+  /**
+   * Category banner image that will replace the green gradient banner
+   */
+  bannerImage?: (number | null) | Media;
+  /**
+   * Select a parent category to make this a subcategory
+   */
+  parent?: (number | null) | Category;
+  /**
+   * Order of display (lower numbers appear first)
+   */
+  order?: number | null;
+  /**
+   * Featured categories appear prominently
+   */
+  featured?: boolean | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Category;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2330,6 +2367,15 @@ export interface GoodsSelect<T extends boolean = true> {
               name?: T;
               description?: T;
               id?: T;
+            };
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              anchor?: T;
+              url?: T;
             };
         id?: T;
       };

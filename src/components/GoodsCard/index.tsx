@@ -5,8 +5,9 @@ import type { Good, Media } from '@/payload-types'
 import { TypedLocale } from 'payload'
 import Image from 'next/image'
 import { Card, CardTitle } from '@/components/ui/card'
-import { MapPin, Package, FileCheck2 } from 'lucide-react'
+import { MapPin, Package, FileCheck2, ExternalLink } from 'lucide-react'
 import { getImageUrl } from '@/utilities/getImageUrl'
+import { getLinkHref } from '@/utilities/getLinkHref'
 import Link from 'next/link'
 
 export const GoodsCard: React.FC<{
@@ -23,16 +24,14 @@ export const GoodsCard: React.FC<{
   const firstProduct = products?.[0]
   if (!firstProduct) return null
 
-  const { image, description, country, specPdf, title } = firstProduct as any
+  const { image, description, country, specPdf, title, link } = firstProduct as any
 
-  return (
-    <Card
-      className={cn(
-        'group overflow-hidden bg-white/95 backdrop-blur-lg border-0 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#9BC273]/10 hover:-translate-y-1',
-        className,
-      )}
-    >
-      <div className="flex min-h-[7rem] sm:min-h-[8rem] lg:min-h-[9rem] xl:min-h-[10rem]">
+  // Get the href from the link if it exists
+  const href = link ? getLinkHref({ link }, locale) : null
+  const openInNewTab = link?.newTab || false
+
+  const cardContent = (
+    <div className="flex min-h-[7rem] sm:min-h-[8rem] lg:min-h-[9rem] xl:min-h-[10rem]">
         {(image || metaImage) &&
           (() => {
             const imageUrl = getImageUrl(image || metaImage)
@@ -70,6 +69,7 @@ export const GoodsCard: React.FC<{
                   href={(specPdf as any).url as string}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
                   className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 hover:from-[#9BC273]/20 hover:to-[#9BC273]/10 hover:scale-110"
                   aria-label="Open product PDF"
                 >
@@ -92,6 +92,28 @@ export const GoodsCard: React.FC<{
           </div>
         </div>
       </div>
+  )
+
+  return (
+    <Card
+      className={cn(
+        'group overflow-hidden bg-white/95 backdrop-blur-lg border-0 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#9BC273]/10 hover:-translate-y-1',
+        href && 'cursor-pointer',
+        className,
+      )}
+    >
+      {href ? (
+        <Link
+          href={href}
+          target={openInNewTab ? '_blank' : undefined}
+          rel={openInNewTab ? 'noopener noreferrer' : undefined}
+          className="block"
+        >
+          {cardContent}
+        </Link>
+      ) : (
+        cardContent
+      )}
     </Card>
   )
 }

@@ -212,7 +212,7 @@ const HeroContent = ({
   locale,
   isMobile,
 }: HeroContentProps) => {
-  const displayImage = highlightImage || image
+  const displayImage = image
 
   return (
     <div
@@ -392,7 +392,7 @@ export default async function ProductPage({ params: p }: Args) {
             </div>
             <div className="hidden lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:justify-center max-w-7xl mx-auto h-full">
               <div className="flex items-center justify-center">
-                <ProductImage image={highlightImage || image} title={title} isMobile={false} />
+                <ProductImage image={image} title={title} isMobile={false} />
               </div>
               <div className="flex items-center justify-center">
                 <HeroContent

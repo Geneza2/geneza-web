@@ -8,6 +8,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { slugField } from '@/fields/slug'
+import { link } from '@/fields/link'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import {
@@ -142,6 +143,15 @@ export const Goods: CollectionConfig = {
             },
           ],
         },
+        link({
+          disableLabel: true,
+          appearances: false,
+          overrides: {
+            admin: {
+              description: 'Optional: Add an internal link to this product (e.g., to a page or another product)',
+            },
+          },
+        }),
       ],
     },
     {

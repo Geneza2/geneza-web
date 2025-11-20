@@ -269,10 +269,10 @@ export const GoodsArchive: React.FC<Props> = ({
     .filter((item): item is Good => item !== null)
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-12">
         <div className="hidden lg:block lg:w-80 flex-shrink-0 order-1">
-          <div className="lg:sticky lg:top-8">
+          <div className="lg:sticky lg:top-24">
             <GoodsSidebar
               categories={categories}
               selectedCategory={selectedCategory}
