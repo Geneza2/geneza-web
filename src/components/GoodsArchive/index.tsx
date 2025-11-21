@@ -286,26 +286,24 @@ export const GoodsArchive: React.FC<Props> = ({
         </div>
 
         <div className="flex-1 min-w-0 order-2 lg:order-2">
-          <div className="lg:hidden mb-4">
+          <div className="lg:hidden mb-6">
             <Button
               variant="outline"
               onClick={() => setOpenAccordion(openAccordion === 'categories' ? null : 'categories')}
-              className={`w-full flex items-center justify-between gap-2 px-4 py-3 border-2 border-white/30 bg-white/90 backdrop-blur-md hover:border-[#9BC273] transition-all duration-200 min-h-[48px] shadow-lg ${
-                openAccordion === 'categories'
-                  ? 'rounded-t-2xl rounded-b-none border-b-0'
-                  : 'rounded-2xl'
+              className={`w-full flex items-center justify-between gap-2 px-4 py-4 text-base text-gray-900 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200 hover:border-[#9BC273] focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20 ${
+                openAccordion === 'categories' ? 'border-[#9BC273]' : ''
               }`}
             >
-              <span className="text-sm font-medium">
+              <span className="font-medium">
                 {locale === 'rs' ? 'Kategorije' : 'Categories'}
               </span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${openAccordion === 'categories' ? 'rotate-180' : ''}`}
+                className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${openAccordion === 'categories' ? 'rotate-180' : ''}`}
               />
             </Button>
 
             {openAccordion === 'categories' && (
-              <div className="border-2 border-t-0 border-white rounded-b-2xl overflow-hidden shadow-lg">
+              <div className="mt-2 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                 <GoodsSidebar
                   categories={categories}
                   selectedCategory={selectedCategory}

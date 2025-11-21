@@ -106,9 +106,9 @@ export default async function Page({
       <div className="relative w-full min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30">
         {draft && <LivePreviewListener />}
         
-        {/* Fixed background image with 16:9 aspect ratio */}
+        {/* Fixed background image - full screen on mobile, 16:9 on desktop */}
         <div className="fixed top-0 left-0 right-0 w-full pointer-events-none z-0 overflow-hidden">
-          <div className="relative w-full pt-[56.25%]">
+          <div className="relative w-full h-screen lg:pt-[56.25%] lg:h-auto">
             {bannerImage ? (
               <>
                 <div className="absolute inset-0">

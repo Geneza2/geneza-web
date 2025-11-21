@@ -26,13 +26,21 @@ export default async function Page({ params: paramsPromise }: Args) {
     let page: PageType | null
 
     try {
-      // Try to find home page first, then fallback to any page
+      // Try to find home page first
       page = await queryPage({
-        slug: 'production',
+        slug: 'home',
         locale,
       })
 
-      // If no home page, try to get any published page
+      // If no 'home' page, try 'production' as fallback
+      if (!page) {
+        page = await queryPage({
+          slug: 'production',
+          locale,
+        })
+      }
+
+      // If still no page, get the first published page
       if (!page) {
         const payload = await getPayload({ config: configPromise })
         const result = await retryOperation(() =>
@@ -113,7 +121,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     const { locale } = await params
     let page = await queryPage({
       locale,
-      slug: 'production',
+      slug: 'home',
     })
 
     // If no home page, try to get any published page
