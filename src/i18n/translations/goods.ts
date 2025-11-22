@@ -2,7 +2,6 @@ export const goodsTranslations = {
   en: {
     title: 'Our Goods',
     searchPlaceholder: 'Search goods...',
-    allCategories: 'All Categories',
     noProducts: 'No products found',
     noProductsInCategory: 'No products in this category',
     noProductsAvailable: 'No products available',
@@ -14,7 +13,6 @@ export const goodsTranslations = {
   rs: {
     title: 'Naša roba',
     searchPlaceholder: 'Pretraži robu...',
-    allCategories: 'Sve kategorije',
     noProducts: 'Nema pronađenih proizvoda',
     noProductsInCategory: 'Nema proizvoda u ovoj kategoriji',
     noProductsAvailable: 'Nema dostupnih proizvoda',

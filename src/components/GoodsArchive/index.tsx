@@ -6,11 +6,18 @@ import { TypedLocale } from 'payload'
 import { GoodsCard } from '@/components/GoodsCard'
 import type { Good, Category as PayloadCategory } from '@/payload-types'
 import { Input } from '@/components/ui/input'
-import { Search, Package, X, ChevronDown } from 'lucide-react'
+import { Search, Package, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { goodsTranslations } from '@/i18n/translations/goods'
 import { GoodsSidebar } from '@/components/GoodsSidebar'
 import { Logo } from '../Logo/Logo'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select'
 
 type Category = {
   slug: string
@@ -43,7 +50,6 @@ export const GoodsArchive: React.FC<Props> = ({
   searchParams,
 }) => {
   const router = useRouter()
-  const [openAccordion, setOpenAccordion] = React.useState<'categories' | 'search' | null>(null)
   const [searchInput, setSearchInput] = React.useState<string>('')
 
   const selectedCategory: string = Array.isArray(searchParams.category)
@@ -271,7 +277,7 @@ export const GoodsArchive: React.FC<Props> = ({
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-12">
-        <div className="hidden lg:block lg:w-80 flex-shrink-0 order-1">
+        <div className="hidden lg:block lg:w-80 flex-shrink-0 order-1 relative z-0">
           <div className="lg:sticky lg:top-24">
             <GoodsSidebar
               categories={categories}
@@ -287,35 +293,33 @@ export const GoodsArchive: React.FC<Props> = ({
 
         <div className="flex-1 min-w-0 order-2 lg:order-2">
           <div className="lg:hidden mb-6">
-            <Button
-              variant="outline"
-              onClick={() => setOpenAccordion(openAccordion === 'categories' ? null : 'categories')}
-              className={`w-full flex items-center justify-between gap-2 px-4 py-4 text-base text-gray-900 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200 hover:border-[#9BC273] focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20 ${
-                openAccordion === 'categories' ? 'border-[#9BC273]' : ''
-              }`}
+            <Select
+              value={selectedCategory === 'all' ? categories[0]?.slug || '' : selectedCategory}
+              onValueChange={(value) => {
+                setSelectedCategory(value)
+              }}
             >
-              <span className="font-medium">
-                {locale === 'rs' ? 'Kategorije' : 'Categories'}
-              </span>
-              <ChevronDown
-                className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${openAccordion === 'categories' ? 'rotate-180' : ''}`}
-              />
-            </Button>
-
-            {openAccordion === 'categories' && (
-              <div className="mt-2 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                <GoodsSidebar
-                  categories={categories}
-                  selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
-                  subcategories={allSubcategories}
-                  selectedSubcategory={selectedSubcategory}
-                  setSelectedSubcategory={setSelectedSubcategory}
-                  locale={locale}
-                  isAccordion={true}
-                />
-              </div>
-            )}
+              <SelectTrigger className="w-full h-12 text-base px-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-200 hover:border-[#9BC273] focus:border-[#9BC273] focus:ring-2 focus:ring-[#9BC273]/20">
+                <SelectValue>
+                  {categories.find(
+                    (cat) =>
+                      cat.slug ===
+                      (selectedCategory === 'all' ? categories[0]?.slug : selectedCategory),
+                  )?.title || (locale === 'rs' ? 'Izaberite kategoriju' : 'Select category')}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="z-[100]">
+                {categories.map((category) => (
+                  <SelectItem
+                    key={category.slug}
+                    value={category.slug}
+                    className="h-10 text-base hover:bg-[#9BC273] hover:text-white focus:bg-[#9BC273] focus:text-white data-[highlighted]:bg-[#9BC273] data-[highlighted]:text-white data-[state=checked]:bg-[#9BC273] data-[state=checked]:text-white"
+                  >
+                    {category.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="lg:hidden mb-6">

@@ -52,21 +52,13 @@ export const GoodsSidebar: React.FC<Props> = ({
   const handleCategoryClick = (categorySlug: string) => {
     if (categorySlug === selectedCategory) {
       return
-    } else if (categorySlug === 'all') {
-      setSelectedCategory('all')
-      const params = new URLSearchParams(searchParams.toString())
-      params.delete('category')
-      params.delete('subcategory')
-      const newUrl = `${window.location.pathname}?${params.toString()}`
-      router.push(newUrl, { scroll: false })
-    } else {
-      setSelectedCategory(categorySlug)
-      const params = new URLSearchParams(searchParams.toString())
-      params.set('category', categorySlug)
-      params.delete('subcategory')
-      const newUrl = `${window.location.pathname}?${params.toString()}`
-      router.push(newUrl, { scroll: false })
     }
+    setSelectedCategory(categorySlug)
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('category', categorySlug)
+    params.delete('subcategory')
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    router.push(newUrl, { scroll: false })
   }
 
   const handleSubcategoryClick = (subcategoryName: string) => {
@@ -157,18 +149,6 @@ export const GoodsSidebar: React.FC<Props> = ({
           </div>
         </div>{' '}
         <div className="space-y-3">
-          {' '}
-          <Button
-            onClick={() => handleCategoryClick('all')}
-            variant="ghost"
-            className={`w-full justify-between group h-auto p-3 sm:p-4 rounded-2xl transition-all duration-300 min-h-[48px] ${
-              selectedCategory === 'all'
-                ? 'bg-gradient-to-r from-[#9BC273] to-[#8AB162] text-white shadow-lg hover:shadow-xl'
-                : 'hover:bg-gray-50 text-gray-700 hover:text-gray-900'
-            }`}
-          >
-            <span className="font-medium">{t.allCategories}</span>
-          </Button>
           {organizedCategories.map((category, _index) => (
             <div key={category.slug} className="space-y-2">
               {category.slug === 'produced-by-geneza' ? (

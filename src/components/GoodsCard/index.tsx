@@ -65,16 +65,29 @@ export const GoodsCard: React.FC<{
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {specPdf && typeof specPdf === 'object' && 'url' in specPdf && specPdf.url && (
-                <Link
-                  href={(specPdf as any).url as string}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 hover:from-[#9BC273]/20 hover:to-[#9BC273]/10 hover:scale-110"
-                  aria-label="Open product PDF"
-                >
-                  <FileCheck2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
-                </Link>
+                href ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      window.open((specPdf as any).url as string, '_blank', 'noopener,noreferrer')
+                    }}
+                    className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 hover:from-[#9BC273]/20 hover:to-[#9BC273]/10 hover:scale-110 cursor-pointer"
+                    aria-label="Open product PDF"
+                  >
+                    <FileCheck2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
+                  </button>
+                ) : (
+                  <Link
+                    href={(specPdf as any).url as string}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 hover:from-[#9BC273]/20 hover:to-[#9BC273]/10 hover:scale-110"
+                    aria-label="Open product PDF"
+                  >
+                    <FileCheck2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
+                  </Link>
+                )
               )}
               <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#9BC273]/10 to-[#9BC273]/5 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:from-[#9BC273]/20 group-hover:to-[#9BC273]/10 group-hover:scale-110">
                 <Package className="w-5 h-5 sm:w-6 sm:h-6 text-[#9BC273]" />
